@@ -8,6 +8,7 @@ public class Customer {
 	private int money;
 	private int stamp=0;
 	private int coffeeCoupon=0;
+	private boolean isMembership;
 
 	public Customer(String name, int money) {
 		this.name = name;
