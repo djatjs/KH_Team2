@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client {
+	
 	static Scanner scan = new Scanner(System.in);
 	static List<Customer> list2 = new ArrayList<Customer>();
+	
 	public static void main(String[] args) {
 		
 		
@@ -22,7 +24,6 @@ public class Client {
 		Cafe caramelMacchiato = new Cafe("카라멜마끼아또",3500);
 		
 		//
-		
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 		buyCoffee(customer1, americano);
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
@@ -38,6 +39,44 @@ public class Client {
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 		buyCoffee(customer2, americano);
 	}
+	/*
+	int menu;
+	
+	menu = scan.nextInt();
+	do{
+        printMenu(); // 메뉴 출력
+        int choice = scan.nextInt(); // 사용자 입력 받기
+
+        switch (choice) {
+            case 1: // 커피 구매 //카테고리 분류
+                buyCoffee();
+                break;
+            case 2: // 고객 정보 보기
+                customerInfo();
+                break;
+            case 3: // 종료
+                System.out.println("프로그램을 종료합니다.");
+                break;
+            default:
+                System.out.println("올바르지 않은 선택입니다. 다시 입력하세요.");
+        }while(menu != 3);
+    }
+
+	
+	*/
+	
+	// 메뉴 출력
+    private static void printMenu() {
+        System.out.println("========= 카페 프로그램 =========");
+        System.out.println("1. 커피 구매"); //인기메뉴가 나오면 좋겠음
+        System.out.println("2. 고객 정보 보기");
+        System.out.println("3. 프로그램 종료");
+        System.out.print("메뉴를 선택하세요: ");
+    }
+
+	
+	
+	
 	//커피 구매
 	private static void buyCoffee(Customer customer, Cafe cafe) {
 		if(customer.getMoney()<cafe.getPrice()) {
