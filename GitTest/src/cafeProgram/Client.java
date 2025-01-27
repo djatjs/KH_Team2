@@ -1,14 +1,17 @@
 package cafeProgram;
 
-import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Client {
+	
 	static Scanner scan = new Scanner(System.in);
+	static ObjectOutputStream oos;	
+	static ObjectInputStream ois;
 	static List<Customer> list2 = new ArrayList<Customer>();
 	public static void main(String[] args) {
 		
@@ -20,17 +23,17 @@ public class Client {
 		try {
 			Socket socket = new Socket(ip, port);
 			System.out.println("[매장에 오신 걸 환영합니다.]");
+			
+			oos = new ObjectOutputStream(socket.getOutputStream());
+			ois = new ObjectInputStream(socket.getInputStream());
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		//sample data : 회원 등록
+		//Customer customer1 = new Customer("sun","1234", 50000);
+		Customer customer2 = new Customer("선","1234");
 		
-		Customer customer1 = new Customer("sun",50000, "member");
-		Customer customer2 = new Customer("선",50000);
-		System.out.println(customer1);
-		System.out.println(customer2);
-
-		
-		//메뉴 등록
+		//sample data : 메뉴 등록
 		Cafe americano = new Cafe("아메리카노",2000);
 		Cafe espresso = new Cafe("에스프레소",1500);
 		Cafe caramelMacchiato = new Cafe("카라멜마끼아또",3500);
@@ -54,37 +57,39 @@ public class Client {
 	}
 	//커피 구매
 	private static void buyCoffee(Customer customer, Cafe cafe) {
-		if(customer.getIsmembership()) {
+		//비회원
+		if(customer.getIsMembership()==0) { 
 			
 		}
-		
-		if(customer.getMoney()<cafe.getPrice()) {
-			System.out.println(cafe.getMenu()+ "을(를)돈이 부족하여 살 수 없음");
-			return;
-		}
-		
-		System.out.println(customer.getName()+" : " +cafe.getMenu()+ "을(를) 구매중");
-		//쿠폰이 있다면
-		if(customer.getCoffeeCoupon()>0 && cafe.getMenu().equals("아메리카노")) {
-			System.out.print("쿠폰을 사용할건가요? (yes : y, no : n)");
-			char str = scan.next().charAt(0);
-			switch(str) {
-			case 'y':
-				//쿠폰을 사용한다면
-				useCoupon(customer, cafe);
-				return;
-			case 'n':
-				System.out.println("쿠폰을 사용하지 않아 결제단계로 넘어갑니다");
-				System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-				break;
+		//회원
+		else if (customer.getIsMembership()==1) {
+			System.out.println(customer.getName()+" : " +cafe.getMenu()+ "을(를) 구매중");
+			//쿠폰이 있다면
+			if(customer.getCoffeeCoupon()>0) {
+				System.out.print("쿠폰을 사용할건가요? (yes : y, no : n)");
+				char str = scan.next().charAt(0);
+				switch(str) {
+				case 'y':
+					//쿠폰을 사용한다면
+					useCoupon(customer, cafe);
+					return;
+				case 'n':
+					System.out.println("쿠폰을 사용하지 않아 결제단계로 넘어갑니다");
+					System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+					break;
+				}
 			}
 		}
-		customer.setMoney(customer.getMoney()-cafe.getPrice()); 
+		
+		
 		addStamp(customer);
 		System.out.println("구매 및 스탬프 적립 완료");
 		System.out.println(customer);
+		
+		//이건 나중에 관리자가 매출 확인 할 때 조회 가능하도록 수정할 예정
 		cafe.addIncome(cafe.getPrice());
 		System.out.println("카페의 판매 수익 : "+ cafe.getIncome());
+		
 		//멤버쉽 가입 된 고객이라면 몇프로 할인 이거는 나중에 생각해보기
 		
 		

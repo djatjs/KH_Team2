@@ -5,30 +5,33 @@ import lombok.Data;
 @Data
 public class Customer {
 	private String name;
-	private int money;
+	private String password;
 	private int stamp=0;
 	private int coffeeCoupon=0;
-	private boolean isMembership = false;
+	//private money;
+ 	//0 : 비회원, 1 : 회원, 2 : 관리자
+	private int isMembership = 0; 
 
-	public Customer(String name, int money, String str) {
+	//회원 가입용 생성자
+	public Customer(String name, String password) {
 		this.name = name;
-		this.money = money;
-		if(str =="member") {
-			this.isMembership = true;
-		}
+		this.password = password;
+		this.isMembership = 1;
 	}
-	public Customer(String name, int money) {
-		this.name = name;
-		this.money = money;
-	}
+
 
 	@Override
 	public String toString() {
-		return name + "의 보유중인 금액 : " + money + ", 스탬프=" + stamp + ", 적립된 쿠폰=" + coffeeCoupon;
+		return name + "의 스탬프=" + stamp + ", 적립된 쿠폰=" + coffeeCoupon;
 	}
-	public boolean getIsmembership() {
-		return isMembership;
+	
+
+
+	public void setCoffeeCoupon(int coffeeCoupon) {
+		this.coffeeCoupon = coffeeCoupon;
 	}
+	
+	
 	
 	
 }
