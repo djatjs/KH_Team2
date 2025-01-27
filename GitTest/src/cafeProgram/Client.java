@@ -1,5 +1,8 @@
 package cafeProgram;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,8 +12,19 @@ public class Client {
 	static List<Customer> list2 = new ArrayList<Customer>();
 	public static void main(String[] args) {
 		
+		//ip, port 설정
+		String ip = "127.0.0.1";
+		int port = 5002;
 		
-		Customer customer1 = new Customer("sun",50000);
+		//소켓 객체 생성 및 서버와 연결
+		try {
+			Socket socket = new Socket(ip, port);
+			System.out.println("[매장에 오신 걸 환영합니다.]");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Customer customer1 = new Customer("sun",50000, "member");
 		Customer customer2 = new Customer("선",50000);
 		System.out.println(customer1);
 		System.out.println(customer2);
@@ -40,6 +54,10 @@ public class Client {
 	}
 	//커피 구매
 	private static void buyCoffee(Customer customer, Cafe cafe) {
+		if(customer.getIsmembership()) {
+			
+		}
+		
 		if(customer.getMoney()<cafe.getPrice()) {
 			System.out.println(cafe.getMenu()+ "을(를)돈이 부족하여 살 수 없음");
 			return;
@@ -77,8 +95,8 @@ public class Client {
 		System.out.println(customer.getName()+" : 쿠폰을 사용하여 아메리카노 구매함");
 		customer.setCoffeeCoupon(customer.getCoffeeCoupon()-1);
 		//카페는 이득을 보지는 않음. 재료값만 나간다고 해야하나..
-		//재료값이 만약에 500원이라고 치면
-		cafe.addIncome(-500);
+		//재료값이 만약에 250원이라고 치면
+		cafe.addIncome(-250);
 		System.out.println(customer);
 		System.out.println("카페의 판매 수익 : "+ cafe.getIncome());
 		
