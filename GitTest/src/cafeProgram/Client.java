@@ -130,7 +130,4 @@ public class Client {
 			customer.setCoffeeCoupon(customer.getCoffeeCoupon()+1);
 		}
 	}
-	
-	
-	
 }
