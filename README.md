@@ -5,12 +5,12 @@
 
 # 클래스
 1.  Customer
-   1) 멤버 변수 : 아이디, 비밀번호, 회원가입 유무(회원, 비회원, 관리자로 나누기 위해 int 형식으로 둘 예정), 스탬프, 쿠폰. (+구매횟수 :  VIP회원 선정용)
-   2) 생성자 : Customer(String id, String password)
+   - 멤버 변수 : 아이디, 비밀번호, 회원가입 유무(회원, 비회원, 관리자로 나누기 위해 int 형식으로 둘 예정), 스탬프, 쿠폰. (+구매횟수 :  VIP회원 선정용)
+   - 생성자 : Customer(String id, String password)
     
 2.  Cafe
-   1) 멤버변수 : 메뉴, 가격, 매출. (+ 날짜)
-   2) 생성자 : Cafe(String menu, int price)
+   - 멤버변수 : 메뉴, 가격, 매출. (+ 날짜)
+   - 생성자 : Cafe(String menu, int price)
 
 
 # 우선 순위
