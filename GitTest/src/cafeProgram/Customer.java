@@ -5,14 +5,15 @@ import lombok.Data;
 @Data
 public class Customer {
 	private String name;
+	private String passWord;
 	private int money;
 	private int stamp=0;
 	private int coffeeCoupon=0;
 	private boolean isMembership;
 
-	public Customer(String name, int money) {
+	public Customer(String name, String passWord) {
 		this.name = name;
-		this.money = money;
+		this.passWord = passWord;
 	}
 
 	@Override
