@@ -9,7 +9,7 @@
    2) 생성자 : Customer(String id, String password)
     
 2.  Cafe
-   1) 멤버 변수 : 메뉴, 가격, 매출. (+ 날짜)
+   1) 멤버변수 : 메뉴, 가격, 매출. (+ 날짜)
    2) 생성자 : Cafe(String menu, int price)
 
 
