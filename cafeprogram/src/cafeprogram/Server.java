@@ -1,6 +1,5 @@
 package cafeprogram;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -10,14 +9,17 @@ import java.util.List;
 
 public class Server {
 	static List<Customer> customers = new ArrayList<Customer>();
+	static List<Cafe> list = new ArrayList<Cafe>();
+	
 	static ObjectInputStream ois;
 	static ObjectOutputStream oos;
+	
 	public static void main(String[] args) {
 		int port = 5001;
 		
 		//관리자 아이디 : false로 설정함으로써 관리자 아이디로 설정함
 		Customer admin = new Customer("admin", "1234");
-		admin.setMember(false);
+		admin.setIsMember("관리자");
 		System.out.println(admin);
 		
 		try {
@@ -63,21 +65,49 @@ public class Server {
 		}
 		
 	}
+	
+	//로그인
 	private static void login() {
 		try {
 			// 클라이언트로부터 로그인을 위한 객체 받음
 			Customer tmp = (Customer) ois.readObject();
-			if(customers.contains(tmp)) {
-				//있다면 로그인 성공
-				
+			
+			int index = customers.indexOf(tmp);
+			if(index == -1) {
+				System.out.println("로그인 실패");
+				oos.writeInt(0);
+				oos.flush();
+				return;
 			}
+			//있다면 로그인 성공
 			//로그인 한 아이디의 유형(회원 or 관리자)에 따른 메뉴 안내
-			//switch()
+			tmp = customers.get(index);
+			switch(tmp.getIsMember()) {
+			case "회원":
+				oos.writeInt(0);
+				oos.flush();
+				loginMember(tmp);
+				break;
+			case "관리자":
+				oos.writeInt(0);
+				oos.flush();
+				loginAdmin();
+				break;
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void loginMember(Customer tmp) {
+		System.out.println("사용자 메뉴를 보여줄 예정");
 		
 	}
+	private static void loginAdmin() {
+		System.out.println("관리자 메뉴를 보여줄 예정");
+		
+	}
+	//회원가입
 	private static void registerId() {
 		try {
 			// 클라이언트로부터 가입을 위한 객체 받음

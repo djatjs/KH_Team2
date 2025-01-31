@@ -8,7 +8,7 @@ import lombok.Data;
 public class Customer {
 	private String id;
 	private String password;
-	private boolean isMember;
+	private String isMember;
 	private int stamp;
 	private int coupon;
 	
@@ -16,7 +16,7 @@ public class Customer {
 	public Customer(String id, String password) {
 		this.id = id;
 		this.password = password;
-		isMember = true;
+		isMember = "회원";
 	}
 	
 	//로그인용 이퀄

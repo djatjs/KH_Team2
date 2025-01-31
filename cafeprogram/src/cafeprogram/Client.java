@@ -75,24 +75,24 @@ public class Client {
 		}
 		
 	}
-
+	
 	private static void AfterLoginMenu(int menu) {
 		switch(menu) {
+		case 0:
+			System.out.println("[로그인 실패]");
+			break;
 		case 1:
 			//음료 메뉴 출력 후 주문대기
 			System.out.println("[회원 아이디 로그인 성공!]");
 			break;
 		case 2:
 			//관리자 기능 안내
-			System.out.println("[관리자 아이디 로그인 성공!]");
-			
-			break;
-		case 3:
+			System.out.println("[관리자 아이디 로그인 성공!]");			
 			break;
 		}
 		
 	}
-
+	//회원가입
 	private static void registerId() {
 		Customer tmp = inputForRegister();
 		try {
