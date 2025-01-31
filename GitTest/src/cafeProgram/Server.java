@@ -6,36 +6,55 @@ import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
-@AllArgsConstructor
+
 public class Server {
     
-    private List<Customer2> list;
+	private ObjectOutputStream oos;
+    private ObjectInputStream ois;
+    
+    private static List<Customer2> list = new ArrayList<Customer2>();;
     private ServerSocket serverSocket;
 
-    public void startServer() {
-        try {
-            while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("[연결 성공]" );
-
-                new ClientHandler(socket, list).start();
-            }
-        } catch (IOException e) {
-            System.out.println("[오류 발생]");
-            e.printStackTrace();
-        }
-    }
-
     public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(9999);
-            List<Customer2> list = new ArrayList<>();
-            Server server = new Server(list, serverSocket);
-            server.startServer();
-        } catch (IOException e) {
-            System.out.println("[연결 실패]");
-        }
+    	ServerSocket serverSocket;
+    	
+    	//불러오기
+    	
+		try {
+			serverSocket = new ServerSocket(9999);
+			while(true) {
+				try {
+					Socket socket = serverSocket.accept();
+					System.out.println("[연결 성공]" );
+					
+					CafeServer server = new CafeServer(socket, list);
+					server.run();
+				} catch (IOException e) {
+					System.out.println("[연결 실패]");
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			//저장하기
+		}
+    }
+    
+    
+    
+    
+    public void startServer() {
+    	try {
+    		while (true) {
+    			Socket socket = serverSocket.accept();
+    			System.out.println("[연결 성공]" );
+    			
+    			new ClientHandler(socket, list).start();
+    		}
+    	} catch (IOException e) {
+    		System.out.println("[오류 발생]");
+    		e.printStackTrace();
+    	}
     }
 }                   
 
@@ -60,7 +79,7 @@ class ClientHandler extends Thread {
             int menu;
             do {
                 menu = ois.readInt(); 
-                handleMenu(menu);
+                runMenu(menu);
             } while (menu != 3); 
 
             System.out.println("[클라이언트 연결 종료]");
@@ -73,16 +92,16 @@ class ClientHandler extends Thread {
     }
 
    
-    private void handleMenu(int menu) throws IOException, ClassNotFoundException {
+    private void runMenu(int menu) throws IOException, ClassNotFoundException {
         switch (menu) {
             case 1:
-                handleLogin();
+                Login();
                 break;
             case 2:
-                handleSignUp();
+                SignUp();
                 break;
             case 3:
-                System.out.println("[클라이언트가 종료를 선택했습니다.]");
+               
                 break;
             default:
                 System.out.println("[잘못된 메뉴입니다.");
@@ -90,7 +109,7 @@ class ClientHandler extends Thread {
     }
 
  
-    private void handleLogin() throws IOException, ClassNotFoundException {
+    private void Login() throws IOException, ClassNotFoundException {
         oos.writeInt(1); 
         oos.flush();
 
@@ -111,10 +130,10 @@ class ClientHandler extends Thread {
     }
 
    
-    private void handleSignUp() throws IOException, ClassNotFoundException {
+    private void SignUp() throws IOException, ClassNotFoundException {
         int requestType = ois.readInt(); 
         if (requestType != 2) {
-            System.out.println("잘못된 회원가입 요청: " + requestType);
+            System.out.println("잘못입력 하셨습니다.");
             return;
         }
 
@@ -126,8 +145,8 @@ class ClientHandler extends Thread {
             oos.writeBoolean(false); 
             System.out.println("[중복된 아이디입니다.]");
         } else {
-        	list.add(newUser); // 회원 목록에 추가
-            oos.writeBoolean(true); // 회원가입 성공 응답
+        	list.add(newUser); 
+            oos.writeBoolean(true); 
             System.out.println("[회원가입이 완료됐습니다.]");
         }
         oos.flush();

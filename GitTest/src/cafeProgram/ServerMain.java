@@ -22,7 +22,7 @@ public class ServerMain {
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("[서버가 실행 중 입니다.]");
-
+            System.out.println(list);
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("[새 클라이언트 연결됨]");
@@ -31,7 +31,7 @@ public class ServerMain {
                 save(fileName, list);
 
                 Server server = new Server(list, serverSocket);
-                server.handleMenu();
+                
             }
         } catch (IOException e) {
             e.printStackTrace();

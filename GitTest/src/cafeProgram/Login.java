@@ -66,7 +66,7 @@ public class Login {
 	private static void printMenu() {
 		System.out.println("--------------------");
 		System.out.println("1. 로그인");
-		System.out.println("2. 회원가입");
+		System.out.println("2. 회원원가입");
 		System.out.println("3. 뒤로가기");
 		System.out.println("--------------------");
 		System.out.println("메뉴 선택 : ");
@@ -96,6 +96,8 @@ public class Login {
 	            oos.writeObject(customer2);
 	            oos.flush();
 
+	            //boolean res = ois.readBoolean();
+	            //if(res){성공}else{실패}
 	            customer3 = (Customer2) ois.readObject();
 	
 		}catch(Exception e) {
@@ -156,11 +158,13 @@ public class Login {
 	private static Customer2 inputCustomer2() {
 
 		System.out.print("아이디 : ");
-		String name = scan.nextLine();
+		String id = scan.nextLine();
 		System.out.print("비밀번호 : ");
-		String passWord = scan.nextLine();
-
-		return new Customer2(name, passWord);
+		String pw = scan.nextLine();
+		System.out.print("비밀번호 확인 : ");
+		String pw2 = scan.next();
+		
+		return new Customer2(id, pw);
 	}
 
 	
