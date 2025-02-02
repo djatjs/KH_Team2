@@ -1,5 +1,6 @@
 package cafeprogram;
 
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -18,9 +19,12 @@ public class Server {
 		int port = 5001;
 		
 		//관리자 아이디 : false로 설정함으로써 관리자 아이디로 설정함
-		Customer admin = new Customer("admin", "1234");
-		admin.setIsMember("관리자");
+		Customer admin = new Customer("admin", "1111");
+		admin.setType("관리자");
+		customers.add(admin);
 		System.out.println(admin);
+		
+		
 		
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
@@ -51,19 +55,22 @@ public class Server {
 
 	}
 	private static void runMenu(int menu) {
-		switch(menu) {
-		case 1:
-			login();
-			break;
-		case 2:
-			registerId();
-			break;
-		case 3:
-			break;
-		default:
-			
-		}
-		
+		//while(true) {
+			switch(menu) {
+			case 1:
+				login();
+				break;
+			case 2:
+				registerId();
+				break;
+			case 3:
+				//그냥 고객(클라이언트)이 나간 경우 : 서버에서 뭐 할건 없긴함.
+				break;
+			default:
+				//고객(클라이언트)의 입력이 잘못된 경우 : 서버에서 뭐 할건 없긴 함
+				break;
+			}		
+		//}
 	}
 	
 	//로그인
@@ -82,29 +89,146 @@ public class Server {
 			//있다면 로그인 성공
 			//로그인 한 아이디의 유형(회원 or 관리자)에 따른 메뉴 안내
 			tmp = customers.get(index);
-			switch(tmp.getIsMember()) {
-			case "회원":
-				oos.writeInt(0);
+			//반복을 해야했다면 여기서 해야했네
+			do {
+				switch(tmp.getType()) {
+				case "회원":
+					oos.writeInt(1);
+					oos.flush();
+					loginMember(tmp);
+					break;
+				case "관리자":
+					
+					loginAdmin();
+					break;
+				}
+			}while(true);
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("tlqkf");
+		}
+	}
+	
+	//회원 로그인 후
+	private static void loginMember(Customer tmp) {
+		System.out.println("사용자 메뉴를 보여줄 예정");
+		
+	}
+	//관리자 로그인 후
+	private static void loginAdmin() {
+		int menu=0;
+		do{
+			try {
+				oos.writeInt(2);
 				oos.flush();
-				loginMember(tmp);
-				break;
-			case "관리자":
-				oos.writeInt(0);
+				menu = ois.readInt();
+				System.out.println("[클라이언트 입력 : "+ menu +"]");
+				runAdmin(menu);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}			
+		}while(menu==5);
+		
+		
+	}
+	private static void runAdmin(int menu) {
+		switch(menu) {
+		case 1:
+			insertMenu();
+			break;
+		case 2:
+			editMenu();
+			break;
+		case 3:
+			deleteMenu();
+			break;
+		case 4:
+			checkIncome();
+			break;
+		case 5:
+			//고객(클라이언트)이 로그아웃한 경우 : 서버에서 뭐 할건 없긴 함
+			break;
+		default:
+			//고객(클라이언트)의 입력이 잘못된 경우 : 서버에서 뭐 할건 없긴 함
+		}
+		
+	}
+	//메뉴 추가
+	private static void insertMenu() {
+		try {
+			//클라이언트로부터 추가하고자하는 메뉴 정보를 담은 객체를 받음
+			Cafe menu = (Cafe)ois.readObject();
+			//기존 list에 등록된 메뉴인지 확인 
+			boolean res =false;
+			if(list.contains(menu)) {
+				//등록되어 있다면 추가하지 않고 false 반환
+				oos.writeBoolean(res);
 				oos.flush();
-				loginAdmin();
-				break;
+			}else {
+				//등록되어 있지 않다면 추가 후  true 반환
+				list.add(menu);
+				System.out.println(list);
+				res = true;
+				oos.writeBoolean(res);
+				oos.flush();
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void loginMember(Customer tmp) {
-		System.out.println("사용자 메뉴를 보여줄 예정");
-		
+	//메뉴 수정
+	private static void editMenu() {
+		try {
+			//클라이언트에 카페 메뉴들을 보내줌. list를 보내주는게 좋을거같음
+			oos.writeObject(list);
+			oos.flush();
+			//클라이언트로부터 수정하고자하는 메뉴의 번호와 수정될 메뉴 정보를 담은 객체를 받음
+			int index = ois.readInt() - 1;
+			Cafe tmp = (Cafe) ois.readObject();
+			
+			//수정 후 bool타입으로 결과 반환
+			boolean res = true;
+			if(index == -1) {
+				System.out.println("[수정 중 오류 발생]");
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			}
+			Cafe edit = list.get(index);
+			
+			edit.setMenu(tmp.getMenu());
+			edit.setPrice(tmp.getPrice());
+			oos.writeBoolean(res);
+			oos.flush();
+			System.out.println(list);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	private static void loginAdmin() {
-		System.out.println("관리자 메뉴를 보여줄 예정");
+	//메뉴 삭제
+	private static void deleteMenu() {
+		try {
+			//클라이언트에 카페 메뉴들을 보내줌. list를 보내주는게 좋을거같음
+			oos.writeObject(list);
+			oos.flush();
+			//클라이언트로부터 수정하고자하는 메뉴의 번호를 받음
+			int index = ois.readInt() - 1;
+			//삭제 후 성공 유무를 bool타입으로 결과 반환
+			Cafe menu = list.get(index);
+			boolean res = false;
+			if(list.remove(menu)) {
+				res = true;
+			}
+			oos.writeBoolean(res);
+			oos.flush();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	//매출 확인
+	private static void checkIncome() {
+		//클라이언트에 일단은 매출 int 형식으로 보내줌
 		
 	}
 	//회원가입

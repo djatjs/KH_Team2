@@ -1,14 +1,17 @@
 package cafeprogram;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import lombok.Data;
 
 @Data
-public class Customer {
+public class Customer implements Serializable {
+
+	private static final long serialVersionUID = 5689322435214970710L;
 	private String id;
 	private String password;
-	private String isMember;
+	private String type;
 	private int stamp;
 	private int coupon;
 	
@@ -16,7 +19,7 @@ public class Customer {
 	public Customer(String id, String password) {
 		this.id = id;
 		this.password = password;
-		isMember = "회원";
+		type = "회원";
 	}
 	
 	//로그인용 이퀄

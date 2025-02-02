@@ -1,5 +1,4 @@
 content_assist_autoactivation_triggers_java=.qwertyuioplkjhgfdsazxcvbnm_QWERTYUIOPLKJHGFDSAZXCVBNM
-content_assist_disable_completion_trigger_chars=true
 content_assist_number_of_computers=20
 content_assist_proposals_background=255,255,255
 content_assist_proposals_foreground=0,0,0
