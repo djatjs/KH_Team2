@@ -8,20 +8,38 @@ import lombok.Data;
 @Data
 public class Customer2  implements Serializable{
 
-	    private static final long serialVersionUID = 1L; 
-	    private String id;
-	    private String pw;
+	  	private String id;
+	   	private String pw;
+	   	private String authority;//사용자,관리자
 
 	    public Customer2(String id, String pw) {
 	        this.id = id;
 	        this.pw = pw;
 	    }
 
-	    public String getName() {
+	    public String getId() {
 	        return id;
 	    }
 
-	    public String getPassWord() {
+	    public String getPw() {
 	        return pw;
 	    }
-	}
+
+		@Override
+		public String toString() {
+			return "[" + "아이디 : " + id + ", " +  "비밀번호 : " + pw + "]";
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Customer2 other = (Customer2) obj;
+			return Objects.equals(id, other.id);
+		}	
+	    
+}
