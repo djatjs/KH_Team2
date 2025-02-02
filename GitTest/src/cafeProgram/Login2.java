@@ -85,18 +85,18 @@ public class Login2 {
     }
 
     private static void adminMenu() throws IOException{
-	    int menu;
-    	do {	
-    		adminPrintMainMenu();
-	        menu = scan.nextInt();
-	        scan.nextLine();
+    	int menu;
+        do {
+            adminPrintMainMenu(); 
+            menu = scan.nextInt(); 
+            scan.nextLine(); 
 
-	        oos.writeInt(menu);
-	        oos.flush();
-	        
-	        adminRunMainMenu(menu);
-	    }while(menu != 4);
-   }
+            oos.writeInt(menu);
+            oos.flush();
+
+            adminRunMainMenu(menu);
+        } while (menu != 4);
+    }
 	       
 	private static void adminPrintMainMenu() {
 			
@@ -110,7 +110,7 @@ public class Login2 {
 	}
 
 	private static void adminRunMainMenu(int menu) {
-		
+		 
 			switch (menu) {
 		     case 1:
 		         System.out.println("메뉴 추가 (구현 필요)");
@@ -130,16 +130,16 @@ public class Login2 {
 	}
 
 	private static void userMenu(int menu) throws IOException {
+		  do {
+		        userPrintMainMenu();
+		        menu = scan.nextInt(); 
+		        scan.nextLine();
 	
-		userPrintMainMenu();
-		
-		menu = scan.nextInt();
-		scan.nextLine();
-		
-		oos.writeInt(menu);
-		oos.flush();
-		
-		userRunMainMenu(menu);
+		        oos.writeInt(menu); 
+		        oos.flush();
+	
+		        userRunMainMenu(menu); 
+		    } while (menu != 2);
 		}
 
 	private static void userPrintMainMenu() {
@@ -153,7 +153,7 @@ public class Login2 {
 	}
 
 	private static void userRunMainMenu(int menu) {
-			do {
+			
 				switch (menu) {
 			     case 1:
 			         System.out.println("주문 기능 (구현 필요)");
@@ -163,8 +163,7 @@ public class Login2 {
 			         return;
 			     default:
 			         System.out.println("[잘못된 메뉴 선택입니다.]");
-				}
-			} while (menu != 2);
+			}
 	}
 
 	private static void signUp() throws IOException {

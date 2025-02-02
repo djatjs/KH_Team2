@@ -11,7 +11,7 @@ public class Server {
 	static {
 		user.put("admin", "admin");
 	}
-	
+
 	public static void main(String[] args) {
 		try (ServerSocket serverSocket = new ServerSocket(Port)) {
 			System.out.println("[서버가 실행 중 입니다...]");
@@ -75,55 +75,60 @@ public class Server {
 			oos.flush();
 
 			if (res) {
-				 boolean admin = id.equals("admin");// 관리자인지 여부 받기
+				boolean admin = id.equals("admin");// 관리자인지 여부 받기
+				oos.writeBoolean(admin); 
+			    oos.flush();
+			    
 				System.out.println("[" + id + "님이 로그인 하였습니다.]");
-				
-				if(admin) {
-	                adminMenu(0); // 관리자 메뉴 실행
-	            } else {
-	                userMenu(0); // 일반 사용자 메뉴 실행
-	            }
+
+				if (admin) {
+					adminMenu(); // 관리자 메뉴 실행
+				} else {
+					userMenu(); // 일반 사용자 메뉴 실행
+				}
 			} else {
 				System.out.println("[아이디/비밀번호가 일치하지 않습니다.]");
 			}
 		}
 
-		private void adminMenu(int menu) throws IOException{
+		private void adminMenu() throws IOException {
+			int menu;
+
+			do {
+				menu = ois.readInt(); // 클라이언트로부터 메뉴 선택 받기
+				switch (menu) {
+				case 1:
+					System.out.println("메뉴 추가 (구현 필요)");
+					break;
+				case 2:
+					System.out.println("메뉴 수정 (구현 필요)");
+					break;
+				case 3:
+					System.out.println("매출확인 (구현 필요)");
+					break;
+				case 4:
+					System.out.println("[로그아웃을 합니다.]");
+					return;
+				default:
+					System.out.println("[잘못된 메뉴 선택입니다.]");
+				}
+			} while (menu != 4);
+		}
+
+		private void userMenu() throws IOException {
+			int menu;
 			
 			do {
 				menu = ois.readInt();
-				switch(menu) {
-			     case 1:
-			         System.out.println("메뉴 추가 (구현 필요)");
-			         break;
-			     case 2:
-			         System.out.println("메뉴 수정 (구현 필요)");
-			         break;
-			     case 3:
-			     	System.out.println("매출확인 (구현 필요)");
-			     	break;
-			     case 4:
-			         System.out.println("[로그아웃을 합니다.]");
-			         return;
-			     default:
-			         System.out.println("[잘못된 메뉴 선택입니다.]");
-				}
-		} while (menu != 4);
-}
-
-		private void userMenu(int menu) throws IOException {
-			
-			do {	
-				menu = ois.readInt();
 				switch (menu) {
-			     case 1:
-			         System.out.println("주문 기능 (구현 필요)");
-			         break;
-			     case 2:
-			         System.out.println("[로그아웃을 합니다.]");
-			         return;
-			     default:
-			         System.out.println("[잘못된 메뉴 선택입니다.]");
+				case 1:
+					System.out.println("주문 기능 (구현 필요)");
+					break;
+				case 2:
+					System.out.println("[로그아웃을 합니다.]");
+					return;
+				default:
+					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
 			} while (menu != 2);
 		}
