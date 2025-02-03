@@ -1,25 +1,45 @@
 package cafeProgram;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import lombok.Data;
 
 @Data
-public class Customer {
-	private String name;
-	private String passWord;
-	private int money;
-	private int stamp=0;
-	private int coffeeCoupon=0;
-	private boolean isMembership;
+public class Customer  implements Serializable{
 
-	public Customer(String name, String passWord) {
-		this.name = name;
-		this.passWord = passWord;
-	}
+	  	private String id;
+	   	private String pw;
+	   	private String authority;//사용자,관리자
 
-	@Override
-	public String toString() {
-		return name + "의 보유중인 금액 : " + money + ", 스탬프=" + stamp + ", 적립된 쿠폰=" + coffeeCoupon;
-	}
-	
-	
+	    public Customer(String id, String pw) {
+	        this.id = id;
+	        this.pw = pw;
+	    }
+
+	    public String getId() {
+	        return id;
+	    }
+
+	    public String getPw() {
+	        return pw;
+	    }
+
+		@Override
+		public String toString() {
+			return "[" + "아이디 : " + id + ", " +  "비밀번호 : " + pw + "]";
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Customer other = (Customer) obj;
+			return Objects.equals(id, other.id);
+		}	
+	    
 }

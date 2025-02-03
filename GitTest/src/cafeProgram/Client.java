@@ -1,133 +1,193 @@
 package cafeProgram;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-	
-	static Scanner scan = new Scanner(System.in);
-	static List<Customer> list2 = new ArrayList<Customer>();
-	
-	public static void main(String[] args) {
-		
-		
-		Customer customer1 = new Customer("sun",50000);
-		Customer customer2 = new Customer("선",50000);
-		System.out.println(customer1);
-		System.out.println(customer2);
 
-		
-		//메뉴 등록
-		Cafe americano = new Cafe("아메리카노",2000);
-		Cafe espresso = new Cafe("에스프레소",1500);
-		Cafe caramelMacchiato = new Cafe("카라멜마끼아또",3500);
-		
-		//
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		buyCoffee(customer1, americano);
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		buyCoffee(customer1, espresso);
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		buyCoffee(customer1, caramelMacchiato);
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		buyCoffee(customer2, caramelMacchiato);
-		
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		customer2.setCoffeeCoupon(1);
-		System.out.println(customer2);
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		buyCoffee(customer2, americano);
+    private static Scanner scan = new Scanner(System.in);
+    private static ObjectOutputStream oos;
+    private static ObjectInputStream ois;
+
+    public static void main(String[] args) {
+        String ip = "127.0.0.1"; // 서버 IP
+        int port = 9999; // 서버 포트
+
+        try (Socket socket = new Socket(ip, port)) {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
+            System.out.println("서버에 연결되었습니다.");
+
+            int menu;
+            do {
+                printMainMenu();
+                menu = scan.nextInt();
+                scan.nextLine(); 
+
+                oos.writeInt(menu);
+                oos.flush();
+
+                switch (menu) {
+                    case 1: // 로그인
+                        login();
+                        break;
+                    case 2: // 회원가입
+                        signUp();
+                        break;
+                    case 3: // 종료
+                        System.out.println("[프로그램을 종료합니다.]");
+                        break;
+                    default:
+                        System.out.println("[잘못된 메뉴 선택입니다.]");
+                }
+            } while (menu != 3);
+        } catch (IOException e) {
+            System.out.println("[서버와 연결이 끊어졌습니다.]");
+        }
+    }
+
+    private static void printMainMenu() {
+        System.out.println("------------------");
+        System.out.println("1. 로그인");
+        System.out.println("2. 회원가입");
+        System.out.println("3. 종료");
+        System.out.println("------------------");
+        System.out.print("메뉴 선택 : ");
+    }
+
+    private static void login() throws IOException {
+        System.out.print("아이디 : ");
+        String id = scan.next();
+        System.out.print("비밀번호 : ");
+        String pw = scan.next();
+
+        Customer customer2 = new Customer(id, pw);
+        
+        oos.writeObject(customer2); // 서버에 회원 정보 전송
+        oos.flush();
+
+        boolean res = ois.readBoolean(); // 서버로부터 결과 받기
+        
+        if (res) {
+            boolean admin = ois.readBoolean(); // 관리자인지 여부 받기
+
+            if (admin) {
+                adminMenu(); // 관리자 메뉴 실행
+            } else {
+                userMenu(0); // 일반 사용자 메뉴 실행
+            }
+        } else {
+            System.out.println("[아이디 또는 비밀번호가 틀렸습니다.]");
+        }
+    }
+
+    private static void adminMenu() throws IOException{
+    	int menu;
+        do {
+            adminPrintMainMenu(); 
+            menu = scan.nextInt(); 
+            scan.nextLine(); 
+
+            oos.writeInt(menu);
+            oos.flush();
+
+            adminRunMainMenu(menu);
+        } while (menu != 4);
+    }
+	       
+	private static void adminPrintMainMenu() {
+			
+		System.out.println("------------------");
+	    System.out.println("1. 메뉴 추가");
+	    System.out.println("2. 메뉴 수정");
+	    System.out.println("3. 매출 확인");
+	    System.out.println("4. 로그아웃");
+	    System.out.println("------------------");
+	    System.out.print("메뉴 선택: ");
 	}
-	/*
-	int menu;
-	
-	menu = scan.nextInt();
-	do{
-        printMenu(); // 메뉴 출력
-        int choice = scan.nextInt(); // 사용자 입력 받기
 
-        switch (choice) {
-            case 1: // 커피 구매 //카테고리 분류
-                buyCoffee();
-                break;
-            case 2: // 고객 정보 보기
-                customerInfo();
-                break;
-            case 3: // 종료
-                System.out.println("프로그램을 종료합니다.");
-                break;
-            default:
-                System.out.println("올바르지 않은 선택입니다. 다시 입력하세요.");
-        }while(menu != 3);
-    }
-
-	
-	*/
-	
-	// 메뉴 출력
-    private static void printMenu() {
-        System.out.println("========= 카페 프로그램 =========");
-        System.out.println("1. 커피 구매"); //인기메뉴가 나오면 좋겠음
-        System.out.println("2. 고객 정보 보기");
-        System.out.println("3. 프로그램 종료");
-        System.out.print("메뉴를 선택하세요: ");
-    }
-
-	
-	
-	
-	//커피 구매
-	private static void buyCoffee(Customer customer, Cafe cafe) {
-		if(customer.getMoney()<cafe.getPrice()) {
-			System.out.println(cafe.getMenu()+ "을(를)돈이 부족하여 살 수 없음");
-			return;
-		}
-		
-		System.out.println(customer.getName()+" : " +cafe.getMenu()+ "을(를) 구매중");
-		//쿠폰이 있다면
-		if(customer.getCoffeeCoupon()>0 && cafe.getMenu().equals("아메리카노")) {
-			System.out.print("쿠폰을 사용할건가요? (yes : y, no : n)");
-			char str = scan.next().charAt(0);
-			switch(str) {
-			case 'y':
-				//쿠폰을 사용한다면
-				useCoupon(customer, cafe);
-				return;
-			case 'n':
-				System.out.println("쿠폰을 사용하지 않아 결제단계로 넘어갑니다");
-				System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-				break;
+	private static void adminRunMainMenu(int menu) {
+		 
+			switch (menu) {
+		     case 1:
+		         System.out.println("메뉴 추가 (구현 필요)");
+		         break;
+		     case 2:
+		         System.out.println("메뉴 수정 (구현 필요)");
+		         break;
+		     case 3:
+		     	System.out.println("매출확인 (구현 필요)");
+		     	break;
+		     case 4:
+		         System.out.println("[로그아웃을 합니다.]");
+		         return;
+		     default:
+		         System.out.println("[잘못된 메뉴 선택입니다.]");
 			}
-		}
-		customer.setMoney(customer.getMoney()-cafe.getPrice()); 
-		addStamp(customer);
-		System.out.println("구매 및 스탬프 적립 완료");
-		System.out.println(customer);
-		cafe.addIncome(cafe.getPrice());
-		System.out.println("카페의 판매 수익 : "+ cafe.getIncome());
-		//멤버쉽 가입 된 고객이라면 몇프로 할인 이거는 나중에 생각해보기
-		
-		
 	}
+
+	private static void userMenu(int menu) throws IOException {
+		  do {
+		        userPrintMainMenu();
+		        menu = scan.nextInt(); 
+		        scan.nextLine();
 	
-	//쿠폰 쓰면 아메리카노 드림
-	private static void useCoupon(Customer customer, Cafe cafe) {
-		System.out.println(customer.getName()+" : 쿠폰을 사용하여 아메리카노 구매함");
-		customer.setCoffeeCoupon(customer.getCoffeeCoupon()-1);
-		//카페는 이득을 보지는 않음. 재료값만 나간다고 해야하나..
-		//재료값이 만약에 500원이라고 치면
-		cafe.addIncome(-500);
-		System.out.println(customer);
-		System.out.println("카페의 판매 수익 : "+ cafe.getIncome());
+		        oos.writeInt(menu); 
+		        oos.flush();
+	
+		        userRunMainMenu(menu); 
+		    } while (menu != 2);
+		}
+
+	private static void userPrintMainMenu() {
+		
+		System.out.println("------------------");
+	    System.out.println("1. 주문하기");
+	    System.out.println("2. 로그아웃");
+	    System.out.println("------------------");
+	    System.out.print("메뉴 선택: ");
 		
 	}
-	//스탬프 찍기
-	public static void addStamp(Customer customer) {
-		customer.setStamp(customer.getStamp()+1);
-		if(customer.getStamp() == 10) {
-			customer.setStamp(0);
-			customer.setCoffeeCoupon(customer.getCoffeeCoupon()+1);
-		}
+
+	private static void userRunMainMenu(int menu) {
+			
+				switch (menu) {
+			     case 1:
+			         System.out.println("주문 기능 (구현 필요)");
+			         break;
+			     case 2:
+			         System.out.println("[로그아웃을 합니다.]");
+			         return;
+			     default:
+			         System.out.println("[잘못된 메뉴 선택입니다.]");
+			}
 	}
+
+	private static void signUp() throws IOException {
+        System.out.print("아이디 : ");
+        String id = scan.nextLine();
+        System.out.print("비밀번호 : ");
+        String pw = scan.nextLine();
+        System.out.print("비밀번호 확인 : ");
+        String pw2 = scan.nextLine();
+
+        if (!pw.equals(pw2)) {
+            System.out.println("[비밀번호가 일치하지 않습니다.]");
+            return;
+        }
+
+        Customer customer = new Customer(id, pw);
+        oos.writeObject(customer); // 서버에 회원 정보 전송
+        oos.flush();
+
+        boolean res = ois.readBoolean(); // 서버로부터 결과 받기
+        if (res) {
+        	System.out.println("[회원가입이 완료되었습니다.]");
+        } else {
+            System.out.println("[이미 존재하는 아이디입니다.]");
+        }
+    }
 }

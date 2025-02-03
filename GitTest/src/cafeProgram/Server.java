@@ -66,7 +66,7 @@ public class Server {
 		}
 
 		private void login() throws IOException, ClassNotFoundException {
-			Customer2 customer = (Customer2) ois.readObject();
+			Customer customer = (Customer) ois.readObject();
 			String id = customer.getId();
 			String pw = customer.getPw();
 
@@ -134,7 +134,7 @@ public class Server {
 		}
 
 		private void signUp() throws IOException, ClassNotFoundException {
-			Customer2 customer = (Customer2) ois.readObject();
+			Customer customer = (Customer) ois.readObject();
 			String id = customer.getId();
 			String pw = customer.getPw();
 
