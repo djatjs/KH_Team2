@@ -8,8 +8,10 @@ import java.util.Map;
 public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 	private static Map<String, String> user = new HashMap<>(); // 아이디-비밀번호 저장
+	private static String fileName = "src/cafeProgram/data.txt";//데이터 저장
+	
 	static {
-		user.put("admin", "admin");
+		user.put("admin", "admin");//관리자 추가
 	}
 
 	public static void main(String[] args) {
