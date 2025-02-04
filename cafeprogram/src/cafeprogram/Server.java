@@ -6,12 +6,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.RestoreAction;
+
 
 public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 	private static Map<String, String> user = new HashMap<>(); // 아이디-비밀번호 저장
+	private static List<Cafe> list = new ArrayList<Cafe>();
 	static {
 		user.put("admin", "admin");
 	}
@@ -97,26 +103,116 @@ public class Server {
 
 		private void adminMenu() throws IOException {
 			int menu;
-
+			
 			do {
 				menu = ois.readInt(); // 클라이언트로부터 메뉴 선택 받기
 				switch (menu) {
 				case 1:
-					System.out.println("메뉴 추가 (구현 필요)");
+					insertCafeMenu();
 					break;
 				case 2:
-					System.out.println("메뉴 수정 (구현 필요)");
+					editCafeMenu();
 					break;
 				case 3:
-					System.out.println("매출확인 (구현 필요)");
+					deleteCafeMenu();
 					break;
 				case 4:
+					CheckIncome();
+					return;
+				case 5:
 					System.out.println("[로그아웃을 합니다.]");
 					return;
 				default:
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
-			} while (menu != 4);
+			} while (menu != 5);
+		}
+
+		private void insertCafeMenu() {
+			try {
+				//클라이언트로부터 카페(메뉴) 객체 받아옴
+				Cafe menu = (Cafe)ois.readObject();
+				//이미 등록된 메뉴인지 확인
+				boolean res;
+				if(!list.contains(menu)) {
+					res = true;
+					list.add(menu);
+				}else {
+					res = false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println(list);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+
+		private void editCafeMenu() {
+			try {
+				//클라이언트로 리스트 보냄
+				oos.writeObject(list);
+				oos.flush();
+				oos.reset();
+				//리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if(list ==null || list.isEmpty()) {
+					return;
+				}
+				//클라이언트로부터 수정할 메뉴의 번호를 받음
+				int index = ois.readInt();
+				//클라이언트로부터 수정할 메뉴 정보까지 받음
+				Cafe tmp = (Cafe)ois.readObject();
+				Cafe menu = list.get(index);
+				//수정 후 결과 반환
+				boolean res;
+				if(menu.update(tmp)) {
+					res = true;
+				}else {
+					res =false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println(list);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+
+		private void deleteCafeMenu() {
+			try {
+				//클라이언트로 리스트 보냄
+				oos.writeObject(list);
+				oos.flush();
+				oos.reset();
+				//리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if(list ==null || list.isEmpty()) {
+					return;
+				}
+				
+				//클라이언트로부터 삭제할 메뉴의 번호를 받음
+				int index = ois.readInt();
+				//System.out.println(list.get(index)+"삭제할 예정");
+				boolean res;
+				if(list.remove(list.get(index))) {
+					res = true;
+				}
+				else {
+					res =false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println(list);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+
+		private void CheckIncome() {
+			// TODO Auto-generated method stub
+			
 		}
 
 		private void userMenu() throws IOException {
