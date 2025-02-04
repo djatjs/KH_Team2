@@ -42,7 +42,6 @@ public class Server implements Serializable {
 		private static void save(String fileName, Object obj) {
 			try(FileOutputStream fos = new FileOutputStream(fileName);
 				ObjectOutputStream oos = new ObjectOutputStream(fos)){
-				
 				oos.writeObject(obj);
 				System.out.println("저장");
 			} catch (Exception e) {
@@ -57,14 +56,13 @@ public class Server implements Serializable {
 			try(FileInputStream fis = new FileInputStream(fileName);
 				ObjectInputStream ois = new ObjectInputStream(fis)){
 				System.out.println("불러오기");
-				
 				return ois.readObject();
 			} catch (Exception e) {
 				System.out.println("-----------------");
 				System.out.println("불러오기 실패");
 				System.out.println("-----------------");
 			}
-		return null;
+			 return new HashMap<>();
 	}
 
 	private static class Handler extends Thread {
@@ -182,6 +180,7 @@ public class Server implements Serializable {
 			boolean res2 = !user.containsKey(id);
 			if (res2) {
 				user.put(id, pw);
+				save(fileName, user);
 			}
 
 			oos.writeBoolean(res2);

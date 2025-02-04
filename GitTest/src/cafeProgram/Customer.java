@@ -12,7 +12,6 @@ public class Customer  implements Serializable{
 		
 	  	private String id;
 	   	private String pw;
-	   	private String authority;//사용자,관리자
 
 	    public Customer(String id, String pw) {
 	        this.id = id;
@@ -43,5 +42,9 @@ public class Customer  implements Serializable{
 			Customer other = (Customer) obj;
 			return Objects.equals(id, other.id);
 		}	
-	    
+		
+		@Override
+		public int hashCode() {
+		    return Objects.hash(id);
+		}
 }
