@@ -22,10 +22,8 @@ public class Server implements Serializable {
 	}
 
 	public static void main(String[] args) {
-		user = (HashMap<>) load(fileName);
-		if(list == null) {
-			list = new ArrayList<Customer>();
-		}
+		user = (Map<String, String>) (load(fileName));
+	
 		try (ServerSocket serverSocket = new ServerSocket(Port)) {
 			System.out.println("[서버가 실행 중 입니다...]");
 
@@ -37,7 +35,7 @@ public class Server implements Serializable {
 			}
 		} catch (IOException e) {
 			System.out.println("[오류가 발생했습니다.]");
-			save(fileName, list);
+			save(fileName, user);
 		}
 	}
 
@@ -96,7 +94,7 @@ public class Server implements Serializable {
 						break;
 					case 3: // 클라이언트 종료
 						System.out.println("[클라이언트가 종료하였습니다.]");
-						save(fileName, list);
+						save(fileName, user);
 						socket.close();
 						return;
 					default:
