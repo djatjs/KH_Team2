@@ -1,20 +1,31 @@
 package cafeProgram;
 
-import java.io.*;
-import java.net.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Server {
+public class Server implements Serializable {
 	private static int Port = 9999; // 사용할 포트 번호
 	private static Map<String, String> user = new HashMap<>(); // 아이디-비밀번호 저장
 	private static String fileName = "src/cafeProgram/data.txt";//데이터 저장
-	
 	static {
 		user.put("admin", "admin");//관리자 추가
 	}
 
 	public static void main(String[] args) {
+		user = (HashMap<>) load(fileName);
+		if(list == null) {
+			list = new ArrayList<Customer>();
+		}
 		try (ServerSocket serverSocket = new ServerSocket(Port)) {
 			System.out.println("[서버가 실행 중 입니다...]");
 
@@ -26,7 +37,36 @@ public class Server {
 			}
 		} catch (IOException e) {
 			System.out.println("[오류가 발생했습니다.]");
+			save(fileName, list);
 		}
+	}
+
+		private static void save(String fileName, Object obj) {
+			try(FileOutputStream fos = new FileOutputStream(fileName);
+				ObjectOutputStream oos = new ObjectOutputStream(fos)){
+				
+				oos.writeObject(obj);
+				System.out.println("저장");
+			} catch (Exception e) {
+				System.out.println("-----------------");
+				System.out.println("저장하기 실패");
+				System.out.println("-----------------");
+			}
+			
+		}
+
+		private static Object load(String fileName) {
+			try(FileInputStream fis = new FileInputStream(fileName);
+				ObjectInputStream ois = new ObjectInputStream(fis)){
+				System.out.println("불러오기");
+				
+				return ois.readObject();
+			} catch (Exception e) {
+				System.out.println("-----------------");
+				System.out.println("불러오기 실패");
+				System.out.println("-----------------");
+			}
+		return null;
 	}
 
 	private static class Handler extends Thread {
@@ -56,6 +96,7 @@ public class Server {
 						break;
 					case 3: // 클라이언트 종료
 						System.out.println("[클라이언트가 종료하였습니다.]");
+						save(fileName, list);
 						socket.close();
 						return;
 					default:
