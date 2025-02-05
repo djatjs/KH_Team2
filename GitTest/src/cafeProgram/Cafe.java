@@ -1,37 +1,56 @@
 package cafeProgram;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class Cafe {
-	// 메뉴, 가격, 매출
+public class Cafe implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String menu;
 	private int price;
-	private static int income;
 	
-	//인기순 
+	List<Income> list;//입출금 내역
 	
-
+	
 	public Cafe(String menu, int price) {
 		this.menu = menu;
 		this.price = price;
+		list = new ArrayList<Income>();
 	}
 
-	public int getIncome() {
-		return income;
+	//메뉴 이름만 비교해서 같으면 서로 같은 객체로 취급
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cafe other = (Cafe) obj;
+		return Objects.equals(menu, other.menu);
 	}
-	public static void addIncome(int price) {
-        income += price; // 수익 추가
-        //count ++;
-    }
-	//고객이 주문할려고 할 때 리스트로 보이는데
-	//그 리스트를 정렬(인기순으로)
+
+	@Override
+	public String toString() {
+		return menu + " : " + price + "원";
+	}
+
+	public boolean update(Cafe tmp) {
+		this.menu = tmp.menu;
+		this.price = tmp.price;
+		return true;
+	}
+
+	public void buyDrink(int money){
+		//구매 내역 저장까지
+		list.add(new Income(money));
+	}
 	
-	//주문단계 갈 때
-	// 메뉴 확인 - 리스트 정렬
-	// 결제- 스탬프 적립 함수, 매출 증가 함수 사용
-	
-	//관리자
-	//-메뉴 추가, 수정, 삭제, 매출 확인(총매출만 할건지, 날짜 아무거나 샘플데이터 넣어서 확인하는식으로 일 월 매출 확인을 추가할건지)
 	
 }
