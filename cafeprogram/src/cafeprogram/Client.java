@@ -272,7 +272,7 @@ public class Client {
 	}
 
 	private static void userRunMainMenu(int menu) {
-		//유저 정보 가져와야됨
+		//유저 정보 클라이언트는 필요없음. 필요하면 그 때 서버로부터 받으면 됨
 		switch (menu) {
 		case 1:
 			order();
@@ -286,10 +286,37 @@ public class Client {
 	}
 
 	private static void order() {
-		int index;
-		System.out.print("삭제할 메뉴 입력 : ");
-		index = scan.nextInt()-1;
-		
+		try {
+			//서버로부터 카페 메뉴 리스트 받아옴
+			List<Cafe> list = (List)ois.readObject();
+			
+			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			if(list ==null || list.isEmpty()) {
+				System.out.println("[등록된 메뉴가 없음]");
+				return;
+			}
+			
+			//리스트 출력
+			for(int i=0; i<list.size(); i++) {
+				System.out.println(i+1 +". "+ list.get(i));
+			}
+			
+			//주문할 메뉴 입력 및 서버로 전송
+			int index;
+			System.out.print("주문할 메뉴 입력 : ");
+			index = scan.nextInt()-1;
+			oos.writeInt(index);
+			oos.flush();
+			
+			//buyDrink();
+			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어보는 멘트 출력
+			//사용자는 y(yes) or n(no)로 대답
+			//y라면 쿠폰 쓰는 메소드, n라면 안쓰고 스탬프 찍어주는 메소드
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void signUp() throws IOException {
