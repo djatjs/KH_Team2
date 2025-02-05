@@ -272,17 +272,17 @@ public class Client {
 	}
 
 	private static void userRunMainMenu(int menu) {
-			
-				switch (menu) {
-			     case 1:
-			         System.out.println("주문 기능 (구현 필요)");
-			         break;
-			     case 2:
-			         System.out.println("[로그아웃을 합니다.]");
-			         return;
-			     default:
-			         System.out.println("[잘못된 메뉴 선택입니다.]");
-			}
+		//유저 정보 가져와야됨
+		switch (menu) {
+		case 1:
+			//buyDrink();
+			break;
+		case 2:
+			System.out.println("[로그아웃을 합니다.]");
+			break;
+		default:
+			System.out.println("[잘못된 메뉴 선택입니다.]");
+		}
 	}
 
 	private static void signUp() throws IOException {
