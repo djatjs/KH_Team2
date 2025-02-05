@@ -275,7 +275,7 @@ public class Client {
 		//유저 정보 가져와야됨
 		switch (menu) {
 		case 1:
-			//buyDrink();
+			order();
 			break;
 		case 2:
 			System.out.println("[로그아웃을 합니다.]");
@@ -283,6 +283,13 @@ public class Client {
 		default:
 			System.out.println("[잘못된 메뉴 선택입니다.]");
 		}
+	}
+
+	private static void order() {
+		int index;
+		System.out.print("삭제할 메뉴 입력 : ");
+		index = scan.nextInt()-1;
+		
 	}
 
 	private static void signUp() throws IOException {
