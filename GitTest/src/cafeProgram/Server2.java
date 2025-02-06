@@ -164,14 +164,46 @@ public class Server2 {
 					break;
 				case 4:
 					CheckIncome();
-					return;
+					break;
 				case 5:
+					deleteUser();
+					break;
+				case 6:
 					System.out.println("[로그아웃을 합니다.]");
 					return;
 				default:
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
-			} while (menu != 5);
+			} while (menu != 6);
+		}
+
+		private void deleteUser() {
+			try {
+				//클라이언트로 리스트 보냄
+				oos.writeObject(user);
+				oos.flush();
+				oos.reset();
+				//리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if(user ==null || user.isEmpty()) {
+					return;
+				}
+				
+				//클라이언트로부터 삭제할 메뉴의 번호를 받음
+				int index = ois.readInt();
+				boolean res;
+				if(user.remove(user.get(index))) {
+					res = true;
+				}
+				else {
+					res =false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println("회원이 삭제 되었습니다.");
+			}catch (Exception e) {
+				e.printStackTrace();
+			}save(fileName, user);
+			save(fileName2, list);
 		}
 
 		private void insertCafeMenu() {
@@ -188,7 +220,7 @@ public class Server2 {
 				}
 				oos.writeBoolean(res);
 				oos.flush();
-				System.out.println(list + " 메뉴에 추가 되었습니다.");
+				System.out.println(list + " 메뉴가 추가 되었습니다.");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -219,7 +251,7 @@ public class Server2 {
 				}
 				oos.writeBoolean(res);
 				oos.flush();
-				System.out.println(list + " 메뉴에 수정 되었습니다.");
+				System.out.println(list + " 메뉴가 수정 되었습니다.");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -249,7 +281,7 @@ public class Server2 {
 				}
 				oos.writeBoolean(res);
 				oos.flush();
-				System.out.println(list + " 메뉴에 삭제 되었습니다.");
+				System.out.println(list + " 메뉴가 삭제 되었습니다.");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -269,7 +301,7 @@ public class Server2 {
 				switch (menu) {
 				case 1:
 					System.out.println("주문 기능 (구현 필요)");
-					//buyDrink(customer);
+					buyDrink(customer);
 					break;
 				case 2:
 					System.out.println("[로그아웃을 합니다.]");
@@ -278,6 +310,22 @@ public class Server2 {
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
 			} while (menu != 2);
+		}
+
+		private void buyDrink(Customer customer) {
+			try {
+				//클라이언트로 리스트 보냄
+				oos.writeObject(list);
+				oos.flush();
+				oos.reset();
+				//리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if(list ==null || list.isEmpty()) {
+					return;
+				}
+			}catch (Exception e) {
+					// TODO: handle exception
+				}
+		
 		}
 
 		private void signUp() throws IOException, ClassNotFoundException {

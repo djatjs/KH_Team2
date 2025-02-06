@@ -7,8 +7,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
-
-
 public class Client {
 
     private static Scanner scan = new Scanner(System.in);
@@ -98,7 +96,7 @@ public class Client {
             oos.flush();
 
             adminRunMainMenu(menu);
-        } while (menu != 5);
+        } while (menu != 6);
     }
 	       
 	private static void adminPrintMainMenu() {
@@ -108,7 +106,8 @@ public class Client {
 	    System.out.println("2. 메뉴 수정");
 	    System.out.println("3. 메뉴 삭제");
 	    System.out.println("4. 매출 확인");
-	    System.out.println("5. 로그아웃");
+	    System.out.println("5. 회원정보 관리");
+	    System.out.println("6. 로그아웃");
 	    System.out.println("------------------");
 	    System.out.print("메뉴 선택: ");
 	}
@@ -127,8 +126,11 @@ public class Client {
 			break;
 		case 4:
 			checkIncome();
-			return;
+			break;
 		case 5:
+			deleteUser();
+			break;
+		case 6:
 			System.out.println("[로그아웃을 합니다.]");
 			return;
 		default:
@@ -136,6 +138,47 @@ public class Client {
 		}
 	}
 
+	private static void deleteUser() {
+		try {
+			//서버로부터 회원 메뉴 리스트 받아옴
+			List<Customer>list = (List)ois.readObject();
+			
+			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			if(list ==null || list.isEmpty()) {
+				System.out.println("[등록된 회원이 없음]");
+				return;
+			}
+			
+			//리스트 출력
+			for(int i=0; i<list.size(); i++) {
+				System.out.println(i+1 +". "+ list.get(i));
+			}
+			//삭제할 회원의 번호 입력
+			int index=0;
+			do {
+				System.out.print("삭제할 회원번호 입력 : ");
+				index = scan.nextInt()-1;
+				if(index>=list.size()||index<0) {
+					System.out.println("리스트에 있는 번호로 입력하시오");
+				}							
+			}while(index>=list.size()||index<0);
+			
+			//서버로 삭제될 회원 번호 전송
+			oos.writeInt(index);
+			oos.flush();
+			
+			//서버로부터 삭제 결과 받음 
+			boolean res = ois.readBoolean();
+			if(res) {
+				System.out.println("[회원 삭제 완료]");
+			}else {
+				System.out.println("[회원 삭제 실패]");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void insertCafeMenu() {
 		Cafe menu = inputMenuInfo();
 		try {
@@ -275,7 +318,7 @@ public class Client {
 		//유저 정보 가져와야됨
 		switch (menu) {
 		case 1:
-			//buyDrink();
+			buyDrink();
 			break;
 		case 2:
 			System.out.println("[로그아웃을 합니다.]");
@@ -284,6 +327,29 @@ public class Client {
 			System.out.println("[잘못된 메뉴 선택입니다.]");
 		}
 	}
+
+	private static void buyDrink() {
+		try {
+			//서버로부터 카페 메뉴 리스트 받아옴
+			List<Cafe>list = (List)ois.readObject();
+			
+			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			if(list ==null || list.isEmpty()) {
+				System.out.println("[등록된 메뉴가 없습니다.]");
+				return;
+			}
+			
+			//리스트 출력
+			for(int i=0; i<list.size(); i++) {
+				System.out.println(i+1 +". "+ list.get(i));
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+	}
+		
+
 
 	private static void signUp() throws IOException {
         System.out.print("아이디 : ");
