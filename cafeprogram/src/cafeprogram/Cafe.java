@@ -13,13 +13,13 @@ public class Cafe implements Serializable{
 	private String menu;
 	private int price;
 	
-	List<Income> list = new ArrayList<Income>();//입출금 내역
+	//List<Income> list = new ArrayList<Income>();//입출금 내역
 	
 	
 	public Cafe(String menu, int price) {
 		this.menu = menu;
 		this.price = price;
-		list = new ArrayList<Income>();
+		//list = new ArrayList<Income>();
 	}
 
 	//메뉴 이름만 비교해서 같으면 서로 같은 객체로 취급

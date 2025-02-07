@@ -24,8 +24,10 @@ public class Server {
 		//불러오기
 		String cafeFile = "src/cafeprogram/cafe.txt";
 		String userFile = "src/cafeprogram/user.txt";
+		String incomeFile = "src/cafeprogram/income.txt"; 
 		list = (List<Cafe>) load(cafeFile);
 		user = (List<Customer>) load(userFile);
+		incomes = (List<Income>) load(incomeFile);
 		
 		// 리스트 초기화 (null 체크 후)
         if (list == null) {
@@ -35,6 +37,9 @@ public class Server {
             user =  new ArrayList<Customer>(); // 리스트 초기화
             //sample data
             user.add(new Customer("admin", "admin"));
+        }
+		if (incomes == null) {
+            incomes =  new ArrayList<Income>(); // 리스트 초기화
         }
 		
 		
@@ -228,7 +233,16 @@ public class Server {
 		}
 		//관리자 : 매출 확인
 		private void CheckIncome() {
-			// TODO Auto-generated method stub
+			try {
+				int sum=0;
+				for(Income tmp : incomes) {
+					sum+=tmp.getMoney();
+				}
+				oos.writeInt(sum);
+				oos.flush();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 		}
 		//사용자 메뉴
@@ -287,10 +301,13 @@ public class Server {
 					//O라고 대답하면 쿠폰 사용
 					if(isUse.equals("o") || isUse.equals("O")) {
 						System.out.println("쿠폰 사용");
-						customer.useCoupon(menu);
+						customer.useCoupon(menu, incomes);
 						//쿠폰 사용 완료시 참 반환하게 끔 수정 필요
 						oos.writeBoolean(true);
 						oos.flush();
+						System.out.println("확인용 주문 내역");
+						//이거 아니긴함
+						System.out.println(incomes);
 						return;
 					}
 					//X라고 대답하면 안쓰고 스탬프 찍어줌
@@ -300,12 +317,12 @@ public class Server {
 				}
 				
 				//결제 완료시 참 반환하게 끔 수정 필요
-				customer.addStamp(menu);
+				customer.addStamp(menu, incomes);
 				oos.writeBoolean(true);
 				oos.flush();
 				System.out.println("확인용 주문 내역");
 				//이거 아니긴함
-				System.out.println(menu.getList());
+				System.out.println(incomes);
 				
 			}catch (Exception e) {
 				e.printStackTrace();

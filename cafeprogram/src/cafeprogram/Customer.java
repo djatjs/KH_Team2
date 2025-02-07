@@ -1,8 +1,7 @@
 package cafeprogram;
 
-import java.awt.Menu;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import lombok.Data;
@@ -40,22 +39,20 @@ public class Customer  implements Serializable{
 			return Objects.equals(id, other.id) && Objects.equals(pw, other.pw);
 		}
 		
-		//쿠폰 사용 : 카페는 매출 0
-		public void useCoupon(Cafe menu) {
+		//쿠폰 사용 : 카페는 매출 가격-1000만큼 추가
+		public void useCoupon(Cafe menu, List<Income> incomes) {
 			this.coupon--;
-			menu.getList().add(new Income(0));
+			incomes.add(new Income(new Cafe(menu.getMenu(),menu.getPrice()-1000)));
 		}
 		
 		//쿠폰 사용 X : 카페는 메뉴의 가격만큼 매출 증가
-		public void addStamp(Cafe menu) {
+		public void addStamp(Cafe menu, List<Income> incomes) {
 			this.stamp++;
 			if(stamp >= 10) {
 				stamp-=10;
 				this.coupon++;
 			}
-			
-			menu.getList().add(new Income(menu.getPrice()));
-			
+			incomes.add(new Income(new Cafe(menu.getMenu(),menu.getPrice())));
 		}
 	    
 }

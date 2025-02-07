@@ -246,6 +246,12 @@ public class Client {
 	}
 	
 	private static void checkIncome() {
+		try {
+			int totalIncome = ois.readInt();
+			System.out.println(totalIncome);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
