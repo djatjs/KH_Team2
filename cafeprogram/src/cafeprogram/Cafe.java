@@ -13,7 +13,7 @@ public class Cafe implements Serializable{
 	private String menu;
 	private int price;
 	
-	List<Income> list;//입출금 내역
+	List<Income> list = new ArrayList<Income>();//입출금 내역
 	
 	
 	public Cafe(String menu, int price) {
@@ -46,10 +46,7 @@ public class Cafe implements Serializable{
 		return true;
 	}
 
-	public void buyDrink(int money){
-		//구매 내역 저장까지
-		list.add(new Income(money));
-	}
+
 	
 	
 }

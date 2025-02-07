@@ -17,6 +17,7 @@ public class Server {
 
 	private static List<Cafe> list; // 카페 메뉴 리스트
 	private static List<Customer> user = new ArrayList<Customer>(); //사용자 정보 저장
+	private static List<Income> incomes= new ArrayList<Income>();
 
 	public static void main(String[] args) {
 		
@@ -273,8 +274,45 @@ public class Server {
 		//사용자 : 주문(결제)
 		private void buyDrink(Customer customer, int index) {
 			//누가 어떤 메뉴를 주문할지에 대한 정보를 다 전달받은 상황.
+			Cafe menu = list.get(index);
+			//서버에 주문될 메뉴와 고객정보 보냄
+			try {
+				oos.writeObject(menu);
+				oos.writeObject(customer); //이거 보내야하나?
+				oos.flush();
+				//사용자가 쿠폰을 가지고 있다면
+				if(customer.getCoupon()>0) {
+					//클라이언트로부터 쿠폰 사용할지 여부 전달받음
+					String isUse = ois.readUTF();
+					//O라고 대답하면 쿠폰 사용
+					if(isUse.equals("o") || isUse.equals("O")) {
+						System.out.println("쿠폰 사용");
+						customer.useCoupon(menu);
+						//쿠폰 사용 완료시 참 반환하게 끔 수정 필요
+						oos.writeBoolean(true);
+						oos.flush();
+						return;
+					}
+					//X라고 대답하면 안쓰고 스탬프 찍어줌
+					else if(isUse.equals("x") || isUse.equals("X")){
+						System.out.println("쿠폰을 사용하지 않아 결제 단계로 넘어갑니다");
+					}
+				}
+				
+				//결제 완료시 참 반환하게 끔 수정 필요
+				customer.addStamp(menu);
+				oos.writeBoolean(true);
+				oos.flush();
+				System.out.println("확인용 주문 내역");
+				//이거 아니긴함
+				System.out.println(menu.getList());
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			//사용자가 쿠폰을 가지고 있다면 
-			System.out.println("결제레츠고");
+			
 			
 		}
 

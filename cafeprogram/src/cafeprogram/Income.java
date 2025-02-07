@@ -1,9 +1,15 @@
 package cafeprogram;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Income {
+
+public class Income implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7668830909274243298L;
 	private Date date;//구매 날짜
 	private int money;//금액
 	

@@ -305,18 +305,45 @@ public class Client {
 			int index;
 			System.out.print("주문할 메뉴 입력 : ");
 			index = scan.nextInt()-1;
+			scan.nextLine();
 			oos.writeInt(index);
 			oos.flush();
 			
-			//buyDrink();
-			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어보는 멘트 출력
-			//사용자는 y(yes) or n(no)로 대답
-			//y라면 쿠폰 쓰는 메소드, n라면 안쓰고 스탬프 찍어주는 메소드
-			
+			buyDrink();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private static void buyDrink() {
+		try {
+			//주문하는 메뉴의 객체도 받음
+			Cafe menu = (Cafe) ois.readObject();
+			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어봄
+			Customer user = (Customer) ois.readObject();
+			System.out.println(menu+" /구매중");
+			if(user.getCoupon()>0) {
+				System.out.println("쿠폰을 사용하시겠습니까?");
+				//사용자는 o(yes) or x(no)로 대답 후 서버로 전송
+				System.out.print("입력(O/X) : ");
+				String isUse =scan.nextLine();
+				oos.writeUTF(isUse);
+				oos.flush();
+			}
+			
+			boolean res = ois.readBoolean();
+			if(res) {
+				System.out.println(menu.getMenu()+" : 주문 완료");
+			}else {
+				System.out.println("주문 실패");
+			}
+			
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private static void signUp() throws IOException {
