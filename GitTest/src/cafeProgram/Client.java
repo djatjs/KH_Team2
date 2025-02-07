@@ -160,8 +160,10 @@ public class Client {
 				index = scan.nextInt()-1;
 				if(index>=list.size()||index<0) {
 					System.out.println("리스트에 있는 번호로 입력하시오");
-				}							
+					return;
+				}				
 			}while(index>=list.size()||index<0);
+			
 			
 			//서버로 삭제될 회원 번호 전송
 			oos.writeInt(index);
@@ -315,10 +317,10 @@ public class Client {
 	}
 
 	private static void userRunMainMenu(int menu) {
-		//유저 정보 가져와야됨
+		//유저 정보 클라이언트는 필요없음. 필요하면 그 때 서버로부터 받으면 됨
 		switch (menu) {
 		case 1:
-			buyDrink();
+			order();
 			break;
 		case 2:
 			System.out.println("[로그아웃을 합니다.]");
@@ -328,14 +330,14 @@ public class Client {
 		}
 	}
 
-	private static void buyDrink() {
+	private static void order() {
 		try {
 			//서버로부터 카페 메뉴 리스트 받아옴
-			List<Cafe>list = (List)ois.readObject();
+			List<Cafe> list = (List)ois.readObject();
 			
 			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
 			if(list ==null || list.isEmpty()) {
-				System.out.println("[등록된 메뉴가 없습니다.]");
+				System.out.println("[등록된 메뉴가 없음]");
 				return;
 			}
 			
@@ -343,13 +345,51 @@ public class Client {
 			for(int i=0; i<list.size(); i++) {
 				System.out.println(i+1 +". "+ list.get(i));
 			}
+			
+			//주문할 메뉴 입력 및 서버로 전송
+			int index;
+			System.out.print("주문할 메뉴 입력 : ");
+			index = scan.nextInt()-1;
+			scan.nextLine();
+			oos.writeInt(index);
+			oos.flush();
+			
+			buyDrink();
 		}catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
-		
+
+	}
+
+	private static void buyDrink() {
+		try {
+			//주문하는 메뉴의 객체도 받음
+			Cafe menu = (Cafe) ois.readObject();
+			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어봄
+			Customer user = (Customer) ois.readObject();
+			System.out.println(menu+" /구매중");
+			if(user.getCoupon()>0) {
+				System.out.println("쿠폰을 사용하시겠습니까?");
+				//사용자는 o(yes) or x(no)로 대답 후 서버로 전송
+				System.out.print("입력(O/X) : ");
+				String isUse =scan.nextLine();
+				oos.writeUTF(isUse);
+				oos.flush();
+			}
+			
+			boolean res = ois.readBoolean();
+			if(res) {
+				System.out.println(menu.getMenu()+" : 주문 완료");
+			}else {
+				System.out.println("주문 실패");
+			}
+			
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 		
-
 
 	private static void signUp() throws IOException {
         System.out.print("아이디 : ");
