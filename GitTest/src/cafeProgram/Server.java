@@ -175,33 +175,59 @@ public class Server {
 		}
 
 		private void deleteUser() {
-			try {
-				// 클라이언트로 리스트 보냄
-				oos.writeObject(user);
-				oos.flush();
-				oos.reset();
-				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
-				if (user == null || user.isEmpty()) {
-					return;
-				}
+		    try {
+		        // 클라이언트로 리스트 보냄
+		        oos.writeObject(user);
+		        oos.flush();
+		        oos.reset();
 
-				// 클라이언트로부터 삭제할 메뉴의 번호를 받음
-				int index = ois.readInt();
-				boolean res;
-				if (user.remove(user.get(index))) {
-					res = true;
-				} else {
-					res = false;
-				}
-				oos.writeBoolean(res);
-				oos.flush();
-				System.out.println("회원이 삭제 되었습니다.");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-			save(fileName, user);
-			save(fileName2, list);
+		        // 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+		        if (user == null || user.isEmpty()) {
+		            return;
+		        }
+
+		        // 클라이언트로부터 삭제할 회원의 번호를 받음
+		        int index = ois.readInt();
+		        
+		        if (index == -1) {  // 클라이언트에서 취소 신호를 보낸 경우
+		            System.out.println("[회원 삭제를 취소하였습니다.]");
+		            return;
+		        }
+
+		        // 인덱스가 유효한지 확인
+		        if (index < 0 || index >= user.size()) {
+		            oos.writeBoolean(false);
+		            oos.flush();
+		            System.out.println("[잘못된 번호입니다.]");
+		            return;
+		        }
+		        
+		        // 삭제할 회원 정보 가져오기
+		        Customer targetUser = user.get(index);
+
+		        // admin 계정은 삭제 불가능하도록 처리
+		        if (targetUser.getId().equals("admin")) {
+		            oos.writeBoolean(false);  // 삭제 실패 응답
+		            oos.flush();
+		            System.out.println("[관리자 계정(admin)은 삭제할 수 없습니다.]");
+		            return;
+		        }
+
+		        boolean res;
+		        if (user.remove(user.get(index))) {
+		            res = true;
+		        } else {
+		            res = false;
+		        }
+		        oos.writeBoolean(res);
+		        oos.flush();
+		        System.out.println("[회원이 삭제 되었습니다.]");
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return;
+		    }
+		    save(fileName, user);
+		    save(fileName2, list);
 		}
 
 		private void insertCafeMenu() {

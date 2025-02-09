@@ -139,46 +139,52 @@ public class Client {
 	}
 
 	private static void deleteUser() {
-		try {
-			//서버로부터 회원 메뉴 리스트 받아옴
-			List<Customer>list = (List)ois.readObject();
-			
-			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
-			if(list ==null || list.isEmpty()) {
-				System.out.println("[등록된 회원이 없음]");
-				return;
-			}
-			
-			//리스트 출력
-			for(int i=0; i<list.size(); i++) {
-				System.out.println(i+1 +". "+ list.get(i));
-			}
-			//삭제할 회원의 번호 입력
-			int index=0;
-			do {
-				System.out.print("삭제할 회원번호 입력 : ");
-				index = scan.nextInt()-1;
-				if(index>=list.size()||index<0) {
-					System.out.println("리스트에 있는 번호로 입력하시오");
-					return;
-				}				
-			}while(index>=list.size()||index<0);
-			
-			
-			//서버로 삭제될 회원 번호 전송
-			oos.writeInt(index);
-			oos.flush();
-			
-			//서버로부터 삭제 결과 받음 
-			boolean res = ois.readBoolean();
-			if(res) {
-				System.out.println("[회원 삭제 완료]");
-			}else {
-				System.out.println("[회원 삭제 실패]");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+	    try {
+	        // 서버로부터 회원 메뉴 리스트 받아옴
+	        List<Customer> list = (List<Customer>) ois.readObject();
+
+	        // 리스트가 null상태이거나 담긴 메뉴가 없으면 없다고 하고 끝
+	        if (list == null || list.isEmpty()) {
+	            System.out.println("[등록된 회원이 없음]");
+	            return;
+	        }
+
+	        // 리스트 출력
+	        for (int i = 0; i < list.size(); i++) {
+	            System.out.println(i + 1 + ". " + list.get(i));
+	        }
+
+	        // 삭제할 회원의 번호 입력
+	        int index;
+	        do {
+	            System.out.print("[삭제할 회원번호(0: 취소): ");
+	            index = scan.nextInt() - 1;  
+	            if (index == -1) {  
+	                System.out.println("[삭제를 취소합니다.]");
+	                oos.writeInt(-1);  // 서버로 -1을 전송하여 취소 의사 전달
+	                oos.flush();
+	                return;
+	            }
+	            if (index >= list.size() || index < 0) {
+	                System.out.println("[리스트에 있는 번호로 입력하세요.]");
+	            }
+	        } while (index >= list.size() || index < 0);
+
+	        // 서버로 삭제될 회원 번호 전송
+	        oos.writeInt(index);
+	        oos.flush();
+
+	        // 서버로부터 삭제 결과 받음 
+	        boolean res = ois.readBoolean();  
+	        if (res) {
+	            System.out.println("[회원 삭제 완료]");
+	        } else {
+	            System.out.println("[회원 삭제 실패(관리자 계정은 삭제할 수 없습니다)]");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	private static void insertCafeMenu() {
