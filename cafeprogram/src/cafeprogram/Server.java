@@ -234,41 +234,6 @@ public class Server {
 		}
 		//관리자 : 매출 확인
 		private void CheckIncome() {
-			int menu=0;
-			do {
-				try {
-					menu = ois.readInt();
-					switch(menu) {
-					case 1:
-						//getDayIncome();
-						break;
-					case 2:
-						//getWeekIncome();
-						break;
-					case 3:
-						//getMonthIncome();
-						break;
-					case 4:
-						//getYearIncome();
-						break;
-					case 5:
-						getTotalIncome();
-						break;
-					case 6:
-						System.out.println("[이전 메뉴로 돌아갑니다]");
-						break;
-					default:
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}while(menu!=6);
-			
-			
-			
-		}
-		private void getTotalIncome() {
 			try {
 				int sum=0;
 				for(Income tmp : incomes) {
@@ -279,6 +244,39 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+//			int menu=0;
+//			do {
+//				try {
+//					menu = ois.readInt();
+//					switch(menu) {
+//					case 1:
+//						//getDayIncome();
+//						break;
+//					case 2:
+//						//getWeekIncome();
+//						break;
+//					case 3:
+//						//getMonthIncome();
+//						break;
+//					case 4:
+//						//getYearIncome();
+//						break;
+//					case 5:
+//						getTotalIncome();
+//						break;
+//					case 6:
+//						System.out.println("[이전 메뉴로 돌아갑니다]");
+//						break;
+//					default:
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				
+//			}while(menu!=6);
+		}
+		private void getTotalIncome() {
+			
 			
 		}
 

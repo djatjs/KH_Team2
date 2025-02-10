@@ -246,57 +246,59 @@ public class Client {
 	}
 	
 	private static void checkIncome() {
-		int menu=0;
-		do {
-			try {
-				//조회 방법(일 주 월 년)
-				System.out.println("------------------");
-				System.out.println("1. 하루 매출");
-				System.out.println("2. 일주일 매출");
-				System.out.println("3. 월 매출");
-				System.out.println("4. 년 매출");
-				System.out.println("5. 총 매출");
-				System.out.println("6. 뒤로가기");
-				System.out.println("------------------");
-				System.out.print("조회방식 : ");
-				menu = scan.nextInt();
-				scan.nextLine();
-				oos.writeInt(menu);
-				oos.flush();
-				
-				//메뉴에 따른 조회
-				switch(menu) {
-				case 1:
-					getDayIncome();
-					break;
-				case 2:
-					getWeekIncome();
-					break;
-				case 3:
-					getMonthIncome();
-					break;
-				case 4:
-					getYearIncome();
-					break;
-				case 5:
-					getTotalIncome();
-					break;
-				case 6:
-					System.out.println("[이전 메뉴로 돌아갑니다]");
-					oos.flush();
-					break;
-				default:
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}while(menu!=6);
-			
-	
-	
-		
+		try {
+			int totalIncome = ois.readInt();
+			System.out.println(totalIncome);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+//		int menu=0;
+//		do {
+//			try {
+//				//조회 방법(일 주 월 년)
+//				System.out.println("------------------");
+//				System.out.println("1. 하루 매출");
+//				System.out.println("2. 일주일 매출");
+//				System.out.println("3. 월 매출");
+//				System.out.println("4. 년 매출");
+//				System.out.println("5. 총 매출");
+//				System.out.println("6. 뒤로가기");
+//				System.out.println("------------------");
+//				System.out.print("조회방식 : ");
+//				menu = scan.nextInt();
+//				scan.nextLine();
+//				oos.writeInt(menu);
+//				oos.flush();
+//				
+//				//메뉴에 따른 조회
+//				switch(menu) {
+//				case 1:
+//					getDayIncome();
+//					break;
+//				case 2:
+//					getWeekIncome();
+//					break;
+//				case 3:
+//					getMonthIncome();
+//					break;
+//				case 4:
+//					getYearIncome();
+//					break;
+//				case 5:
+//					getTotalIncome();
+//					break;
+//				case 6:
+//					System.out.println("[이전 메뉴로 돌아갑니다]");
+//					oos.flush();
+//					break;
+//				default:
+//				}
+//				
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			
+//		}while(menu!=6);
 	}
 
 	private static void getDayIncome() {
@@ -324,12 +326,7 @@ public class Client {
 	}
 
 	private static void getTotalIncome() {
-		try {
-			int totalIncome = ois.readInt();
-			System.out.println(totalIncome);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	private static void userMenu(int menu) throws IOException {
