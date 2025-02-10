@@ -297,8 +297,27 @@ public class Client {
 	}
 	
 	private static void checkIncome() {
-		
-	}
+		 try {
+		        System.out.println("------------------");
+		        System.out.println("1. 일별 매출");
+		        System.out.println("2. 주별 매출");
+		        System.out.println("3. 월별 매출");
+		        System.out.println("4. 연별 매출");
+		        System.out.println("------------------");
+		        System.out.print("메뉴 선택: ");
+		        int period = scan.nextInt();
+		        scan.nextLine();
+
+		        oos.writeInt(period);
+		        oos.flush();
+
+		        // 서버로부터 매출 데이터 받기
+		       
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+	
 
 	private static void userMenu(int menu) throws IOException {
 		  do {

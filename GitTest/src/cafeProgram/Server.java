@@ -14,8 +14,10 @@ public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 	private static List<Cafe> list; // 카페 메뉴 리스트
 	private static List<Customer> user = new ArrayList<Customer>(); // 사용자 정보 저장
-	private static String fileName = "src/cafeProgram/data2.txt";// 데이터 저장
-	private static String fileName2 = "src/cafeProgram/cafe.txt";// 데이터 저장
+	private static List<Income> amount = new ArrayList<Income>(); // 매출 저장
+	private static String fileName = "src/cafeProgram/user.txt";// 회원 데이터 저장
+	private static String fileName2 = "src/cafeProgram/cafe.txt";//카페 데이터 저장
+	private static String fileName3 = "src/cafeProgram/amount.txt";//카페 데이터 저장
 
 	public static void main(String[] args) {
 
@@ -24,6 +26,9 @@ public class Server {
 
 		user = (List<Customer>) (load(fileName));
 		list = (List<Cafe>) (load(fileName2));
+	
+		
+		
 
 		// 리스트 null 상태 확인
 		if (user == null || user.isEmpty()) {
@@ -78,7 +83,7 @@ public class Server {
 
 	}
 
-	private static class Handler extends Thread {
+	private static class Handler<Incom> extends Thread {
 		private Socket socket;
 		private ObjectInputStream ois;
 		private ObjectOutputStream oos;
@@ -227,7 +232,6 @@ public class Server {
 		        return;
 		    }
 		    save(fileName, user);
-		    save(fileName2, list);
 		}
 
 		private void insertCafeMenu() {
@@ -248,7 +252,7 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			save(fileName2, list);
 		}
 
 		private void editCafeMenu() {
@@ -279,7 +283,7 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			save(fileName2, list);
 		}
 
 		private void deleteCafeMenu() {
@@ -308,13 +312,41 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			save(fileName2, list);
 		}
 
 		// 관리자 : 매출 확인
 		private void CheckIncome() {
-			// TODO Auto-generated method stub
+			int menu;
 
+			do {
+				menu = ois.readInt();
+				switch (menu) {
+				case 1:
+					getDayIncome();
+					break;
+				case 2:
+					getWeekIncome();
+					break;
+				case 3:
+					getMonthIncome();
+					break;
+				case 4:
+					getYearIncome();
+					break;
+				case 5:
+					getTotalIncome();
+					break;
+				case 6:
+					System.out.println("[이전으로 돌아갑니다.]");
+					return;
+				default:
+					System.out.println("[잘못된 메뉴 선택입니다.]");
+				}
+			} while (menu != 2);
 		}
+		
+		
 
 		// 사용자 메뉴
 		private void userMenu(Customer customer) throws IOException {
@@ -418,7 +450,6 @@ public class Server {
 			if (res) {
 				user.add(customer);
 				save(fileName, user);
-				save(fileName2, list);
 			}
 
 			oos.writeBoolean(res);
