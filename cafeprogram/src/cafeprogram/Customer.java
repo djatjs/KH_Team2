@@ -40,19 +40,19 @@ public class Customer  implements Serializable{
 		}
 		
 		//쿠폰 사용 : 카페는 매출 가격-1000만큼 추가
-		public void useCoupon(Cafe menu, List<Income> incomes) {
+		public void useCoupon(Cafe1 menu, List<Income1> incomes) {
 			this.coupon--;
-			incomes.add(new Income(new Cafe(menu.getMenu(),menu.getPrice()-1000)));
+			incomes.add(new Income1(new Cafe1(menu.getMenu(),menu.getPrice()-1000)));
 		}
 		
 		//쿠폰 사용 X : 카페는 메뉴의 가격만큼 매출 증가
-		public void addStamp(Cafe menu, List<Income> incomes) {
+		public void addStamp(Cafe1 menu, List<Income1> incomes) {
 			this.stamp++;
 			if(stamp >= 10) {
 				stamp-=10;
 				this.coupon++;
 			}
-			incomes.add(new Income(new Cafe(menu.getMenu(),menu.getPrice())));
+			incomes.add(new Income1(new Cafe1(menu.getMenu(),menu.getPrice())));
 		}
 	    
 }

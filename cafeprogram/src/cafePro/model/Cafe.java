@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class Cafe implements Serializable{
-	private static final long serialVersionUID = 3052890581774008663L;
+	private static final long serialVersionUID = 1L;
 	private String menu;
 	private int price;
 	

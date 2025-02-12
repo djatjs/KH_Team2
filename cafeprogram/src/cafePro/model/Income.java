@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public class Income implements Serializable{
-	private static final long serialVersionUID = -7668830909274243298L;
+	private static final long serialVersionUID = 1L;
 	private Date date;//구매 날짜
 	private int money;//금액
 	private List<Cafe>list;

@@ -9,16 +9,16 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Income implements Serializable{
+public class Income1 implements Serializable{
 	private static final long serialVersionUID = -7668830909274243298L;
 	private Date date;//구매 날짜
 	private int money;//금액
-	private List<Cafe>list;
+	private List<Cafe1>list;
 	
-	public Income(Cafe cafe) {
+	public Income1(Cafe1 cafe) {
 		this.money = cafe.getPrice();
 		this.date = new Date();
-		list = new ArrayList<Cafe>();
+		list = new ArrayList<Cafe1>();
 	}
 	public String getDateStr() {
 		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

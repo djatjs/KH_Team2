@@ -1,5 +1,6 @@
 package cafePro.program;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
@@ -18,8 +19,7 @@ public class MemberProgram{
 		this.memberManager = new MemberManager(oos, ois);
 	}
 	
-	public void run() {
-		//메뉴 소개
+	public void run() {   
 		int menu=0;
 		do {
 			try {
@@ -47,7 +47,7 @@ public class MemberProgram{
         System.out.print("메뉴 선택 : ");
 	}
 	
-	public void runMenu(int menu) {
+	public void runMenu(int menu) throws Exception {
 		switch (menu) {
         case 1: 
         	memberManager.login();

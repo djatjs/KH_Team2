@@ -20,15 +20,16 @@ public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 
 	private static List<Cafe> list; // 카페 메뉴 리스트
-	private static List<Member> user = new ArrayList<Member>(); //사용자 정보 저장
-	private static List<Income> incomes= new ArrayList<Income>();
+	private static List<Member> user; //사용자 정보 저장
+	private static List<Income> incomes;
+	
+	private static String cafeFile = "src/cafePro/cafe.txt";
+	private static String userFile = "src/cafePro/user.txt";
+	private static String incomeFile = "src/cafePro/income.txt"; 
 
 	public static void main(String[] args) {
 		
 		//불러오기
-		String cafeFile = "src/cafePro/cafe.txt";
-		String userFile = "src/cafePro/user.txt";
-		String incomeFile = "src/cafePro/income.txt"; 
 		list = (List<Cafe>) load(cafeFile);
 		user = (List<Member>) load(userFile);
 		incomes = (List<Income>) load(incomeFile);
@@ -45,7 +46,9 @@ public class Server {
 		if (incomes == null) {
             incomes =  new ArrayList<Income>(); // 리스트 초기화
         }
-		
+		System.out.println(list);
+		System.out.println(user);
+		System.out.println(incomes);
 		
 		//클라이언트 연결 대기
 		try (ServerSocket serverSocket = new ServerSocket(Port)) {
@@ -56,9 +59,7 @@ public class Server {
 				System.out.println("[클라이언트가 연결되었습니다.]");
 
 				new Handler(socket).start();
-				save(cafeFile, list);
-				save(userFile, user);
-				save(incomeFile, incomes);
+				
 			}
 		} catch (IOException e) {
 			System.out.println("[오류가 발생했습니다.]");
@@ -93,6 +94,9 @@ public class Server {
 					case 3: // 클라이언트 종료
 						System.out.println("[클라이언트가 종료하였습니다.]");
 						socket.close();
+						save(cafeFile, list);
+						save(userFile, user);
+						save(incomeFile, incomes);
 						return;
 					default:
 						System.out.println("[잘못된 입력입니다.]");
@@ -145,15 +149,72 @@ public class Server {
 					deleteCafeMenu();
 					break;
 				case 4:
-					CheckIncome();
+					deleteMember();
 					return;
 				case 5:
+					CheckIncome();
+					return;
+				case 6:
 					System.out.println("[로그아웃을 합니다.]");
 					return;
 				default:
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
-			} while (menu != 5);
+			} while (menu != 6);
+		}
+		private void deleteMember() {
+			try {
+				// 클라이언트로 리스트 보냄
+				oos.writeObject(user);
+				oos.flush();
+				oos.reset();
+
+				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if (user == null || user.isEmpty()) {
+					return;
+				}
+
+				// 클라이언트로부터 삭제할 회원의 번호를 받음
+				int index = ois.readInt();
+
+				if (index == -1) { // 클라이언트에서 취소 신호를 보낸 경우
+					System.out.println("[회원 삭제를 취소하였습니다.]");
+					return;
+				}
+
+				// 인덱스가 유효한지 확인
+				if (index < 0 || index >= user.size()) {
+					oos.writeBoolean(false);
+					oos.flush();
+					System.out.println("[잘못된 번호입니다.]");
+					return;
+				}
+
+				// 삭제할 회원 정보 가져오기
+				Member targetUser = user.get(index);
+
+				// admin 계정은 삭제 불가능하도록 처리
+				if (targetUser.getId().equals("admin")) {
+					oos.writeBoolean(false); // 삭제 실패 응답
+					oos.flush();
+					System.out.println("[관리자 계정(admin)은 삭제할 수 없습니다.]");
+					return;
+				}
+
+				boolean res;
+				if (user.remove(user.get(index))) {
+					res = true;
+				} else {
+					res = false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println("[회원이 삭제 되었습니다.]");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			
 		}
 		//관리자 : 메뉴 추가
 		private void insertCafeMenu() {
@@ -374,6 +435,12 @@ public class Server {
 
 		//메뉴 : 회원가입
 		private void signUp() throws IOException, ClassNotFoundException {
+			//클라이언트에서 정보 잘못입력하면 false 전송후 리턴시키는 것에 맞춰가기
+			boolean inputRes = ois.readBoolean();
+			if(!inputRes) {
+				return;
+			}
+			
 			//회원정보 정보 받음
 			Member customer = (Member) ois.readObject();
 			

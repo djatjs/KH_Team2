@@ -127,17 +127,17 @@ public class Client {
 			break;
 		case 4:
 			checkIncome();
-			return;
+			break;
 		case 5:
 			System.out.println("[로그아웃을 합니다.]");
-			return;
+			break;
 		default:
 			System.out.println("[잘못된 메뉴 선택입니다.]");
 		}
 	}
 
 	private static void insertCafeMenu() {
-		Cafe menu = inputMenuInfo();
+		Cafe1 menu = inputMenuInfo();
 		try {
 			oos.writeObject(menu);
 			oos.flush();
@@ -153,7 +153,7 @@ public class Client {
 		
 	}
 
-	private static Cafe inputMenuInfo() {
+	private static Cafe1 inputMenuInfo() {
 		System.out.println("------------------");
 		System.out.print("메뉴 이름 : ");
 		String name = scan.next();
@@ -161,13 +161,13 @@ public class Client {
 		int price = scan.nextInt();
 		scan.nextLine();
 		System.out.println("------------------");
-		return new Cafe(name, price);
+		return new Cafe1(name, price);
 	}
 
 	private static void editCafeMenu() {
 		//서버로부터 카페 메뉴 리스트 받아옴
 		try {
-			List<Cafe>list = (List)ois.readObject();
+			List<Cafe1>list = (List)ois.readObject();
 			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
 			if(list ==null || list.isEmpty()) {
 				System.out.println("[등록된 메뉴가 없음]");
@@ -187,7 +187,7 @@ public class Client {
 				}							
 			}while(index>=list.size()||index<0);
 			//수정할 메뉴 정보 입력
-			Cafe tmp = inputMenuInfo();
+			Cafe1 tmp = inputMenuInfo();
 			//번호와 수정할 메뉴 정보 서버로 전송
 			oos.writeInt(index);
 			oos.writeObject(tmp);
@@ -207,7 +207,7 @@ public class Client {
 	private static void deleteCafeMenu() {
 		try {
 			//서버로부터 카페 메뉴 리스트 받아옴
-			List<Cafe>list = (List)ois.readObject();
+			List<Cafe1>list = (List)ois.readObject();
 			
 			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
 			if(list ==null || list.isEmpty()) {
@@ -368,7 +368,7 @@ public class Client {
 	private static void order() {
 		try {
 			//서버로부터 카페 메뉴 리스트 받아옴
-			List<Cafe> list = (List)ois.readObject();
+			List<Cafe1> list = (List)ois.readObject();
 			
 			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
 			if(list ==null || list.isEmpty()) {
@@ -399,7 +399,7 @@ public class Client {
 	private static void buyDrink() {
 		try {
 			//주문하는 메뉴의 객체도 받음
-			Cafe menu = (Cafe) ois.readObject();
+			Cafe1 menu = (Cafe1) ois.readObject();
 			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어봄
 			Customer user = (Customer) ois.readObject();
 			System.out.println(menu+" /구매중");

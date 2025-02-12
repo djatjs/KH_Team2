@@ -8,7 +8,7 @@ import java.util.Objects;
 import lombok.Data;
 
 @Data
-public class Cafe implements Serializable{
+public class Cafe1 implements Serializable{
 	private static final long serialVersionUID = 3052890581774008663L;
 	private String menu;
 	private int price;
@@ -16,7 +16,7 @@ public class Cafe implements Serializable{
 	//List<Income> list = new ArrayList<Income>();//입출금 내역
 	
 	
-	public Cafe(String menu, int price) {
+	public Cafe1(String menu, int price) {
 		this.menu = menu;
 		this.price = price;
 		//list = new ArrayList<Income>();
@@ -31,7 +31,7 @@ public class Cafe implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Cafe other = (Cafe) obj;
+		Cafe1 other = (Cafe1) obj;
 		return Objects.equals(menu, other.menu);
 	}
 
@@ -40,7 +40,7 @@ public class Cafe implements Serializable{
 		return menu + " : " + price + "원";
 	}
 
-	public boolean update(Cafe tmp) {
+	public boolean update(Cafe1 tmp) {
 		this.menu = tmp.menu;
 		this.price = tmp.price;
 		return true;

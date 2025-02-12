@@ -6,5 +6,4 @@ public class Main {
 		Client program = new Client();
 		program.run();
 	}
-
 }
