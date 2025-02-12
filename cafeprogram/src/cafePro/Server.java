@@ -12,6 +12,10 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import cafePro.model.Cafe;
+import cafePro.model.Income;
+import cafePro.model.Member;
+
 public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 

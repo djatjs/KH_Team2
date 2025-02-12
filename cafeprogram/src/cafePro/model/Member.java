@@ -1,4 +1,4 @@
-package cafePro;
+package cafePro.model;
 
 import java.util.List;
 import java.util.Objects;
