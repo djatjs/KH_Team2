@@ -11,6 +11,7 @@ public class MemberManager {
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
+    
 	public MemberManager(ObjectOutputStream oos, ObjectInputStream ois) {
 		this.oos = oos;
         this.ois = ois;
