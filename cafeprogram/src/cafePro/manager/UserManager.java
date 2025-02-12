@@ -52,13 +52,16 @@ public class UserManager {
 		try {
 			//주문하는 메뉴의 객체도 받음
 			Cafe menu = (Cafe) ois.readObject();
+			
 			//사용자 객체 받고 쿠폰 갯수 확인해서 있으면 사용할건지 물어봄
 			Member user = (Member) ois.readObject();
 			System.out.println("------------------");
 			System.out.println(menu+" /구매중");
+			
 			if(user.getCoupon()>0) {
+				
 				System.out.println("쿠폰을 사용하시겠습니까?");
-				//사용자는 o(yes) or x(no)로 대답 후 서버로 전송
+				
 				System.out.print("입력(O/X) : ");
 				String isUse =scan.nextLine();
 				oos.writeUTF(isUse);
@@ -71,7 +74,6 @@ public class UserManager {
 			}else {
 				System.out.println("주문 실패");
 			}
-			
 
 		}catch (Exception e) {
 			e.printStackTrace();

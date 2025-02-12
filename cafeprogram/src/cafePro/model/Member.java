@@ -22,7 +22,7 @@ public class Member implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[" + "아이디 : " + id + ", " + "비밀번호 : " + pw + "]";
+		return "아이디 : " + id + " / " + "비밀번호 : " + pw;
 	}
 
 	// 로그인용 이퀄

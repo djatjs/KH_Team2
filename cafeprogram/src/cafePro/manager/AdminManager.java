@@ -37,18 +37,18 @@ public class AdminManager {
 
 	public void editCafeMenu() {
 		try {
-			//서버로부터 카페 메뉴 리스트 받아옴
+			
 			List<Cafe>list = (List)ois.readObject();
-			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			
 			if(list ==null || list.isEmpty()) {
 				System.out.println("[등록된 메뉴가 없음]");
 				return;
 			}
-			//리스트 출력
+			
 			for(int i=0; i<list.size(); i++) {
 				System.out.println(i+1 +". "+ list.get(i));
 			}
-			//수정할 메뉴의 번호 입력
+			
 			int index=0;
 			do {
 				System.out.print("수정할 메뉴 입력 : ");
@@ -57,13 +57,13 @@ public class AdminManager {
 					System.out.println("리스트에 있는 번호로 입력하시오");
 				}							
 			}while(index>=list.size()||index<0);
-			//수정할 메뉴 정보 입력
+			
 			Cafe tmp = inputMenuInfo();
-			//번호와 수정할 메뉴 정보 서버로 전송
+			
 			oos.writeInt(index);
 			oos.writeObject(tmp);
 			oos.flush();
-			//결과 받아옴
+			
 			boolean res = ois.readBoolean();
 			if(res) {
 				System.out.println("[메뉴 수정 완료]");
@@ -78,20 +78,19 @@ public class AdminManager {
 
 	public void deleteCafeMenu() {
 		try {
-			//서버로부터 카페 메뉴 리스트 받아옴
+			
 			List<Cafe>list = (List)ois.readObject();
 			
-			//리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			
 			if(list ==null || list.isEmpty()) {
 				System.out.println("[등록된 메뉴가 없음]");
 				return;
 			}
 			
-			//리스트 출력
 			for(int i=0; i<list.size(); i++) {
 				System.out.println(i+1 +". "+ list.get(i));
 			}
-			//삭제할 메뉴의 번호 입력
+			
 			int index=0;
 			do {
 				System.out.print("삭제할 메뉴 입력 : ");
@@ -101,11 +100,9 @@ public class AdminManager {
 				}							
 			}while(index>=list.size()||index<0);
 			
-			//서버로 삭제될 메뉴 번호 전송
 			oos.writeInt(index);
 			oos.flush();
-			
-			//서버로부터 삭제 결과 받음 
+			 
 			boolean res = ois.readBoolean();
 			if(res) {
 				System.out.println("[메뉴 삭제 완료]");
@@ -119,21 +116,19 @@ public class AdminManager {
 	
 	public void deleteMember() {
 		try {
-			// 서버로부터 회원 메뉴 리스트 받아옴
+			
 			List<Member> list = (List<Member>) ois.readObject();
 
-			// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다고 하고 끝
+			
 			if (list == null || list.isEmpty()) {
 				System.out.println("[등록된 회원이 없음]");
 				return;
 			}
 
-			// 리스트 출력
 			for (int i = 0; i < list.size(); i++) {
 				System.out.println(i + 1 + ". " + list.get(i));
 			}
 
-			// 삭제할 회원의 번호 입력
 			int index;
 			do {
 				System.out.print("[삭제할 회원번호(0: 취소): ");
@@ -149,11 +144,9 @@ public class AdminManager {
 				}
 			} while (index >= list.size() || index < 0);
 
-			// 서버로 삭제될 회원 번호 전송
 			oos.writeInt(index);
 			oos.flush();
 
-			// 서버로부터 삭제 결과 받음
 			boolean res = ois.readBoolean();
 			if (res) {
 				System.out.println("[회원 삭제 완료]");
@@ -168,9 +161,47 @@ public class AdminManager {
 	}
 	
 	public void checkIncome() {
-		System.out.println("매출확인");
+		try {
+			int menu=0;
+			do {
+				printIncomeMenu();
+				
+				menu = scan.nextInt();
+				scan.nextLine();
+				
+				// 서버에 매출 조회 요청
+				oos.writeInt(menu); 
+				oos.flush();
+				
+				if(menu == 6) {
+					return;
+				}
+				int totalIncome = ois.readInt();
+				
+				if (menu == 5) {
+					System.out.println("[총 매출: " + totalIncome + "원]");
+				} else {
+					System.out.println("[매출: " + totalIncome + "원]");
+				}
+			}while(menu != 6);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
+
+	private void printIncomeMenu() {
+		System.out.println("------------------");
+		System.out.println("1. 일별 매출");
+		System.out.println("2. 주별 매출");
+		System.out.println("3. 월별 매출");
+		System.out.println("4. 연별 매출");
+		System.out.println("5. 총 매출");
+		System.out.println("6. 뒤로 가기");
+		System.out.println("------------------");
+		System.out.print("메뉴 선택: ");
+	}
+
 	private static Cafe inputMenuInfo() {
 		System.out.println("------------------");
 		System.out.print("메뉴 이름 : ");

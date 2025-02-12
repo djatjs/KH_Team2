@@ -8,8 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import cafePro.model.Cafe;
@@ -150,13 +152,13 @@ public class Server {
 					break;
 				case 4:
 					deleteMember();
-					return;
+					break;
 				case 5:
 					CheckIncome();
-					return;
+					break;
 				case 6:
 					System.out.println("[로그아웃을 합니다.]");
-					return;
+					break;
 				default:
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
@@ -298,50 +300,101 @@ public class Server {
 			}
 		}
 		//관리자 : 매출 확인
-		private void CheckIncome() {
-			try {
-				int sum=0;
-				for(Income tmp : incomes) {
-					sum+=tmp.getMoney();
+		private void CheckIncome() throws IOException {
+			int menu=0;
+			do {
+				 menu = ois.readInt(); // 클라이언트가 보낸 매출 요청
+				
+				if (menu == 6) { // "뒤로 가기" 선택 시 종료
+					System.out.println("[이전 메뉴로 돌아갑니다.]");
+					break;
 				}
-				oos.writeInt(sum);
+				
+				int totalIncome = 0;
+				
+				switch (menu) {
+				case 1:
+					totalIncome = getDayIncome();// 일
+					break;
+				case 2:
+					totalIncome = getWeekIncome();// 주
+					break;
+				case 3:
+					totalIncome = getMonthIncome();// 월
+					break;
+				case 4:
+					totalIncome = getYearIncome();// 년
+					break;
+				case 5:
+					totalIncome = getTotalIncome(); // 총 매출 계산
+					break;
+				
+				}
+				
+				// 정상적인 매출 데이터를 클라이언트에 전송
+				oos.writeInt(totalIncome);
 				oos.flush();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-//			int menu=0;
-//			do {
-//				try {
-//					menu = ois.readInt();
-//					switch(menu) {
-//					case 1:
-//						//getDayIncome();
-//						break;
-//					case 2:
-//						//getWeekIncome();
-//						break;
-//					case 3:
-//						//getMonthIncome();
-//						break;
-//					case 4:
-//						//getYearIncome();
-//						break;
-//					case 5:
-//						getTotalIncome();
-//						break;
-//					case 6:
-//						System.out.println("[이전 메뉴로 돌아갑니다]");
-//						break;
-//					default:
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//				
-//			}while(menu!=6);
+			}while(menu !=6);
 		}
-		private void getTotalIncome() {
-			
+		private int getYearIncome() {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+			String currentYear = sdf.format(new Date());
+			int total = 0;
+
+			for (Income income : incomes) {
+				if (sdf.format(income.getDate()).equals(currentYear)) {
+					total += income.getMoney();
+				}
+			}
+			return total;
+		}
+
+		private int getMonthIncome() {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+			String currentMonth = sdf.format(new Date());
+			int total = 0;
+
+			for (Income income : incomes) {
+				if (sdf.format(income.getDate()).equals(currentMonth)) {
+					total += income.getMoney();
+				}
+			}
+			return total;
+		}
+
+		private int getWeekIncome() {
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			Date startOfWeek = cal.getTime();
+			int total = 0;
+
+			for (Income income : incomes) {
+				if (!income.getDate().before(startOfWeek)) {
+					total += income.getMoney();
+				}
+			}
+			return total;
+		}
+
+		private int getDayIncome() {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String today = sdf.format(new Date());
+			int total = 0;
+
+			for (Income income : incomes) {
+				if (sdf.format(income.getDate()).equals(today)) {
+					total += income.getMoney();
+				}
+			}
+			return total;
+		}
+
+		private int getTotalIncome() {
+			int total = 0;
+			for (Income income : incomes) {
+				total += income.getMoney();
+			}
+			return total;
 			
 		}
 
@@ -392,12 +445,13 @@ public class Server {
 			//서버에 주문될 메뉴와 고객정보 보냄
 			try {
 				oos.writeObject(menu);
-				oos.writeObject(customer); //이거 보내야하나?
+				oos.writeObject(customer);
 				oos.flush();
 				//사용자가 쿠폰을 가지고 있다면
 				if(customer.getCoupon()>0) {
 					//클라이언트로부터 쿠폰 사용할지 여부 전달받음
 					String isUse = ois.readUTF();
+					
 					//O라고 대답하면 쿠폰 사용
 					if(isUse.equals("o") || isUse.equals("O")) {
 						System.out.println("쿠폰 사용");
@@ -407,10 +461,11 @@ public class Server {
 						oos.flush();
 						System.out.println("확인용 주문 내역");
 						//이거 아니긴함
-						System.out.println(incomes);
+						System.out.println(incomes.getLast());
 						return;
 					}
-					//X라고 대답하면 안쓰고 스탬프 찍어줌
+					
+					//X라고 대답하면 안쓰고 정상결제 및 스탬프 찍어주기 위해 그냥 넘어감
 					else if(isUse.equals("x") || isUse.equals("X")){
 						System.out.println("쿠폰을 사용하지 않아 결제 단계로 넘어갑니다");
 					}
@@ -422,15 +477,12 @@ public class Server {
 				oos.flush();
 				System.out.println("확인용 주문 내역");
 				//이거 아니긴함
-				System.out.println(incomes);
+				System.out.println(incomes.getLast());
 				
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			//사용자가 쿠폰을 가지고 있다면 
-			
-			
+
 		}
 
 		//메뉴 : 회원가입
