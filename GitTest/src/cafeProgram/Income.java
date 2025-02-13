@@ -1,12 +1,13 @@
 package cafeProgram;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Data;
 
 @Data
-public class Income {
+public class Income implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
