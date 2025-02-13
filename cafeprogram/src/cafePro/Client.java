@@ -9,7 +9,7 @@ import cafePro.program.MemberProgram;
 public class Client {
 
 	public void run() {
-		String ip = "127.0.0.1"; // 서버 IP
+		String ip = "192.168.40.62"; // 서버 IP
         int port = 9999; // 서버 포트
 		
         try (Socket socket = new Socket(ip, port)) {
