@@ -86,9 +86,11 @@ public class Client {
 		}
 	}
 
-	private static void logout() {
-		loggedIn = false; // 로그아웃 시 로그인 상태 초기화
-		System.out.println("[로그아웃 되었습니다.]");
+	private static void logout() throws IOException {
+	    // 로그아웃 처리
+	    oos.writeInt(6);  // 로그아웃을 위한 메뉴 선택 전송
+	    oos.flush();
+	    System.out.println("[로그아웃 되었습니다.]");
 	}
 
 	private static void adminMenu() throws IOException {
@@ -118,7 +120,7 @@ public class Client {
 		System.out.print("메뉴 선택: ");
 	}
 
-	private static void adminRunMainMenu(int menu) {
+	private static void adminRunMainMenu(int menu) throws IOException {
 
 		switch (menu) {
 		case 1:
