@@ -86,6 +86,11 @@ public class Client {
 		}
 	}
 
+	private static void logout() {
+		loggedIn = false; // 로그아웃 시 로그인 상태 초기화
+		System.out.println("[로그아웃 되었습니다.]");
+	}
+
 	private static void adminMenu() throws IOException {
 		int menu;
 		do {
@@ -106,8 +111,8 @@ public class Client {
 		System.out.println("1. 메뉴 추가");
 		System.out.println("2. 메뉴 수정");
 		System.out.println("3. 메뉴 삭제");
-		System.out.println("4. 매출 확인");
-		System.out.println("5. 회원정보 관리");
+		System.out.println("4. 회원 관리");
+		System.out.println("5. 매출 확인");
 		System.out.println("6. 로그아웃");
 		System.out.println("------------------");
 		System.out.print("메뉴 선택: ");
@@ -126,16 +131,138 @@ public class Client {
 			deleteCafeMenu();
 			break;
 		case 4:
-			checkIncome();
-			break;
-		case 5:
 			deleteUser();
 			break;
+		case 5:
+			checkIncome();
+			break;
 		case 6:
-			System.out.println("[로그아웃을 합니다.]");
+			logout();
 			return;
 		default:
 			System.out.println("[잘못된 메뉴 선택입니다.]");
+		}
+	}
+
+	private static void insertCafeMenu() {
+		Cafe menu = inputMenuInfo(); // 사용자 입력을 받아 메뉴 정보 객체 생성
+		try {
+			// 메뉴 객체를 서버로 전송
+			oos.writeObject(menu);
+			oos.flush(); // 전송을 완료한 후, 서버로부터 결과를 받음
+
+			// 서버로부터 결과를 받아 처리
+			boolean res = ois.readBoolean(); // 메뉴가 정상적으로 추가되었는지 확인
+			if (res) {
+				System.out.println("[메뉴 등록 완료]");
+
+				// 서버에서 메뉴 추가 후, 갱신된 메뉴 리스트를 받는 부분 추가
+				List<Cafe> newMenuList = (List<Cafe>) ois.readObject(); // 갱신된 리스트 받기
+				System.out.println("현재 등록된 메뉴 리스트:");
+				for (Cafe cafe : newMenuList) {
+					System.out.println(cafe); // 갱신된 메뉴 리스트 출력
+				}
+			} else {
+				System.out.println("[메뉴 등록 실패]");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Cafe inputMenuInfo() {
+		System.out.println("------------------");
+		System.out.print("메뉴 이름 : ");
+		String name = scan.next();
+		System.out.print("메뉴 가격 : ");
+		int price = scan.nextInt();
+		scan.nextLine();
+		System.out.println("------------------");
+		return new Cafe(name, price);
+	}
+
+	private static void editCafeMenu() {
+		// 서버로부터 카페 메뉴 리스트 받아옴
+		try {
+			List<Cafe> list = (List<Cafe>) ois.readObject();
+			// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			if (list == null || list.isEmpty()) {
+				System.out.println("[등록된 메뉴가 없습니다.]");
+				return;
+			}
+			// 리스트 출력
+			for (int i = 0; i < list.size(); i++) {
+				System.out.println(i + 1 + ". " + list.get(i));
+			}
+			// 수정할 메뉴의 번호 입력
+			int index;
+			do {
+				System.out.print("수정할 메뉴 입력 : ");
+				index = scan.nextInt() - 1;
+				if (index >= list.size() || index < 0) {
+					System.out.println("[리스트에 있는 번호로 입력하세요.]");
+				}
+			} while (index >= list.size() || index < 0);
+			// 수정할 메뉴 정보 입력
+			Cafe tmp = inputMenuInfo();
+			// 번호와 수정할 메뉴 정보 서버로 전송
+			oos.writeInt(index);
+			oos.writeObject(tmp);
+			oos.flush();
+			// 결과 받아옴
+			boolean res = ois.readBoolean();
+			Cafe menu = (Cafe) ois.readObject();
+
+			if (res) {
+				System.out.println("[메뉴 수정 완료]");
+			} else {
+				System.out.println("[메뉴 수정 실패]");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void deleteCafeMenu() {
+		try {
+			// 서버로부터 카페 메뉴 리스트 받아옴
+			List<Cafe> list = (List) ois.readObject();
+
+			// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+			if (list == null || list.isEmpty()) {
+				System.out.println("[등록된 메뉴가 없음]");
+				return;
+			}
+
+			// 리스트 출력
+			for (int i = 0; i < list.size(); i++) {
+				System.out.println(i + 1 + ". " + list.get(i));
+			}
+			// 삭제할 메뉴의 번호 입력
+			int index = 0;
+			do {
+				System.out.print("삭제할 메뉴 입력 : ");
+				index = scan.nextInt() - 1;
+				if (index >= list.size() || index < 0) {
+					System.out.println("리스트에 있는 번호로 입력하시오");
+				}
+			} while (index >= list.size() || index < 0);
+
+			// 서버로 삭제될 메뉴 번호 전송
+			oos.writeInt(index);
+			oos.flush();
+
+			// 서버로부터 삭제 결과 받음
+			boolean res = ois.readBoolean();
+			if (res) {
+				System.out.println("[메뉴 삭제 완료]");
+			} else {
+				System.out.println("[메뉴 삭제 실패]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -188,119 +315,6 @@ public class Client {
 		}
 	}
 
-	private static void insertCafeMenu() {
-		Cafe menu = inputMenuInfo();
-		try {
-			oos.writeObject(menu);
-			oos.flush();
-			boolean res = ois.readBoolean();
-			if (res) {
-				System.out.println("[메뉴 등록 완료]");
-			} else {
-				System.out.println("[메뉴 등록 실패]");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private static Cafe inputMenuInfo() {
-		System.out.println("------------------");
-		System.out.print("메뉴 이름 : ");
-		String name = scan.next();
-		System.out.print("메뉴 가격 : ");
-		int price = scan.nextInt();
-		scan.nextLine();
-		System.out.println("------------------");
-		return new Cafe(name, price);
-	}
-
-	private static void editCafeMenu() {
-		// 서버로부터 카페 메뉴 리스트 받아옴
-		try {
-			
-				List<Cafe> list = (List<Cafe>) ois.readObject();
-				// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
-				if (list == null || list.isEmpty()) {
-					System.out.println("[등록된 메뉴가 없음]");
-					return;
-				}
-				// 리스트 출력
-				for (int i = 0; i < list.size(); i++) {
-					System.out.println(i + 1 + ". " + list.get(i));
-				}
-				// 수정할 메뉴의 번호 입력
-				int index = 0;
-				do {
-					System.out.print("수정할 메뉴 입력 : ");
-					index = scan.nextInt() - 1;
-					if (index >= list.size() || index < 0) {
-						System.out.println("리스트에 있는 번호로 입력하시오");
-					}
-				} while (index >= list.size() || index < 0);
-				// 수정할 메뉴 정보 입력
-				Cafe tmp = inputMenuInfo();
-				// 번호와 수정할 메뉴 정보 서버로 전송
-				oos.writeInt(index);
-				oos.writeObject(tmp);
-				oos.flush();
-				// 결과 받아옴
-				boolean res = ois.readBoolean();
-				
-				Menu.update(tmp)
-				if (res) {
-					System.out.println("[메뉴 수정 완료]");
-				} else {
-					System.out.println("[메뉴 수정 실패]");
-				}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-}
-
-	private static void deleteCafeMenu() {
-		try {
-			// 서버로부터 카페 메뉴 리스트 받아옴
-			List<Cafe> list = (List) ois.readObject();
-
-			// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
-			if (list == null || list.isEmpty()) {
-				System.out.println("[등록된 메뉴가 없음]");
-				return;
-			}
-
-			// 리스트 출력
-			for (int i = 0; i < list.size(); i++) {
-				System.out.println(i + 1 + ". " + list.get(i));
-			}
-			// 삭제할 메뉴의 번호 입력
-			int index = 0;
-			do {
-				System.out.print("삭제할 메뉴 입력 : ");
-				index = scan.nextInt() - 1;
-				if (index >= list.size() || index < 0) {
-					System.out.println("리스트에 있는 번호로 입력하시오");
-				}
-			} while (index >= list.size() || index < 0);
-
-			// 서버로 삭제될 메뉴 번호 전송
-			oos.writeInt(index);
-			oos.flush();
-
-			// 서버로부터 삭제 결과 받음
-			boolean res = ois.readBoolean();
-			if (res) {
-				System.out.println("[메뉴 삭제 완료]");
-			} else {
-				System.out.println("[메뉴 삭제 실패]");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static void checkIncome() {
 		try {
 			while (true) { // 계속 반복해서 입력받도록 설정
@@ -309,14 +323,15 @@ public class Client {
 				System.out.println("2. 주별 매출");
 				System.out.println("3. 월별 매출");
 				System.out.println("4. 연별 매출");
-				System.out.println("5. 뒤로 가기");
+				System.out.println("5. 총 매출");
+				System.out.println("6. 뒤로 가기");
 				System.out.println("------------------");
 				System.out.print("메뉴 선택: ");
 
 				int period = scan.nextInt();
 				scan.nextLine();
 
-				if (period == 5) {
+				if (period == 6) {
 					System.out.println("[이전 메뉴로 돌아갑니다.]");
 					return; // "뒤로 가기" 선택 시 종료
 				}
@@ -331,7 +346,11 @@ public class Client {
 					continue; // 다시 메뉴 선택
 				}
 
-				System.out.println("매출: " + totalIncome + "원");
+				if (period == 5) {
+					System.out.println("[총 매출: " + totalIncome + "원]");
+				} else {
+					System.out.println("[매출: " + totalIncome + "원]");
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class Customer implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 2227705510541700605L;
+	
 	private String id;
 	private String pw;
 	private int stamp = 0;
@@ -18,7 +18,6 @@ public class Customer implements Serializable {
 	public Customer(String id, String pw) {
 		this.id = id;
 		this.pw = pw;
-
 	}
 
 	@Override

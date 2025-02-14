@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="D:/dav/jar/lombok.jar">
+	<classpathentry kind="lib" path="C:/Users/keson/Desktop/java_lab/dav/jar/lombok.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

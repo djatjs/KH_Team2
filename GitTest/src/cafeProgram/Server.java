@@ -21,6 +21,7 @@ public class Server {
 	private static String fileName = "src/cafeProgram/user.txt";// 회원 데이터 저장
 	private static String fileName2 = "src/cafeProgram/cafe.txt";// 카페 데이터 저장
 	private static String fileName3 = "src/cafeProgram/amount.txt";// 카페 데이터 저장
+	private static boolean loggedIn = false;
 
 	public static void main(String[] args) {
 
@@ -139,6 +140,7 @@ public class Server {
 			oos.flush();
 
 			if (res) {
+				loggedIn = true;
 				boolean admin = customer.getId().equals("admin");// 관리자인지 여부 받기
 				oos.writeBoolean(admin);
 				oos.flush();
@@ -151,59 +153,40 @@ public class Server {
 					userMenu(customer); // 일반 사용자 메뉴 실행
 				}
 			} else {
+				loggedIn = false;
 				System.out.println("[아이디/비밀번호가 일치하지 않습니다.]");
 			}
 		}
 
-		private void adminMenu() throws IOException {
-			int menu;
-
-			do {
-				menu = ois.readInt(); // 클라이언트로부터 메뉴 선택 받기
-				System.out.println(menu);
-				switch (menu) {
-				case 1:
-					insertCafeMenu();
-					break;
-				case 2:
-					editCafeMenu();
-					break;
-				case 3:
-					deleteCafeMenu();
-					break;
-				case 4:
-					CheckIncome();
-					break;
-				case 5:
-					deleteUser();
-					break;
-				case 6:
-					System.out.println("[로그아웃을 합니다.]");
-					return;
-				default:
-					System.out.println("[잘못된 메뉴 선택입니다.]");
-				}
-			} while (menu != 6);
+		private void logout() throws IOException {
+			   loggedIn = false;  // 로그아웃 시 loggedIn을 false로 설정
+			    System.out.println("[로그아웃 되었습니다.]");
 		}
 
 		private void insertCafeMenu() {
 			try {
-				// 클라이언트로부터 카페(메뉴) 객체 받아옴
+				// 클라이언트로부터 메뉴 객체 받기
 				Cafe menu = (Cafe) ois.readObject();
-				// 이미 등록된 메뉴인지 확인
 				boolean res = false;
+
+				// 이미 등록된 메뉴인지 확인
 				if (!list.contains(menu)) {
-					list.add(menu);
+					list.add(menu); // 리스트에 새 메뉴 추가
 					save(fileName2, list); // 파일 저장
-					res = true;
-					System.out.println("[" + menu + "]" + "[메뉴가 추가 되었습니다.] "); // 방금 추가된 메뉴만 출력
+					res = true; // 추가 성공
+					System.out.println("[" + menu + "] 메뉴가 추가되었습니다.");
 				} else {
 					System.out.println("[이미 존재하는 메뉴입니다.]");
 				}
 
-				// 클라이언트에게 응답 전송
+				// 클라이언트에게 응답 (성공/실패)
 				oos.writeBoolean(res);
-				oos.writeObject(menu); // 방금 추가된 메뉴만 전송
+
+				if (res) {
+					// 갱신된 메뉴 리스트를 클라이언트로 전송 (성공 시에만)
+					oos.writeObject(list);
+				}
+
 				oos.flush();
 
 			} catch (Exception e) {
@@ -215,16 +198,25 @@ public class Server {
 			try {
 				// 클라이언트로 리스트 보냄
 				oos.writeObject(list);
-				System.out.println(list);
 				oos.flush();
 				oos.reset();
+
 				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
 				if (list == null || list.isEmpty()) {
+					System.out.println("[등록된 메뉴가 없습니다.");
+					return;
+				}
+
+				int index = ois.readInt();
+				// 유효 인덱스인지
+				if (index < 0 || index >= list.size()) {
+					System.out.println("[잘못된 입력입니다.]");
+					oos.writeBoolean(false); // 실패 응답
+					oos.flush();
 					return;
 				}
 
 				// 클라이언트로부터 수정할 메뉴의 번호를 받음
-				int index = ois.readInt();
 				// 클라이언트로부터 수정할 메뉴 정보까지 받음
 				Cafe tmp = (Cafe) ois.readObject();
 				Cafe menu = list.get(index);
@@ -238,9 +230,10 @@ public class Server {
 				oos.writeBoolean(res);
 				oos.writeObject(menu);
 				oos.flush();
+
 				System.out.println("[" + menu + "]" + "[메뉴가 수정 되었습니다.] ");
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("[메뉴 수정이 실패했습니다.");
 			}
 			save(fileName2, list);
 		}
@@ -272,44 +265,6 @@ public class Server {
 				e.printStackTrace();
 			}
 			save(fileName2, list);
-		}
-
-		// 관리자 : 매출 확인
-		private void CheckIncome() throws IOException {
-			while (true) {
-				int menu = ois.readInt(); // 클라이언트가 보낸 매출 요청
-
-				if (menu == 5) { // "뒤로 가기" 선택 시 종료
-					System.out.println("[이전 메뉴로 돌아갑니다.]");
-					return;
-				}
-
-				int totalIncome = 0;
-
-				switch (menu) {
-				case 1:
-					totalIncome = getDayIncome();
-					break;
-				case 2:
-					totalIncome = getWeekIncome();
-					break;
-				case 3:
-					totalIncome = getMonthIncome();
-					break;
-				case 4:
-					totalIncome = getYearIncome();
-					break;
-				default:
-					System.out.println("[잘못된 입력입니다.]");
-					oos.writeInt(-1); // 잘못된 입력 시 클라이언트에 -1 전송
-					oos.flush();
-					continue;
-				}
-
-				// 정상적인 매출 데이터를 클라이언트에 전송
-				oos.writeInt(totalIncome);
-				oos.flush();
-			}
 		}
 
 		private void deleteUser() {
@@ -367,6 +322,47 @@ public class Server {
 			save(fileName, user);
 		}
 
+		// 관리자 : 매출 확인
+		private void CheckIncome() throws IOException {
+			while (true) {
+				int menu = ois.readInt(); // 클라이언트가 보낸 매출 요청
+
+				if (menu == 6) { // "뒤로 가기" 선택 시 종료
+					System.out.println("[이전 메뉴로 돌아갑니다.]");
+					return;
+				}
+
+				int totalIncome = 0;
+
+				switch (menu) {
+				case 1:
+					totalIncome = getDayIncome();// 일
+					break;
+				case 2:
+					totalIncome = getWeekIncome();// 주
+					break;
+				case 3:
+					totalIncome = getMonthIncome();// 월
+					break;
+				case 4:
+					totalIncome = getYearIncome();// 년
+					break;
+				case 5:
+					totalIncome = getTotalIncome(); // 총 매출 계산
+					break;
+				default:
+					System.out.println("[잘못된 입력입니다.]");
+					oos.writeInt(-1); // 잘못된 입력 시 클라이언트에 -1 전송
+					oos.flush();
+					continue;
+				}
+
+				// 정상적인 매출 데이터를 클라이언트에 전송
+				oos.writeInt(totalIncome);
+				oos.flush();
+			}
+		}
+
 		private int getDayIncome() {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String today = sdf.format(new Date());
@@ -421,6 +417,45 @@ public class Server {
 				}
 			}
 			return total;
+		}
+
+		// 총 매출 계산
+		private int getTotalIncome() {
+			int total = 0;
+			for (Income income : amount) {
+				total += income.getAmount();
+			}
+			return total;
+		}
+
+		private void adminMenu() throws IOException {
+			int menu;
+		
+			do {
+				menu = ois.readInt(); // 클라이언트로부터 메뉴 선택 받기
+				switch (menu) {
+				case 1:
+					insertCafeMenu();
+					break;
+				case 2:
+					editCafeMenu();
+					break;
+				case 3:
+					deleteCafeMenu();
+					break;
+				case 4:
+					deleteUser();
+					break;
+				case 5:
+					CheckIncome();
+					break;
+				case 6:
+					logout();
+					return;
+				default:
+					System.out.println("[잘못된 메뉴 선택입니다.]");
+				}
+			} while (menu != 6);
 		}
 
 		// 사용자 메뉴

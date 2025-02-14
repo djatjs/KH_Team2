@@ -1,7 +1,6 @@
 package cafeProgram;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lombok.Data;
@@ -9,8 +8,8 @@ import lombok.Data;
 @Data
 public class Income implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 7207517658313599146L;
+	
 	private Date date;// 구매 날짜
 	private int money;// 금액
 
@@ -31,4 +30,5 @@ public class Income implements Serializable {
 	public String toString() {
 		return getDateStr() + " / " + money + "원";
 	}
+	
 }
