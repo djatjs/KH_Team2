@@ -1,5 +1,6 @@
 package cafeProgram;
 
+import java.awt.Menu;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -218,42 +219,46 @@ public class Client {
 	private static void editCafeMenu() {
 		// 서버로부터 카페 메뉴 리스트 받아옴
 		try {
-			List<Cafe> list = (List) ois.readObject();
-			// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
-			if (list == null || list.isEmpty()) {
-				System.out.println("[등록된 메뉴가 없음]");
-				return;
-			}
-			// 리스트 출력
-			for (int i = 0; i < list.size(); i++) {
-				System.out.println(i + 1 + ". " + list.get(i));
-			}
-			// 수정할 메뉴의 번호 입력
-			int index = 0;
-			do {
-				System.out.print("수정할 메뉴 입력 : ");
-				index = scan.nextInt() - 1;
-				if (index >= list.size() || index < 0) {
-					System.out.println("리스트에 있는 번호로 입력하시오");
+			
+				List<Cafe> list = (List<Cafe>) ois.readObject();
+				// 리스트가 null상태이거나 담긴 메뉴가 없으면 없다하고 끝
+				if (list == null || list.isEmpty()) {
+					System.out.println("[등록된 메뉴가 없음]");
+					return;
 				}
-			} while (index >= list.size() || index < 0);
-			// 수정할 메뉴 정보 입력
-			Cafe tmp = inputMenuInfo();
-			// 번호와 수정할 메뉴 정보 서버로 전송
-			oos.writeInt(index);
-			oos.writeObject(tmp);
-			oos.flush();
-			// 결과 받아옴
-			boolean res = ois.readBoolean();
-			if (res) {
-				System.out.println("[메뉴 수정 완료]");
-			} else {
-				System.out.println("[메뉴 수정 실패]");
-			}
+				// 리스트 출력
+				for (int i = 0; i < list.size(); i++) {
+					System.out.println(i + 1 + ". " + list.get(i));
+				}
+				// 수정할 메뉴의 번호 입력
+				int index = 0;
+				do {
+					System.out.print("수정할 메뉴 입력 : ");
+					index = scan.nextInt() - 1;
+					if (index >= list.size() || index < 0) {
+						System.out.println("리스트에 있는 번호로 입력하시오");
+					}
+				} while (index >= list.size() || index < 0);
+				// 수정할 메뉴 정보 입력
+				Cafe tmp = inputMenuInfo();
+				// 번호와 수정할 메뉴 정보 서버로 전송
+				oos.writeInt(index);
+				oos.writeObject(tmp);
+				oos.flush();
+				// 결과 받아옴
+				boolean res = ois.readBoolean();
+				
+				Menu.update(tmp)
+				if (res) {
+					System.out.println("[메뉴 수정 완료]");
+				} else {
+					System.out.println("[메뉴 수정 실패]");
+				}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+}
 
 	private static void deleteCafeMenu() {
 		try {

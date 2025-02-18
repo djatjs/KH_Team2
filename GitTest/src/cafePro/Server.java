@@ -1,4 +1,4 @@
-package cafeProgram;
+package cafePro;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,7 +16,7 @@ import java.util.List;
 public class Server {
 	private static int Port = 9999; // 사용할 포트 번호
 	private static List<Cafe> list; // 카페 메뉴 리스트
-	private static List<Customer> user = new ArrayList<Customer>(); // 사용자 정보 저장
+	private static List<Member> user = new ArrayList<Member>(); // 사용자 정보 저장
 	private static List<Income> amount = new ArrayList<Income>(); // 매출 저장
 	private static String fileName = "src/cafeProgram/user.txt";// 회원 데이터 저장
 	private static String fileName2 = "src/cafeProgram/cafe.txt";// 카페 데이터 저장
@@ -25,9 +25,9 @@ public class Server {
 	public static void main(String[] args) {
 
 		// sample data
-		user.add(new Customer("admin", "admin"));
+		user.add(new Member("admin", "admin"));
 
-		user = (List<Customer>) (load(fileName));
+		user = (List<Member>) (load(fileName));
 		list = (List<Cafe>) (load(fileName2));
 		amount = (List<Income>) (load(fileName3));
 
@@ -37,10 +37,10 @@ public class Server {
 
 		// 리스트 null 상태 확인
 		if (user == null || user.isEmpty()) {
-			user = new ArrayList<Customer>();
+			user = new ArrayList<Member>();
 
 			// sample data
-			user.add(new Customer("admin", "admin"));
+			user.add(new Member("admin", "admin"));
 		}
 		if (list == null || list.isEmpty()) {
 			list = new ArrayList<Cafe>();
@@ -131,24 +131,24 @@ public class Server {
 
 		private void login() throws IOException, ClassNotFoundException {
 			// 로그인 정보 받음
-			Customer customer = (Customer) ois.readObject();
+			Member member = (Member) ois.readObject();
 			// 로그인 확인
-			boolean res = user.contains(customer);
+			boolean res = user.contains(member);
 
 			oos.writeBoolean(res);
 			oos.flush();
 
 			if (res) {
-				boolean admin = customer.getId().equals("admin");// 관리자인지 여부 받기
+				boolean admin = member.getId().equals("admin");// 관리자인지 여부 받기
 				oos.writeBoolean(admin);
 				oos.flush();
 
-				System.out.println("[" + customer.getId() + "님이 로그인 하였습니다.]");
+				System.out.println("[" + member.getId() + "님이 로그인 하였습니다.]");
 
 				if (admin) {
 					adminMenu(); // 관리자 메뉴 실행
 				} else {
-					userMenu(customer); // 일반 사용자 메뉴 실행
+					userMenu(member); // 일반 사용자 메뉴 실행
 				}
 			} else {
 				System.out.println("[아이디/비밀번호가 일치하지 않습니다.]");
@@ -160,7 +160,6 @@ public class Server {
 
 			do {
 				menu = ois.readInt(); // 클라이언트로부터 메뉴 선택 받기
-				System.out.println(menu);
 				switch (menu) {
 				case 1:
 					insertCafeMenu();
@@ -184,6 +183,61 @@ public class Server {
 					System.out.println("[잘못된 메뉴 선택입니다.]");
 				}
 			} while (menu != 6);
+		}
+
+		private void deleteUser() {
+			try {
+				// 클라이언트로 리스트 보냄
+				oos.writeObject(user);
+				oos.flush();
+				oos.reset();
+
+				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
+				if (user == null || user.isEmpty()) {
+					return;
+				}
+
+				// 클라이언트로부터 삭제할 회원의 번호를 받음
+				int index = ois.readInt();
+
+				if (index == -1) { // 클라이언트에서 취소 신호를 보낸 경우
+					System.out.println("[회원 삭제를 취소하였습니다.]");
+					return;
+				}
+
+				// 인덱스가 유효한지 확인
+				if (index < 0 || index >= user.size()) {
+					oos.writeBoolean(false);
+					oos.flush();
+					System.out.println("[잘못된 번호입니다.]");
+					return;
+				}
+
+				// 삭제할 회원 정보 가져오기
+				Member targetUser = user.get(index);
+
+				// admin 계정은 삭제 불가능하도록 처리
+				if (targetUser.getId().equals("admin")) {
+					oos.writeBoolean(false); // 삭제 실패 응답
+					oos.flush();
+					System.out.println("[관리자 계정(admin)은 삭제할 수 없습니다.]");
+					return;
+				}
+
+				boolean res;
+				if (user.remove(user.get(index))) {
+					res = true;
+				} else {
+					res = false;
+				}
+				oos.writeBoolean(res);
+				oos.flush();
+				System.out.println("[회원이 삭제 되었습니다.]");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			save(fileName, user);
 		}
 
 		private void insertCafeMenu() {
@@ -215,7 +269,6 @@ public class Server {
 			try {
 				// 클라이언트로 리스트 보냄
 				oos.writeObject(list);
-				System.out.println(list);
 				oos.flush();
 				oos.reset();
 				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
@@ -312,61 +365,6 @@ public class Server {
 			}
 		}
 
-		private void deleteUser() {
-			try {
-				// 클라이언트로 리스트 보냄
-				oos.writeObject(user);
-				oos.flush();
-				oos.reset();
-
-				// 리스트가 null상태이거나 담긴 메뉴가 없으면 서버도 리턴처리
-				if (user == null || user.isEmpty()) {
-					return;
-				}
-
-				// 클라이언트로부터 삭제할 회원의 번호를 받음
-				int index = ois.readInt();
-
-				if (index == -1) { // 클라이언트에서 취소 신호를 보낸 경우
-					System.out.println("[회원 삭제를 취소하였습니다.]");
-					return;
-				}
-
-				// 인덱스가 유효한지 확인
-				if (index < 0 || index >= user.size()) {
-					oos.writeBoolean(false);
-					oos.flush();
-					System.out.println("[잘못된 번호입니다.]");
-					return;
-				}
-
-				// 삭제할 회원 정보 가져오기
-				Customer targetUser = user.get(index);
-
-				// admin 계정은 삭제 불가능하도록 처리
-				if (targetUser.getId().equals("admin")) {
-					oos.writeBoolean(false); // 삭제 실패 응답
-					oos.flush();
-					System.out.println("[관리자 계정(admin)은 삭제할 수 없습니다.]");
-					return;
-				}
-
-				boolean res;
-				if (user.remove(user.get(index))) {
-					res = true;
-				} else {
-					res = false;
-				}
-				oos.writeBoolean(res);
-				oos.flush();
-				System.out.println("[회원이 삭제 되었습니다.]");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-			save(fileName, user);
-		}
-
 		private int getDayIncome() {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String today = sdf.format(new Date());
@@ -374,7 +372,7 @@ public class Server {
 
 			for (Income income : amount) {
 				if (sdf.format(income.getDateStr()).equals(today)) {
-					total += income.getAmount();
+					total += income.getMoney();
 				}
 			}
 			return total;
@@ -389,7 +387,7 @@ public class Server {
 
 			for (Income income : amount) {
 				if (!income.getDateStr().before(startOfWeek)) {
-					total += income.getAmount();
+					total += income.getMoney();
 				}
 			}
 			return total;
@@ -403,7 +401,7 @@ public class Server {
 
 			for (Income income : amount) {
 				if (sdf.format(income.getDateStr()).equals(currentMonth)) {
-					total += income.getAmount();
+					total += income.getMoney();
 				}
 			}
 			return total;
@@ -417,21 +415,21 @@ public class Server {
 
 			for (Income income : amount) {
 				if (sdf.format(income.getDateStr()).equals(currentYear)) {
-					total += income.getAmount();
+					total += income.getMoney();
 				}
 			}
 			return total;
 		}
 
 		// 사용자 메뉴
-		private void userMenu(Customer customer) throws IOException {
+		private void userMenu(Member member) throws IOException {
 			int menu;
 
 			do {
 				menu = ois.readInt();
 				switch (menu) {
 				case 1:
-					order(customer);
+					order(member);
 					break;
 				case 2:
 					System.out.println("[로그아웃을 합니다.]");
@@ -443,7 +441,7 @@ public class Server {
 		}
 
 		// 사용자 : 주문(메뉴 목록 및 주문할 메뉴 번호 받기)
-		private void order(Customer customer) {
+		private void order(Member member) {
 			try {
 				oos.writeObject(list); // 카페 메뉴 리스트 전송
 				oos.flush();
@@ -453,29 +451,29 @@ public class Server {
 				}
 
 				int index = ois.readInt(); // 주문할 메뉴 인덱스 받기
-				buyDrink(customer, index); // 주문 처리
+				buyDrink(member, index); // 주문 처리
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		// 사용자 : 주문(결제)
-		private void buyDrink(Customer customer, int index) {
+		private void buyDrink(Member member, int index) {
 
 			Cafe menu = list.get(index);
 			try {
 				oos.writeObject(menu);
-				oos.writeObject(customer);
+				oos.writeObject(member);
 				oos.flush();
 
 				boolean usedCoupon = false;
 				int price = menu.getPrice();
 
-				if (customer.getCoupon() > 0) {
+				if (member.getCoupon() > 0) {
 					String isUse = ois.readUTF();
 					if (isUse.equalsIgnoreCase("O")) {
 						System.out.println("쿠폰 사용");
-						customer.useCoupon(menu);
+						member.useCoupon(menu);
 						usedCoupon = true;
 						price = 0;
 					}
@@ -485,7 +483,7 @@ public class Server {
 				amount.add(newIncome);
 				save(fileName3, amount);
 
-				customer.addStamp(menu);
+				member.addStamp(menu);
 				oos.writeBoolean(true);
 				oos.flush();
 
@@ -499,18 +497,18 @@ public class Server {
 		// 회원가입
 		private void signUp() throws IOException, ClassNotFoundException {
 			// 회원정보 정보 받음
-			Customer customer = (Customer) ois.readObject();
+			Member member = (Member) ois.readObject();
 
 			boolean res = true;
-			for (Customer tmp : user) {
-				if (tmp.getId().equals(customer.getId())) {
+			for (Member tmp : user) {
+				if (tmp.getId().equals(member.getId())) {
 					res = false;
 					break;
 				}
 			}
 
 			if (res) {
-				user.add(customer);
+				user.add(member);
 				save(fileName, user);
 			}
 
@@ -518,7 +516,7 @@ public class Server {
 			oos.flush();
 
 			if (res) {
-				System.out.println(customer);
+				System.out.println(member);
 				System.out.println("[서버 : 회원가입이 완료되었습니다.]");
 			} else {
 				System.out.println("[서버 : 회원가입이 실패했습니다.]");
