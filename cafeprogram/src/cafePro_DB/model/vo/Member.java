@@ -12,7 +12,7 @@ public class Member implements Serializable{
 	private String nickname;						//M_NICKNAME
 	private UserType userType = UserType.CUSTOMER;  //M_AUTHORITY
 	private DelType delType = DelType.N;			//M_DEL
-	private Date delTime = null;							//M_DEL_TIME
+	private Date delTime = null;					//M_DEL_TIME
 	
 	public enum DelType {
         Y, N
