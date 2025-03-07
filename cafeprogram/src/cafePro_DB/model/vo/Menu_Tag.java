@@ -2,6 +2,9 @@ package cafePro_DB.model.vo;
 
 import java.io.Serializable;
 
+import lombok.Data;
+
+@Data
 public class Menu_Tag implements Serializable{
 
    private static final long serialVersionUID = 1L;
