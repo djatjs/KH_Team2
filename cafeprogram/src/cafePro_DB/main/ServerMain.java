@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import cafePro_DB.service.ServerManager;
+
 public class ServerMain {
 	static ObjectInputStream ois;
 	static ObjectOutputStream oos;
@@ -24,7 +26,8 @@ public class ServerMain {
 				do {
 					menu = ois.readInt();
 					runMenu(menu);
-				} while (menu!=5);
+				} while (menu!=4);
+				System.out.println("[클라이언트 연결 해제]");
 			}
 			
 		} catch (Exception e) {
@@ -32,24 +35,22 @@ public class ServerMain {
 		}
 	}
 	private static void runMenu(int menu) {
+		ServerManager serverManager = new ServerManager(oos,ois);
 		switch (menu) {
 		case 1:
-			System.out.println("1번");
+			serverManager.login();
 			break;
 		case 2:
-			System.out.println("2번");
+			serverManager.register();
 			break;
 		case 3:
-			System.out.println("3번");
+			System.out.println("[비밀번호 찾기]");
 			break;
 		case 4:
-			System.out.println("4번");
-			break;
-		case 5:
-			System.out.println("5번");
+			System.out.println("[종료]");
 			break;
 		default:
-			System.out.println("[종료]");
+			System.out.println("[잘못된 입력]");
 		}
 		
 		
