@@ -23,5 +23,8 @@
 		insert into member(M_ID,M_PW,M_NUMBER,M_NICKNAME) values
 		(#{member.mId},#{member.mPw},#{member.mNumber},#{member.mNickname})
 	</insert>
-  	
+  	<select id="findPw" resultMap="MemberMap">
+		select M_PW from member
+		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
+	</select>
   </mapper>

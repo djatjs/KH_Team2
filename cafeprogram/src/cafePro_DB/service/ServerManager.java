@@ -11,10 +11,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import cafePro_DB.dao.MemberDAO;
+import cafePro_DB.dao.StampDAO;
 import cafePro_DB.model.vo.Member;
 
 public class ServerManager {
 	private MemberDAO memberDao;
+	private StampDAO stampDao;
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
@@ -30,6 +32,7 @@ public class ServerManager {
 			SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 			session = sessionFactory.openSession(true);
 			memberDao = session.getMapper(MemberDAO.class);
+			stampDao = session.getMapper(StampDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -93,6 +96,7 @@ public class ServerManager {
 			//등록된 아이디가 아니라면 회원가입 처리
 			if(res) {
 				memberDao.insertMember(member);
+				//stampDao.insertStamp(member);
 			}
 			//결과 반환
 			oos.writeBoolean(res);
@@ -111,7 +115,23 @@ public class ServerManager {
 		
 	}
 	public void findPw() {
-		
+		try {
+			// 클라이언트로부터 Member 객체를 받음
+			Member member = (Member) ois.readObject();
+			// 비밀번호 조회
+			String pw = memberDao.findPw(member).getMPw();
+			// 클라이언트로 결과 반환
+			oos.writeUTF(pw);
+			oos.flush();
+			if (pw != null) {
+				System.out.println("[서버 : 비밀번호 조회 완료]");
+			} else {
+				System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}	
 	

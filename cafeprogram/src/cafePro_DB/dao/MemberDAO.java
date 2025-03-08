@@ -8,4 +8,6 @@ public interface MemberDAO {
 	Member selectMember(@Param("member")Member member);
 
 	void insertMember(@Param("member")Member member);
+
+	Member findPw(@Param("member")Member member);
 }

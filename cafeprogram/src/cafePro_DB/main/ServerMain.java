@@ -44,7 +44,7 @@ public class ServerMain {
 			serverManager.register();
 			break;
 		case 3:
-			System.out.println("[비밀번호 찾기]");
+			serverManager.findPw();
 			break;
 		case 4:
 			System.out.println("[종료]");
