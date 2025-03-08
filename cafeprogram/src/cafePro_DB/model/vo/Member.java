@@ -19,10 +19,10 @@ public class Member implements Serializable{
 	
 
 	public Member(String id, String pw, String number, String nickname) {
-		this.id = id;
-		this.pw = pw;
-		this.number = number;
-		this.nickname = nickname;
+		this.mId = id;
+		this.mPw = pw;
+		this.mNumber = number;
+		this.mNickname = nickname;
 	}
 	
 	

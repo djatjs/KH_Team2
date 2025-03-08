@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import cafePro_DB.service.MemberManager;
 
 
 public class ClientMain {
@@ -29,22 +30,43 @@ public class ClientMain {
 				menu = scan.nextInt();
 				oos.writeInt(menu);
 				oos.flush();
-			} while (menu!=5);
+				runMenu(menu);
+			} while (menu!=4);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	private static void runMenu(int menu) {
+		MemberManager memberManager = new MemberManager(oos,ois);
+		switch(menu){
+		case 1:
+			memberManager.login();
+			break;
+		case 2:
+			memberManager.register();
+			break;
+		case 3:
+			memberManager.findPw();
+			break;
+		case 4:
+			System.out.println("[프로그램을 종료합니다.]");
+			break;
+		default : 
+			System.out.println("[잘못된 입력]");
+		}
+		
+	}
+
 	private static void printMenu() {
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		System.out.println("일단 서버 클라이언트 형식은 갖추어봄");
-		System.out.println("1. 1번");
-		System.out.println("2. 2번");
-		System.out.println("3. 3번");
-		System.out.println("4. 4번");
-		System.out.println("5. 종료");
+		System.out.println("1. 로그인");
+		System.out.println("2. 회원가입");
+		System.out.println("3. 비밀번호 찾기");
+		System.out.println("4. 종료");
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 		System.out.print("입력 : ");
 	}
+	
 }
