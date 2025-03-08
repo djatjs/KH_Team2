@@ -37,13 +37,44 @@ public class ServerManager {
 	}
 	public void login() {
 		System.out.println("[서버 : 로그인]");
-//		try {
-//			//로그인 정보 받음
-//			Member customer = (Member) ois.readObject();
-//			//로그인 확인
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		try {
+			//로그인 정보 받음
+			Member login = (Member) ois.readObject();
+			//로그인 확인
+			boolean loginRes = true;
+			Member dbMember = memberDao.selectMember(login);
+			if(dbMember == null) {
+				loginRes = false;
+				oos.writeBoolean(loginRes);
+				oos.flush();
+				return;
+			}
+			String type = dbMember.getMAuthority();
+			oos.writeBoolean(loginRes);
+			oos.writeUTF(type);
+			oos.flush();
+			
+			switch(type) {
+			case "ADMIN":
+				runAdminService();
+				break;
+			case "CUSTOMER":
+				runCustomerService(dbMember);
+				break;
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private void runAdminService() {
+		System.out.println("관리자");
+		
+	}
+	private void runCustomerService(Member dbMember) {
+		System.out.println("고객");
+		System.out.println(dbMember);
+		
 	}
 	public void register() {
 		try {
@@ -86,10 +117,10 @@ public class ServerManager {
 	
 	public boolean contains(Member member) {
 		//DB에서 member를 이용하여 사용자 정보를 가져옴 
-		Member dBmember = memberDao.selectMember(member);
+		Member dbMember = memberDao.selectMember(member);
 		
 		//DB에서 가져온 학생 정보가 있으면 중복 
-		if(dBmember != null) {
+		if(dbMember != null) {
 			return true;
 		}
 		return false;

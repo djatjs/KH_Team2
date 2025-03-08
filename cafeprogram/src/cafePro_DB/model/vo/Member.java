@@ -17,12 +17,21 @@ public class Member implements Serializable{
 	private String mDel;							//M_DEL
 	private Date mDelTime;							//M_DEL_TIME
 	
-
+	
+	public Member() {}
+	
+	// 회원가입
 	public Member(String id, String pw, String number, String nickname) {
 		this.mId = id;
 		this.mPw = pw;
 		this.mNumber = number;
 		this.mNickname = nickname;
+	}
+
+	// 로그인
+	public Member(String id, String pw) {
+		this.mId = id;
+		this.mPw = pw;
 	}
 	
 	
