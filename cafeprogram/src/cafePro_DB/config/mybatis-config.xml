@@ -19,5 +19,7 @@
   </environments>
  <mappers>
     <mapper resource="cafePro_DB/dao/MemberMapper.xml"/>
+    <mapper resource="cafePro_DB/dao/StampMapper.xml"/>
+    <mapper resource="cafePro_DB/dao/CouponMapper.xml"/>
 </mappers>
 </configuration>

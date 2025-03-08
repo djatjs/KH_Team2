@@ -1,10 +1,12 @@
 package cafePro_DB.dao;
 
 import org.apache.ibatis.annotations.Param;
-import cafePro_DB.model.vo.Member;
+import cafePro_DB.model.vo.Stamp;
 
 
 public interface StampDAO {
-	//void insertStamp(@Param("member")Member member);
+
+	void insertStamp(String mId);
+	
 
 }

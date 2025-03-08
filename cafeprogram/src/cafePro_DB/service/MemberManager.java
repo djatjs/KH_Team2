@@ -34,10 +34,10 @@ public class MemberManager {
 			String type = ois.readUTF();
 			switch(type) {
 			case "ADMIN":
-				System.out.println("[관리자 메뉴]");
+				runAdmin();
 				break;
 			case "CUSTOMER":
-				System.out.println("[고객 메뉴]");
+				runCustomer();
 				break;
 			}
 			
@@ -119,12 +119,12 @@ public class MemberManager {
 	private Member inputIdPw() {
 		System.out.print("아이디 : ");
         String id = scan.next();
-        System.out.print("비밀번호 : ");
-        String pw = scan.next();
-        System.out.print("전화번호 : ");
-        String number = scan.next();
         System.out.print("닉네임 : ");
         String nickname = scan.next();
+        System.out.print("전화번호 : ");
+        String number = scan.next();
+        System.out.print("비밀번호 : ");
+        String pw = scan.next();
         scan.nextLine();
 		return new Member(id, pw, number, nickname);
 	}

@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import cafePro_DB.dao.CouponDAO;
 import cafePro_DB.dao.MemberDAO;
 import cafePro_DB.dao.StampDAO;
 import cafePro_DB.model.vo.Member;
@@ -17,6 +18,8 @@ import cafePro_DB.model.vo.Member;
 public class ServerManager {
 	private MemberDAO memberDao;
 	private StampDAO stampDao;
+	private CouponDAO couponDao;
+	
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
@@ -33,6 +36,7 @@ public class ServerManager {
 			session = sessionFactory.openSession(true);
 			memberDao = session.getMapper(MemberDAO.class);
 			stampDao = session.getMapper(StampDAO.class);
+			couponDao = session.getMapper(CouponDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -96,7 +100,9 @@ public class ServerManager {
 			//등록된 아이디가 아니라면 회원가입 처리
 			if(res) {
 				memberDao.insertMember(member);
-				//stampDao.insertStamp(member);
+				stampDao.insertStamp(member.getMId());
+				couponDao.insertCoupon(member.getMId());
+				
 			}
 			//결과 반환
 			oos.writeBoolean(res);
