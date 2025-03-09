@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="cafePro_DB.dao.MemberDAO">
+  	
+  	<resultMap type="cafePro_DB.model.vo.Member" id="MemberMap">
+		<id property="mId" column="M_ID"/>
+		<result property="mPw" column="M_PW"/>
+		<result property="mNumber" column="M_NUMBER"/>
+		<result property="mNickname" column="M_NICKNAME"/>
+		<result property="mAuthority" column="M_AUTHORITY"/>
+		<result property="mDel" column="M_DEL"/>
+		<result property="mDelTime" column="M_DEL_TIME"/>
+	</resultMap>
+	
+	<select id="selectMember" resultMap="MemberMap">
+		select * from member
+		where M_ID = #{member.mId} and M_PW = #{member.mPw}
+	</select>
+	
+	<insert id="insertMember">
+		insert into member(M_ID,M_PW,M_NUMBER,M_NICKNAME) values
+		(#{member.mId},#{member.mPw},#{member.mNumber},#{member.mNickname})
+	</insert>
+  	<select id="findPw" resultMap="MemberMap">
+		select M_PW from member
+		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
+	</select>
+  </mapper>
