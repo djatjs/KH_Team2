@@ -1,12 +1,10 @@
 package cafePro_DB.service;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
-import cafePro.program.AdminProgram;
-import cafePro.program.UserProgram;
+import cafePro_DB.main.MenuProgram;
 import cafePro_DB.model.vo.Member;
 
 public class MemberManager {
@@ -32,12 +30,13 @@ public class MemberManager {
 			}
 			
 			String type = ois.readUTF();
+			MenuProgram menuProgram = new MenuProgram(oos, ois);
 			switch(type) {
 			case "ADMIN":
-				runAdmin();
+				menuProgram.runAdmin();
 				break;
 			case "CUSTOMER":
-				runCustomer();
+				menuProgram.runCustomer();
 				break;
 			}
 			

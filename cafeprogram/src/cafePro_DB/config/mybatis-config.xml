@@ -21,5 +21,6 @@
     <mapper resource="cafePro_DB/dao/MemberMapper.xml"/>
     <mapper resource="cafePro_DB/dao/StampMapper.xml"/>
     <mapper resource="cafePro_DB/dao/CouponMapper.xml"/>
+    <mapper resource="cafePro_DB/dao/TagMapper.xml"/>
 </mappers>
 </configuration>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -13,12 +14,15 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import cafePro_DB.dao.CouponDAO;
 import cafePro_DB.dao.MemberDAO;
 import cafePro_DB.dao.StampDAO;
+import cafePro_DB.dao.TagDAO;
 import cafePro_DB.model.vo.Member;
+import cafePro_DB.model.vo.Tag;
 
 public class ServerManager {
 	private MemberDAO memberDao;
 	private StampDAO stampDao;
 	private CouponDAO couponDao;
+	private TagDAO tagDao;
 	
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -37,6 +41,7 @@ public class ServerManager {
 			memberDao = session.getMapper(MemberDAO.class);
 			stampDao = session.getMapper(StampDAO.class);
 			couponDao = session.getMapper(CouponDAO.class);
+			tagDao = session.getMapper(TagDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,10 +79,148 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
+	// 관리자 로그인
 	private void runAdminService() {
-		System.out.println("관리자");
+		try {
+			int menu = 0;
+			do {
+				menu = ois.readInt();
+				runAdminMenu(menu);
+			}while(menu != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private void runAdminMenu(int menu) {
+		switch(menu) {
+		case 1:
+			// 카테고리
+			break;
+		case 2:
+			try {
+				int num = 0;
+				do {
+					num = ois.readInt();
+					runTagMenu(num);
+				}while(num != 4);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case 3:
+			// 메뉴
+			break;
+		case 4:
+			// 매출확인
+			break;
+		case 5:
+			//로그아웃
+			System.out.println("[로그아웃]");
+			break;
+		default:
+			System.out.println("[잘못된 입력]");
+		}
 		
 	}
+	private void runTagMenu(int num) {
+		switch(num) {
+		case 1:
+			insertTag();
+			break;
+		case 2:
+			updateTag();
+			break;
+		case 3:
+			deleteTag();
+			break;
+		case 4:
+			break;
+		default:
+		}
+		
+	}
+	private void insertTag() {
+		try {
+			//받아옴
+			Tag tag = (Tag) ois.readObject();
+			//중복 있는지 확인 : null이여야 등록 가능
+			boolean is_null = true;
+			Tag dbTag = tagDao.selectTag(tag);
+			if(dbTag != null) {
+				is_null = false;
+				oos.writeBoolean(is_null);
+				oos.flush();
+				return;
+			}
+			//등록 후 결과 반환
+			boolean res = tagDao.insertTag(tag);
+			oos.writeBoolean(res);
+			oos.flush();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	private void updateTag() {
+		try {
+			List<Tag> dbTagList = tagDao.selectAllTag();
+			oos.writeObject(dbTagList);
+			oos.flush();
+			// 수정할 태그번호와 새 태그이름 받기
+			int tagNum = ois.readInt();
+			String newTagName = ois.readUTF();
+			// db에 적용하기
+			// 번호에 맞는 Tag 객체 가져오기
+			Tag dbTag = tagDao.selectTagByNum(tagNum);
+			// null 체크 : 객체가 없다면 실패처리
+			if(dbTag == null) {
+				boolean is_null = false;
+				oos.writeBoolean(is_null);
+				oos.flush();
+				return;
+			}
+			// Tag 객체에 newTagName로 업데이트 시키기
+			boolean res = tagDao.updateTag(dbTag, newTagName);
+			oos.writeBoolean(res);
+			oos.flush();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	private void deleteTag() {
+		try {
+			List<Tag> dbTagList = tagDao.selectAllTag();
+			oos.writeObject(dbTagList);
+			oos.flush();
+			// 삭제할 번호
+			int tagNum = ois.readInt();
+			Tag dbTag = tagDao.selectTagByNum(tagNum);
+			// null 체크 : 객체가 없다면 실패처리
+			if(dbTag == null) {
+				boolean is_null = false;
+				oos.writeBoolean(is_null);
+				oos.flush();
+				return;
+			}
+			boolean res = tagDao.deleteTag(dbTag);
+			oos.writeBoolean(res);
+			oos.flush();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
 	private void runCustomerService(Member dbMember) {
 		System.out.println("고객");
 		System.out.println(dbMember);
