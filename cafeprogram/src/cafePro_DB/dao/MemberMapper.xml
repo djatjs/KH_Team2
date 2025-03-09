@@ -25,10 +25,14 @@
 		values
 		(#{member.mId},#{member.mPw},#{member.mNumber},#{member.mNickname})
 	</insert>
-
 	<select id="findPw" resultMap="MemberMap">
 		select M_PW from member
-		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
+		where M_ID
+		= #{member.mId} and M_NUMBER = #{member.mNumber}
 	</select>
-
+	<update id="updateAuthority">
+		update member
+		set m_authority = 'ADMIN'
+		where M_ID = #{mId}
+	</update>
 </mapper>

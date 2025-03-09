@@ -29,7 +29,6 @@ public class AdminProgram {
 				runMenu(menu);
 			} while (menu != 6);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
