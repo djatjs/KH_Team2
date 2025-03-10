@@ -173,13 +173,15 @@ public class ServerManager {
 			// db에 적용하기
 			// 번호에 맞는 Tag 객체 가져오기
 			Tag dbTag = tagDao.selectTagByNum(tagNum);
+			Tag dbTag2 = tagDao.selectTagByName(newTagName);
 			// null 체크 : 객체가 없다면 실패처리
-			if(dbTag == null) {
+			if(dbTag == null || dbTag2 != null) {
 				boolean is_null = false;
 				oos.writeBoolean(is_null);
 				oos.flush();
 				return;
 			}
+			
 			// Tag 객체에 newTagName로 업데이트 시키기
 			boolean res = tagDao.updateTag(dbTag, newTagName);
 			oos.writeBoolean(res);

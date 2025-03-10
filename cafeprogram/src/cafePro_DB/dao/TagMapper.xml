@@ -29,5 +29,8 @@
   		DELETE FROM tag 
   		WHERE TAG_NUM  = #{tag.tagNum}
   	</delete>
+  	<select id="selectTagByName">
+  		select * from tag where TAG_NAME = #{tagName}
+  	</select>
   	
   </mapper>

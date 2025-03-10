@@ -20,6 +20,8 @@ public interface TagDAO {
 
 	boolean deleteTag(@Param("tag")Tag dbTag);
 
+	Tag selectTagByName(@Param("tagName")String tagName);
+
 	
 
 }
