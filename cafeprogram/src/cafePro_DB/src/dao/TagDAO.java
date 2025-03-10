@@ -1,9 +1,9 @@
-package cafePro_DB.dao;
+package dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import cafePro_DB.model.vo.Tag;
+import model.vo.Tag;
 
 
 public interface TagDAO {

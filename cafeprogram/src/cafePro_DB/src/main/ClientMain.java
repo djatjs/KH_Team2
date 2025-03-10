@@ -1,10 +1,10 @@
-package cafePro_DB.main;
+package main;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
-import cafePro_DB.service.MemberManager;
+import service.MemberManager;
 
 
 public class ClientMain {

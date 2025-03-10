@@ -1,4 +1,4 @@
-package cafePro_DB.service;
+package service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +11,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import cafePro_DB.dao.CouponDAO;
-import cafePro_DB.dao.MemberDAO;
-import cafePro_DB.dao.StampDAO;
-import cafePro_DB.dao.TagDAO;
-import cafePro_DB.model.vo.Member;
-import cafePro_DB.model.vo.Tag;
+import dao.CouponDAO;
+import dao.MemberDAO;
+import dao.StampDAO;
+import dao.TagDAO;
+import model.vo.Member;
+import model.vo.Tag;
 
 public class ServerManager {
 	private MemberDAO memberDao;

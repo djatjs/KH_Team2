@@ -1,10 +1,10 @@
-package cafePro_DB.main;
+package main;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
-import cafePro_DB.service.MenuManager;
+import service.MenuManager;
 
 
 public class MenuProgram {

@@ -1,4 +1,4 @@
-package cafePro_DB.dao;
+package dao;
 
 public class IncomeDAO {
 

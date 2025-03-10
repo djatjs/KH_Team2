@@ -1,4 +1,4 @@
-package cafePro_DB.model.vo;
+package model.vo;
 
 import java.io.Serializable;
 

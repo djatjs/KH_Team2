@@ -1,11 +1,11 @@
-package cafePro_DB.service;
+package service;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
-import cafePro_DB.main.MenuProgram;
-import cafePro_DB.model.vo.Member;
+import main.MenuProgram;
+import model.vo.Member;
 
 public class MemberManager {
 	private static Scanner scan = new Scanner(System.in);

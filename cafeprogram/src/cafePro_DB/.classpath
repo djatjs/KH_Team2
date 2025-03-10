@@ -5,17 +5,18 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/JAVA/lombok.jar">
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="D:/dav/jar/lombok.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/JAVA/mybatis-3.5.17.jar">
+	<classpathentry kind="lib" path="D:/dav/jar/mybatis-3.5.17.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/JAVA/mysql-connector-j-9.2.0.jar">
+	<classpathentry kind="lib" path="D:/dav/jar/mysql-connector-j-9.2.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

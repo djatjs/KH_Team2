@@ -1,7 +1,7 @@
-package cafePro_DB.dao;
+package dao;
 
 import org.apache.ibatis.annotations.Param;
-import cafePro_DB.model.vo.Member;
+import model.vo.Member;
 
 
 public interface MemberDAO {

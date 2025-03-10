@@ -1,4 +1,4 @@
-package cafePro_DB.service;
+package service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import cafePro_DB.model.vo.Tag;
+import model.vo.Tag;
 
 public class MenuManager {
 	private static Scanner scan = new Scanner(System.in);
