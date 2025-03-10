@@ -18,9 +18,9 @@
     </environment>
   </environments>
  <mappers>
-    <mapper resource="cafePro_DB/dao/MemberMapper.xml"/>
-    <mapper resource="cafePro_DB/dao/StampMapper.xml"/>
-    <mapper resource="cafePro_DB/dao/CouponMapper.xml"/>
-    <mapper resource="cafePro_DB/dao/TagMapper.xml"/>
+    <mapper resource="dao/MemberMapper.xml"/>
+    <mapper resource="dao/StampMapper.xml"/>
+    <mapper resource="dao/CouponMapper.xml"/>
+    <mapper resource="dao/TagMapper.xml"/>
 </mappers>
 </configuration>

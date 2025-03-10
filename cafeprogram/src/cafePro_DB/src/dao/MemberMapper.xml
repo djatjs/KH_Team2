@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  <mapper namespace="cafePro_DB.dao.MemberDAO">
+  <mapper namespace="dao.MemberDAO">
   	
-  	<resultMap type="cafePro_DB.model.vo.Member" id="MemberMap">
+  	<resultMap type="model.vo.Member" id="MemberMap">
 		<id property="mId" column="M_ID"/>
 		<result property="mPw" column="M_PW"/>
 		<result property="mNumber" column="M_NUMBER"/>

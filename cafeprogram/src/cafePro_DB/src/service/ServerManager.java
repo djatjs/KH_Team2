@@ -31,7 +31,7 @@ public class ServerManager {
 		this.oos = oos;
 		this.ois = ois;
 		
-		String resource = "cafePro_DB/config/mybatis-config.xml";
+		String resource = "config/mybatis-config.xml";
 		InputStream inputStream;
 		SqlSession session;
 		try {
