@@ -209,24 +209,24 @@ public class ServerManager {
 			List<Category> dbCa = categoryDao.seletAllCategory();
 			oos.writeObject(dbCa);
 			oos.flush();
-			
+
 			int can = ois.readInt();
-			
+
 			Category dbCategory = categoryDao.seletCategory(can);
-			
+
 			boolean res = true;
-			
-			if(dbCategory == null) {
+
+			if (dbCategory == null) {
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			
+
 			res = categoryDao.deleteCategory(can);
-			oos.writeInt(can);
+			oos.writeBoolean(res);
 			oos.flush();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -284,15 +284,14 @@ public class ServerManager {
 			oos.writeUTF(pw);
 			oos.flush();
 			if (pw != null) {
-				System.out.println("[서버 : 비밀번호 조회 완료]");
+				System.out.println("[비밀번호 조회를 완료했습니다.]");
 			} else {
-				System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
+				System.out.println("아이디나 전화번호가 일치하지 않습니다.]");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public boolean contains(Member member) {

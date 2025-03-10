@@ -103,11 +103,12 @@ public class AdminManager {
 	}
 
 	public void deleteCategory() {
-		try {
+		try {		
 			// 카테고리 리스트를 읽어옵니다
 			List<Category> dbCa = (List<Category>) ois.readObject();
+			
 			List<Integer> categoryNumList = new ArrayList<>();
-
+			
 			// 카테고리 번호와 이름을 출력합니다
 			for (int i = 0; i < dbCa.size(); i++) {
 				Category category = dbCa.get(i);
@@ -126,10 +127,10 @@ public class AdminManager {
 					break;
 				} else {
 					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-					 // 버퍼 비우기
+					scan.nextLine();
 				}
 			}
-
+			
 			// 삭제할 카테고리 번호를 가져옵니다
 			int caNum = categoryNumList.get(categoryIndex - 1);
 
@@ -141,7 +142,7 @@ public class AdminManager {
 			boolean res = ois.readBoolean();
 
 			// 삭제 결과 출력
-			if (res= true) {
+			if (res == true) {
 				System.out.println("삭제가 완료 되었습니다.");
 			} else {
 				System.out.println("삭제가 실패했습니다.");
