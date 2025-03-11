@@ -33,6 +33,7 @@
 	<update id="updateAuthority">
 		update member
 		set m_authority = 'ADMIN'
-		where M_ID = #{mId}
+		where M_ID =
+		#{mId}
 	</update>
 </mapper>
