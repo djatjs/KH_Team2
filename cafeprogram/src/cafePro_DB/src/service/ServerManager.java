@@ -190,6 +190,7 @@ public class ServerManager {
 			boolean res = true;
 
 			if(dbCategory == null || dbCategory2 != null) {
+				System.out.println("[업데이트 실패 : 이미 등록중인 카테고리.]");
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
@@ -197,14 +198,14 @@ public class ServerManager {
 			}
 			// 현재 카테고리 이름
 		    String currentCaName = dbCategory.getCaName();
-		    // 만약 입력한 이름이 현재 이름과 다르다면 중복 체크
 		    if (!currentCaName.equals(caName)) {
-		    	// 새로운 이름이 이미 존재하는지 확인
 		    	boolean exists = categoryDao.categoryExists(caName);
-		    	
 		    	if (exists) {
-		    		System.out.println("이미 사용 중인 카테고리 이름입니다. 다른 이름을 사용해 주세요.");
-		    		return; // 또는 예외를 던질 수 있습니다.
+		    		System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 이름.]");
+		    		res = false;
+		    		oos.writeBoolean(res);
+					oos.flush();
+		    		return;
 		    	}
 		    }
 
@@ -222,28 +223,24 @@ public class ServerManager {
 		try {
 			oos.writeObject(list);
 			oos.flush();
-		
 			int caNum = ois.readInt();
 
 			Category dbCategory = categoryDao.seletCategoryByNum(caNum);
 
 			boolean res = true;
-
 			if(dbCategory == null) {
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			} 
-			
 			try {
-		        
 		        // 카테고리 삭제
 				res=categoryDao.deleteCategory(caNum);
 		    } catch (PersistenceException e) {
 		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
 		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {
-		            System.out.println("[이 카테고리는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
+		            System.out.println("[해당 카테고리는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
 		            res = false;
 		        } else {
 		            System.out.println("[카테고리 삭제 중 오류가 발생했습니다]");
@@ -337,13 +334,26 @@ public class ServerManager {
 			int tagNum = ois.readInt();
 			Tag dbTag = tagDao.selectTagByNum(tagNum);
 			// null 체크 : 객체가 없다면 실패처리
+			boolean res= true;
 			if(dbTag == null) {
-				boolean is_null = false;
-				oos.writeBoolean(is_null);
+				res = false;
+				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			boolean res = tagDao.deleteTag(dbTag);
+			
+			try {
+		        // 태그 삭제
+				res=tagDao.deleteTag(dbTag);
+		    } catch (PersistenceException e) {
+		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
+		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {
+		            System.out.println("[해당 태그는 다른 메뉴와 연결되어 있어 삭제할 수 없습니다.]");
+		            res = false;
+		        } else {
+		            System.out.println("[태그 삭제 중 오류가 발생했습니다]");
+		        }
+		    }
 			oos.writeBoolean(res);
 			oos.flush();
 		}catch (Exception e) {
