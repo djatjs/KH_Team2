@@ -6,15 +6,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import dao.CategoryDAO;
 import dao.CouponDAO;
 import dao.MemberDAO;
 import dao.StampDAO;
 import dao.TagDAO;
+import model.vo.Category;
 import model.vo.Member;
 import model.vo.Tag;
 
@@ -23,6 +26,7 @@ public class ServerManager {
 	private StampDAO stampDao;
 	private CouponDAO couponDao;
 	private TagDAO tagDao;
+	private CategoryDAO categoryDao;
 	
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -42,6 +46,7 @@ public class ServerManager {
 			stampDao = session.getMapper(StampDAO.class);
 			couponDao = session.getMapper(CouponDAO.class);
 			tagDao = session.getMapper(TagDAO.class);
+			categoryDao = session.getMapper(CategoryDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -94,7 +99,15 @@ public class ServerManager {
 	private void runAdminMenu(int menu) {
 		switch(menu) {
 		case 1:
-			// 카테고리
+			try {
+				int num = 0;
+				do {
+					num = ois.readInt();
+					runCategoryMenu(num);
+				}while(num != 4);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case 2:
 			try {
@@ -119,6 +132,128 @@ public class ServerManager {
 			break;
 		default:
 			System.out.println("[잘못된 입력]");
+		}
+		
+	}
+	private void runCategoryMenu(int num) {
+		switch(num) {
+		case 1:
+			insertCategory();
+			break;
+		case 2:
+			updateCategory();
+			break;
+		case 3:
+			deleteCategory();
+			break;
+		case 4:
+			break;
+		default:
+		}
+		
+	}
+	private void insertCategory() {
+		try {
+			//받아옴
+			Category category = (Category) ois.readObject();
+			//중복 있는지 확인 : null이여야 등록 가능
+			
+			boolean is_null = true;
+			Category dbCategory = categoryDao.selectCategoryByName(category);
+			if(dbCategory != null) {
+				is_null = false;
+				oos.writeBoolean(is_null);
+				oos.flush();
+				return;
+			}
+			//등록 후 결과 반환
+			boolean res = categoryDao.insertCategory(category);
+			oos.writeBoolean(res);
+			oos.flush();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private void updateCategory() {
+		List<Category> list = categoryDao.seletAllCategory();
+		try {
+			oos.writeObject(list);
+			oos.flush();
+		
+			int caNum = ois.readInt();
+			String caName = ois.readUTF();
+			String caCode = ois.readUTF();
+
+			Category dbCategory = categoryDao.seletCategoryByNum(caNum);
+			Category dbCategory2 = categoryDao.seletCategory(caName, caCode);
+			boolean res = true;
+
+			if(dbCategory == null || dbCategory2 != null) {
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			}
+			// 현재 카테고리 이름
+		    String currentCaName = dbCategory.getCaName();
+		    // 만약 입력한 이름이 현재 이름과 다르다면 중복 체크
+		    if (!currentCaName.equals(caName)) {
+		    	// 새로운 이름이 이미 존재하는지 확인
+		    	boolean exists = categoryDao.categoryExists(caName);
+		    	
+		    	if (exists) {
+		    		System.out.println("이미 사용 중인 카테고리 이름입니다. 다른 이름을 사용해 주세요.");
+		    		return; // 또는 예외를 던질 수 있습니다.
+		    	}
+		    }
+
+			res= categoryDao.updateCategory(caNum, caName, caCode);
+			oos.writeBoolean(res);
+			oos.flush();
+
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+		
+	}
+	private void deleteCategory() {
+		List<Category> list = categoryDao.seletAllCategory();
+		try {
+			oos.writeObject(list);
+			oos.flush();
+		
+			int caNum = ois.readInt();
+
+			Category dbCategory = categoryDao.seletCategoryByNum(caNum);
+
+			boolean res = true;
+
+			if(dbCategory == null) {
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			} 
+			
+			try {
+		        
+		        // 카테고리 삭제
+				res=categoryDao.deleteCategory(caNum);
+		    } catch (PersistenceException e) {
+		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
+		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {
+		            System.out.println("[이 카테고리는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
+		            res = false;
+		        } else {
+		            System.out.println("[카테고리 삭제 중 오류가 발생했습니다]");
+		        }
+		    }
+			oos.writeBoolean(res);
+			oos.flush();
+
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
 		}
 		
 	}

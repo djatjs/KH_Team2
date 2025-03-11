@@ -22,5 +22,6 @@
     <mapper resource="dao/StampMapper.xml"/>
     <mapper resource="dao/CouponMapper.xml"/>
     <mapper resource="dao/TagMapper.xml"/>
+    <mapper resource="dao/CategoryMapper.xml"/>
 </mappers>
 </configuration>

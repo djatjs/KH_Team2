@@ -54,7 +54,7 @@ public class MenuProgram {
 			menuManager.tag();
 			break;
 		case 3:
-			menuManager.menu();
+			menuManager.drink();
 			break;
 		case 4:
 			menuManager.income();
