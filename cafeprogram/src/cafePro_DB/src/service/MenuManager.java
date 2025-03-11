@@ -368,6 +368,16 @@ public class MenuManager {
 		System.out.println("[매출 확인]");
 		
 	}
+
+	public void viewMenuList() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void viewHistory() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

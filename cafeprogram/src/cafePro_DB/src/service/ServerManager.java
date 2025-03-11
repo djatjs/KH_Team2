@@ -405,11 +405,84 @@ public class ServerManager {
 	
 	
 	
-	
-	private void runCustomerService(Member dbMember) {
-		System.out.println("고객");
-		System.out.println(dbMember);
+	// 고객 로그인
+	private void runCustomerService(Member member) {
+		try {
+			int menu = 0;
+			do {
+				menu = ois.readInt();
+				// 회원탈퇴를 위한 추가 코드
+				if(menu == 4) {
+					boolean res = withdrawMembership(member);
+					if(res) {
+						menu = 5;
+					}
+				}
+				runCustomerMenu(menu, member);
+			}while(menu != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+	}
+	private void runCustomerMenu(int menu, Member member) {
+		switch(menu) {
+		case 1:
+			System.out.println("[1. 메뉴 조회]");
+//			try {
+//				int num = 0;
+//				do {
+//					num = ois.readInt();
+//					runCategoryMenu(num);
+//				}while(num != 4);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+			break;
+		case 2:
+			System.out.println("[2. 주문 내역 조회]");
+			break;
+		case 3:
+			System.out.println("[3. 회원 정보 수정]");
+			break;
+		case 4:
+			break;
+		case 5:
+			//로그아웃
+			System.out.println("[로그아웃]");
+			break;
+		default:
+			System.out.println("[잘못된 입력]");
+		}
+		
+	}
+	private boolean withdrawMembership(Member member) {
+		boolean res3=false;
+		try {
+			// 클라이언트로부터 신호받음
+			String answer = ois.readUTF();
+			if(answer.equals("N")) {
+				return false;
+			}
+			//
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+			boolean res1 = false;
+			boolean res2 = false;
+			res3 = false;
+			if(member.getMId().equals(id) && member.getMPw().equals(pw)) {
+				res1 = stampDao.deleteMember(id);
+				res2 = couponDao.deleteMember(id);
+				res3 = memberDao.deleteMember(member);				
+			}
+			oos.writeBoolean(res3);
+			oos.flush();
+			return res3;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res3;
 	}
 	public void register() {
 		try {

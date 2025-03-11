@@ -7,5 +7,9 @@
 	<insert id="insertStamp">
         INSERT INTO stamp (ST_M_ID, ST_COUNT) VALUES (#{memberId}, 0)
     </insert>
+    <delete id="deleteMember">
+    	delete from stamp
+    	where ST_M_ID = #{id}
+    </delete>
   	
   </mapper>

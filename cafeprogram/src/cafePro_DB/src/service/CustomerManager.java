@@ -1,22 +1,25 @@
 package service;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
-import main.MenuProgram;
+import main.CustomerProgram;
+import main.AdminProgram;
 import model.vo.Member;
 
-public class MemberManager {
+public class CustomerManager {
 	private static Scanner scan = new Scanner(System.in);
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
-	public MemberManager(ObjectOutputStream oos, ObjectInputStream ois) {
+	public CustomerManager(ObjectOutputStream oos, ObjectInputStream ois) {
 		this.oos = oos;
 		this.ois = ois;
 	}
-	public void login() {
+	public String login() {
+		String type="실패";
 		try {
 			Member login = inputToLogin();
 			oos.writeObject(login);
@@ -25,29 +28,15 @@ public class MemberManager {
 			//로그인 결과
 			boolean loginRes = ois.readBoolean();
 			if(!loginRes) {
-				System.out.println("[로그인 실패 : 아이디 또는 비밀번호 오류]");
-				return;
+				return type;
 			}
-			
-			String type = ois.readUTF();
-			MenuProgram menuProgram = new MenuProgram(oos, ois);
-			switch(type) {
-			case "ADMIN":
-				menuProgram.runAdmin();
-				break;
-			case "CUSTOMER":
-				menuProgram.runCustomer();
-				break;
-			}
-			
-			
-			
-			
+			 type = ois.readUTF();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		return type;
 	}
+	
 	public void register() {
 		try {
 			Member signUp = inputIdPw();
@@ -126,5 +115,52 @@ public class MemberManager {
         String pw = scan.next();
         scan.nextLine();
 		return new Member(id, pw, number, nickname);
+	}
+	
+	
+	public boolean withdrawMembership() {
+		boolean res=false;
+		try {
+			// 여유생기면 비밀번호 입력해서 본인 맞는지 재인증 단계 거쳐보기
+			System.out.print("아이디 : ");
+	        String id = scan.next();
+	        System.out.print("비밀번호 : ");
+	        String pw = scan.next();
+	        scan.nextLine();
+			// 탈퇴할지 말지 여부를 다시 한 번 물어봄
+			String answer ="";
+			while(true) {
+				System.out.print("정말 탈퇴하시겠습니까? (Y or N)");
+				answer = scan.next();
+				scan.nextLine();
+				if(answer.equals("Y") || answer.equals("N")) {break;}
+				else {System.out.println("잘못된 입력");}
+			}
+			oos.writeUTF(answer);
+			oos.flush();
+			if(answer.equals("N")) {
+				return false;
+			}
+			// 탈퇴한다는 신호를 서버로 보냄
+			oos.writeUTF(id);
+			oos.writeUTF(pw);
+			oos.flush();
+			// 서버의 db작업 성공 유무 받음
+			res = ois.readBoolean();
+			
+			
+			if(res) {
+				System.out.println("[삭제 성공! 로그인 화면으로 돌아갑니다.]");
+			}else {
+				System.out.println("[삭제 실패 : 잘못된 아이디 또는 비밀번호 입력]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	public void updateInfo() {
+		System.out.println("회원 정보 수정 구현 예정");
+		
 	}
 }

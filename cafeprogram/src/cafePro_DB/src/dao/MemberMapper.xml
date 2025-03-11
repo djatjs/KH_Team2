@@ -27,4 +27,8 @@
 		select M_PW from member
 		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
 	</select>
+	<delete id ="deleteMember">
+		delete from member
+		where M_ID = #{member.mId} and M_PW = #{member.mPw}
+	</delete>
   </mapper>

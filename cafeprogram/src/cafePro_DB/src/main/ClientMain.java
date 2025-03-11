@@ -4,7 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
-import service.MemberManager;
+import service.CustomerManager;
 
 
 public class ClientMain {
@@ -39,10 +39,23 @@ public class ClientMain {
 	}
 
 	private static void runMenu(int menu) {
-		MemberManager memberManager = new MemberManager(oos,ois);
+		CustomerManager memberManager = new CustomerManager(oos,ois);
 		switch(menu){
 		case 1:
-			memberManager.login();
+			String type = memberManager.login();
+			switch(type) {
+			case "ADMIN":
+				AdminProgram AdminProgram = new AdminProgram(oos, ois);
+				AdminProgram.runAdmin();
+				break;
+			case "CUSTOMER":
+				CustomerProgram customerProgram = new CustomerProgram(oos, ois);
+				customerProgram.runCustomer();
+				break;
+			default:
+				System.out.println("[로그인 실패 : 아이디 또는 비밀번호 오류]");
+			}
+			
 			break;
 		case 2:
 			memberManager.register();

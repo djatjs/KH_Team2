@@ -7,6 +7,8 @@ import model.vo.Coupon;
 public interface CouponDAO {
 
 	void insertCoupon(String mId);
+
+	boolean deleteMember(String id);
 	
 
 }
