@@ -121,7 +121,15 @@ public class ServerManager {
 			}
 			break;
 		case 3:
-			// 메뉴
+			try {
+				int num = 0;
+				do {
+					num = ois.readInt();
+					runDrinkMenu(num);
+				}while(num != 4);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case 4:
 			// 매출확인
@@ -133,6 +141,35 @@ public class ServerManager {
 		default:
 			System.out.println("[잘못된 입력]");
 		}
+		
+	}
+	private void runDrinkMenu(int num) {
+		switch(num) {
+		case 1:
+			insertDrink();
+			break;
+		case 2:
+			updateDrink();
+			break;
+		case 3:
+			deleteDrink();
+			break;
+		case 4:
+			break;
+		default:
+		}
+		
+	}
+	private void insertDrink() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void updateDrink() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void deleteDrink() {
+		// TODO Auto-generated method stub
 		
 	}
 	private void runCategoryMenu(int num) {
@@ -254,6 +291,7 @@ public class ServerManager {
 		}
 		
 	}
+	
 	private void runTagMenu(int num) {
 		switch(num) {
 		case 1:

@@ -308,8 +308,59 @@ public class MenuManager {
 	}
 
 	public void drink() {
-		System.out.println("[메뉴]");
-		printMenu();
+		try {
+			int num =0;
+			do {				
+				printMenu();
+				num = scan.nextInt();
+				scan.nextLine();
+				oos.writeInt(num);
+				oos.flush();
+				runDrinkMenu(num); 
+			}while(num!=4);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void runDrinkMenu(int num) {
+		switch(num) {
+		case 1:
+			insertDrink();
+			break;
+		case 2:
+			updateDrink();
+			break;
+		case 3:
+			deleteDrink();
+			break;
+		case 4:
+			break;
+		default:
+		}
+	}
+
+	private void insertDrink() {
+		// 카테고리 받아오기(어떤 카테고리에 메뉴를 등록할지 결정)
+		
+		// 원하는 카테고리의 번호 입력 (num)
+		
+		// 메뉴 등록을 위한 정보 입력
+		// 메뉴코드(ex_COF001),  num, 메뉴명, 가격, 설명, 썸네일, 온도("H"or"I")
+		
+		// 서버로 보낸 후 db작업 결과 받기
+		
+		// 결과에 따라 성공 유무 콘솔로 출력
+		
+	}
+
+	private void updateDrink() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void deleteDrink() {
+		// TODO Auto-generated method stub
 		
 	}
 
