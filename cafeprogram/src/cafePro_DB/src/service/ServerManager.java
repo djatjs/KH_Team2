@@ -18,10 +18,12 @@ import dao.CategoryDAO;
 import dao.CouponDAO;
 import dao.IncomeDAO;
 import dao.MemberDAO;
+import dao.MenuDAO;
 import dao.StampDAO;
 import dao.TagDAO;
 import model.vo.Category;
 import model.vo.Member;
+import model.vo.Menu;
 import model.vo.Tag;
 
 public class ServerManager {
@@ -31,14 +33,16 @@ public class ServerManager {
 	private TagDAO tagDao;
 	private CategoryDAO categoryDao;
 	private IncomeDAO incomeDao;
-
+	private MenuDAO menuDao;
+	
+	
 	private ObjectOutputStream oos;
-	private ObjectInputStream ois;
-
+    private ObjectInputStream ois;
+    
 	public ServerManager(ObjectOutputStream oos, ObjectInputStream ois) {
 		this.oos = oos;
 		this.ois = ois;
-
+		
 		String resource = "config/mybatis-config.xml";
 		InputStream inputStream;
 		SqlSession session;
@@ -51,6 +55,7 @@ public class ServerManager {
 			couponDao = session.getMapper(CouponDAO.class);
 			tagDao = session.getMapper(TagDAO.class);
 			categoryDao = session.getMapper(CategoryDAO.class);
+			menuDao = session.getMapper(MenuDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,8 +137,8 @@ public class ServerManager {
 				int num = 0;
 				do {
 					num = ois.readInt();
-					runDrinkMenu(num);
-				} while (num != 4);
+					runMenuMenu(num);
+				}while(num != 4);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -148,43 +153,139 @@ public class ServerManager {
 		default:
 			System.out.println("[잘못된 입력]");
 		}
-
+		
 	}
-
-	private void runDrinkMenu(int num) {
-		switch (num) {
+	private void runMenuMenu(int num) {
+		switch(num) {
 		case 1:
-			insertDrink();
+			insertMenu();
 			break;
 		case 2:
-			updateDrink();
+			updateMenu();
 			break;
 		case 3:
-			deleteDrink();
+			deleteMenu();
 			break;
 		case 4:
 			break;
 		default:
 		}
-
+		
 	}
-
-	private void insertDrink() {
-		// TODO Auto-generated method stub
-
+	private void insertMenu() {
+		try {
+			//카테고리 리스트를 보냄?
+			List<Category> list = categoryDao.seletAllCategory();
+			oos.writeObject(list);
+			//받아옴
+			int caNum = ois.readInt();
+			Menu menu = (Menu) ois.readObject();
+			//중복 있는지 확인 : null이여야 등록 가능
+			boolean is_null = true;
+			Menu dbMenu = menuDao.selectMenuByName(menu);
+			if(dbMenu != null) {
+				is_null = false;
+				oos.writeBoolean(is_null);
+				oos.flush();
+				return;
+			}
+			//등록 후 결과 반환
+			boolean res = menuDao.insertMenu(menu);
+			oos.writeBoolean(res);
+			oos.flush();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
+	private void updateMenu() {
+		List<Menu> list = menuDao.selectAllMenu();
+		try {
+			oos.writeObject(list);
+			oos.flush();
+			
+			String meCode = ois.readUTF();
+			String meName = ois.readUTF();
+			int mePrice = ois.readInt();
 
-	private void updateDrink() {
-		// TODO Auto-generated method stub
+			Menu dbmenu = menuDao.selectMenuByCode(meCode);
+			Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
+			boolean res = true;
 
+			if(dbmenu == null || dbmenu2 != null) {
+				System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			}
+			// 현재 메뉴 이름
+		    String currentMeName = dbmenu.getMeName();
+		    if (!currentMeName.equals(meName)) {
+		    	boolean exists = menuDao.menuExists(meName);
+		    	if (exists) {
+		    		System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 이름.]");
+		    		res = false;
+		    		oos.writeBoolean(res);
+					oos.flush();
+		    		return;
+		    	}
+		    }
+		    
+
+			res= menuDao.updateMenu(meCode, meName, mePrice);
+			oos.writeBoolean(res);
+			oos.flush();
+
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+		
 	}
+	private void deleteMenu() {
+		List<Menu> list = menuDao.selectAllMenu();
+		try {
+			oos.writeObject(list);
+			oos.flush();
+		
+			String meCode = ois.readUTF();
+			
+			Menu dbMenu = menuDao.selectMenuByCode(meCode);
+			
+			boolean res = true;
 
-	private void deleteDrink() {
-		// TODO Auto-generated method stub
+			if(dbMenu == null) {
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			}
+			try {
+		        // 카테고리 삭제
+				res=menuDao.deleteMenu(meCode);
+		    } catch (PersistenceException e) {
+		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
+		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {
+		            System.out.println("[해당 메뉴는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
+		            res = false;
+		        } else {
+		            System.out.println("[카테고리 삭제 중 오류가 발생했습니다]");
+		        }
+		    }
+			
+			
+			oos.writeBoolean(res);
+			oos.flush();
 
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+		
 	}
-
 	private void runCategoryMenu(int num) {
+		switch(num) {
+		private void runCategoryMenu(int num) {
 		switch (num) {
 		case 1:
 			insertCategory();
@@ -199,7 +300,6 @@ public class ServerManager {
 			break;
 		default:
 		}
-
 	}
 
 	private void insertCategory() {
@@ -231,7 +331,6 @@ public class ServerManager {
 		try {
 			oos.writeObject(list);
 			oos.flush();
-
 			int caNum = ois.readInt();
 			String caName = ois.readUTF();
 			String caCode = ois.readUTF();
@@ -368,7 +467,6 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
-
 			// Tag 객체에 newTagName로 업데이트 시키기
 			boolean res = tagDao.updateTag(dbTag, newTagName);
 			oos.writeBoolean(res);

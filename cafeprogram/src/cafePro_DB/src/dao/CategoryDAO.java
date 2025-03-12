@@ -29,6 +29,11 @@ public interface CategoryDAO {
 
 	boolean categoryExists(String caName);
 
+<<<<<<< HEAD
+=======
+	boolean updateMenu(String meCode, String meName, int mePrice);
+
+>>>>>>> origin/ojh
 	
 
 

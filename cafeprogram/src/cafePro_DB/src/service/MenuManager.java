@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import dao.CategoryDAO;
 import model.vo.Category;
+import model.vo.Menu;
 import model.vo.Tag;
 
 public class MenuManager {
@@ -52,7 +54,6 @@ public class MenuManager {
 			break;
 		default:
 		}
-
 	}
 
 	private void insertCategory() {
@@ -180,7 +181,6 @@ public class MenuManager {
 			e.printStackTrace();
 		}
 	}
-
 	private void printMenu() {
 		System.out.println("------------------");
 		System.out.println("1. 등록");
@@ -309,10 +309,10 @@ public class MenuManager {
 		}
 	}
 
-	public void drink() {
+	public void menu() {
 		try {
-			int num = 0;
-			do {
+			int num =0;
+			do {				
 				printMenu();
 				num = scan.nextInt();
 				scan.nextLine();
@@ -472,4 +472,183 @@ public class MenuManager {
 
 	}
 
+	private void runMenuMenu(int num) {
+		switch(num) {
+		case 1:
+			insertMenu();
+			break;
+		case 2:
+			updateMenu();
+			break;
+		case 3:
+			deleteMenu();
+			break;
+		case 4:
+			break;
+		default:
+		}
+		
+	}
+
+	private void insertMenu() {
+		 try {
+			 	showCategories();
+			 	System.out.print("카테고리를 선택하세요 : ");
+			 	int caNum = scan.nextInt();
+			 	
+			 	
+			 	System.out.print("메뉴코드 : ");
+	        	String meCode = scan.next();
+	        	System.out.print("코드넘버 : ");
+	        	int meCaNum = scan.nextInt();
+			 	System.out.print("메뉴명 : ");
+	        	String meName = scan.next();
+	        	System.out.print("메뉴 가격 : ");
+	        	int mePrice = scan.nextInt();
+	        	System.out.print("따뜻한/차가운(H/I) : ");
+	        	String meHotIce = scan.next();
+	        	System.out.print("메뉴 설명 : ");
+	        	String meContent = scan.next();
+	        	
+	        	scan.nextLine();
+	        	
+	        	Menu menu = new Menu(meCode, meCaNum, meName, mePrice, meHotIce, meContent);
+	        	
+	        	oos.writeInt(caNum);
+				oos.writeObject(menu);
+				oos.flush();
+				
+				boolean res = ois.readBoolean();
+				if(res) {
+					System.out.println("[메뉴 등록 완료]");
+				}
+				else {
+					System.out.println("[메뉴 등록 실패]");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+	}
+
+	private void showCategories() {
+		List<Category> list;
+		try {
+			List<Category> dbCategory = (List<Category>) ois.readObject();
+			List<Integer> categoryNumList = new ArrayList<>();
+			System.out.println("=== 현재 등록된 카테고리 목록 ===");
+			if(dbCategory.isEmpty()) {
+				System.out.println("등록된 카테고리가 없습니다.");
+				return;
+			}
+			for (int i = 0; i < dbCategory.size(); i++) {
+				Category category = dbCategory.get(i);
+				categoryNumList.add(category.getCaNum()); // 실제 DB tagNum 저장
+				System.out.println((i + 1) + ". " + category.getCaCode()); // 1부터 출력
+			}
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void updateMenu() {
+		try {
+			List<Menu> dblist = (List<Menu>) ois.readObject();
+			List<String> menuNumList = new ArrayList<>();
+			for (int i = 0; i < dblist.size(); i++) {
+				Menu menu = dblist.get(i);
+				menuNumList.add(menu.getMeCode()); // 실제 DB meCode 저장
+				System.out.println((i + 1) + ". " + menu.getMeName()); // 1부터 출력
+			}
+			System.out.println("------------------");
+			int menuIndex = 0;
+			while (true) {
+				System.out.print("수정할 메뉴의 번호를 입력하세요 : ");
+				menuIndex = scan.nextInt();
+				if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+					break;
+				} else {
+					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					scan.nextLine();
+				}
+			}	
+			
+			System.out.print("수정할 메뉴 코드 : ");
+			String meCode = scan.next();
+			System.out.print("수정할 메뉴 이름 : ");
+			String meName = scan.next();
+			System.out.print("수정할 메뉴 가격 : ");
+			int mePrice= scan.nextInt();
+			scan.nextLine();
+			System.out.println("------------------");
+			meCode = menuNumList.get(menuIndex - 1);
+			
+			oos.writeUTF(meCode);
+			oos.writeUTF(meName);
+			oos.writeInt(mePrice);
+			oos.flush();
+			
+			boolean res = ois.readBoolean();
+			if(res == true) {
+				System.out.println("수정이 완료 되었습니다.");
+			}else {
+				System.out.println("수정이 실패했습니다.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void deleteMenu() {
+		try {
+			List<Menu> dbMenu = (List<Menu>) ois.readObject();
+			List<String> menuNumList = new ArrayList<>();
+			for (int i = 0; i < dbMenu.size(); i++) {
+				Menu menu = dbMenu.get(i);
+				menuNumList.add(menu.getMeCode()); // 실제 DB meCode 저장
+				System.out.println((i + 1) + ". " + menu.getMeName()); // 1부터 출력
+			}
+			System.out.println("------------------");
+			int menuIndex = 0;
+			while (true) {
+				System.out.print("삭제할 메뉴의 번호를 입력하세요 : ");
+				menuIndex = scan.nextInt();
+				if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+					break;
+				} else {
+					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					scan.nextLine();
+				}
+			}	
+			
+			scan.nextLine();
+			System.out.println("------------------");
+			String meCode = menuNumList.get(menuIndex - 1);
+			oos.writeUTF(meCode);
+			oos.flush();
+			
+			boolean res = ois.readBoolean();
+			if(res == true) {
+				System.out.println("삭제가 완료 되었습니다.");
+			}else {
+				System.out.println("삭제가 실패했습니다.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void income() {
+		System.out.println("[매출 확인]");
+		
+	}
+	
+	
 }
