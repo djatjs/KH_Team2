@@ -159,8 +159,22 @@ public class CustomerManager {
 		}
 		return res;
 	}
+	
 	public void updateInfo() {
-		System.out.println("회원 정보 수정 구현 예정");
-		
+		boolean upRes=false;
+		try {
+			System.out.print("아이디 : ");
+			String id = scan.next();
+			System.out.print("비밀번호 : ");
+			String pw = scan.next();
+			scan.nextLine();
+			
+			oos.writeUTF(id);
+			oos.writeUTF(pw);
+			oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

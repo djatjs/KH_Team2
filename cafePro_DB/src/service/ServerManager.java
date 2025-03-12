@@ -150,7 +150,7 @@ public class ServerManager {
 				do {
 					num = ois.readInt();
 					runIncomeMenu(num);
-				}while(num != 4);
+				}while(num != 5);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -553,13 +553,15 @@ public class ServerManager {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String today = sdf.format(new Date());
 			int total = 0;
-
+			
+		
 			int dbIncome = incomeDao.incomeDay();
 			oos.writeInt(dbIncome);
-			oos.flush();
+			oos.flush();		
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 			return;
 		}
 
@@ -670,8 +672,20 @@ public class ServerManager {
 	}
 
 	private void updateInfo() {
+		boolean res3 = false;
+		try {
 		
+		
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+			boolean res1 = false;
+			boolean res2 = false;
+	
+	
+	} catch (Exception e) {
+		e.printStackTrace();
 	}
+}
 
 	private boolean withdrawMembership(Member member) {
 		boolean res3 = false;
