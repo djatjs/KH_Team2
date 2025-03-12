@@ -18,17 +18,11 @@
     </environment>
   </environments>
  <mappers>
-<<<<<<< Updated upstream:cafeprogram/bin/cafePro_DB/config/mybatis-config.xml
-    <mapper resource="cafePro_DB/dao/MemberMapper.xml"/>
-    <mapper resource="cafePro_DB/dao/StampMapper.xml"/>
-    <mapper resource="cafePro_DB/dao/CouponMapper.xml"/>
-=======
     <mapper resource="dao/MemberMapper.xml"/>
     <mapper resource="dao/StampMapper.xml"/>
     <mapper resource="dao/CouponMapper.xml"/>
     <mapper resource="dao/TagMapper.xml"/>
     <mapper resource="dao/CategoryMapper.xml"/>
     <mapper resource="dao/MenuMapper.xml"/>
->>>>>>> Stashed changes:cafeprogram/src/cafePro_DB/src/config/mybatis-config.xml
 </mappers>
 </configuration>
