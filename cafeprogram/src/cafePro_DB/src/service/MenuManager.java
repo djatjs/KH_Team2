@@ -365,8 +365,88 @@ public class MenuManager {
 	}
 
 	public void income() {
-		System.out.println("[매출 확인]");
+		try {
+			int num = 0;
+			do {
+				printIncomeMenu();
+				num = scan.nextInt();
+				scan.nextLine();
+				oos.writeInt(num);
+				oos.flush();
+				runIncomeMenu(num);
+			} while (num != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+	}
+
+	private void printIncomeMenu() {
+		System.out.println("------------------");
+		System.out.println("1. 일별 매출");
+		System.out.println("2. 월별 매출");
+		System.out.println("3. 연별 매출");
+		System.out.println("4. 총 매출");
+		System.out.println("5. 뒤로 가기");
+		System.out.println("------------------");
+		System.out.print("메뉴 선택 : ");
+	}
+
+	private void runIncomeMenu(int num) {
+		switch (num) {
+		case 1:
+			DayIncome(); // 일
+			break;
+		case 2:
+			MonthIncome(); // 월
+			break;
+		case 3:
+			YearIncome(); // 년
+			break;
+		case 4:
+			TotalIncome(); // 총매출
+			break;
+		case 5:
+			break;
+		default:
+		}
+	}
+
+
+	private void DayIncome() {
+		try {
+			int dbIncome = ois.readInt();
+			System.out.println("금일 매출 : " + dbIncome + "원");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void MonthIncome() {
+		try {
+			int dbIncome = ois.readInt();
+			System.out.println("이번달 매출 : " + dbIncome + "원");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void YearIncome() {
+		try {
+			int dbIncome = ois.readInt();
+			System.out.println("올해 매출 : " + dbIncome + "원");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void TotalIncome() {
+		try {
+			int dbIncome = ois.readInt();
+			System.out.println("총매출 : " + dbIncome + "원");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void viewMenuList() {
