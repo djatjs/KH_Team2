@@ -26,8 +26,8 @@
     </select>
 
 	<insert id="insertMenu">
-        INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT) 
-        VALUES (#{menu.meCode}, #{menu.meCaNum}, #{menu.meName}, #{menu.mePrice}, #{menu.meContent})
+        INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_HOT_ICE, ME_CONTENT) 
+        VALUES (#{menu.meCode}, #{menu.meCaNum}, #{menu.meName}, #{menu.mePrice}, #{menu.meHotIce}, #{menu.meContent})
     </insert>
     <update id="updateMenu">
     	update menu
