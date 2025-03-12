@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -132,7 +134,15 @@ public class ServerManager {
 			}
 			break;
 		case 4:
-			// 매출확인
+			try {
+				int num = 0;
+				do {
+					num = ois.readInt();
+					runIncomeMenu(num);
+				}while(num != 5);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case 5:
 			//로그아웃
@@ -141,6 +151,53 @@ public class ServerManager {
 		default:
 			System.out.println("[잘못된 입력]");
 		}
+		
+	}
+	private void runIncomeMenu(int num) {
+		switch (num) {
+		case 1:
+			DayIncome();
+			break;
+		case 2:
+			MonthIncome();
+			break;
+		case 3:
+			YearIncome();
+			break;
+		case 4:
+			TotalIncome();
+			break;
+		case 5:
+			break;
+		default:
+		}
+	}
+	private void DayIncome() {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String today = sdf.format(new Date());
+			int total = 0;
+
+			int dbIncome = incomeDao.incomeDay();
+			oos.writeInt(dbIncome);
+			oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
+	}
+	private void MonthIncome() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void YearIncome() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void TotalIncome() {
+		// TODO Auto-generated method stub
 		
 	}
 	private void runDrinkMenu(int num) {
@@ -473,7 +530,8 @@ public class ServerManager {
 			if(member.getMId().equals(id) && member.getMPw().equals(pw)) {
 				res1 = stampDao.deleteMember(id);
 				res2 = couponDao.deleteMember(id);
-				res3 = memberDao.deleteMember(member);				
+				// 훗날에 제품 구매를 한 후에도 삭제가 안된다면 M_DEL 설정으로 바꾸기
+				res3 = memberDao.deleteMember(member);			
 			}
 			oos.writeBoolean(res3);
 			oos.flush();

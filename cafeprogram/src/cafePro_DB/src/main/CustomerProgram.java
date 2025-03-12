@@ -67,7 +67,7 @@ public class CustomerProgram {
 			memberManager.updateInfo();
 			break;
 		case 4:
-			memberManager.withdrawMembership();
+			System.out.println("[탈퇴를 취소합니다]");
 			break;
 		case 5:
 			System.out.println("[로그아웃 합니다]");

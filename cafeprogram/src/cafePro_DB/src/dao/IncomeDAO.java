@@ -1,5 +1,13 @@
 package dao;
 
-public class IncomeDAO {
+public interface IncomeDAO {
+
+	int incomeDay();
+
+	int incomeMonth();
+
+	int incomeYear();
+
+	int totalIncome();
 
 }
