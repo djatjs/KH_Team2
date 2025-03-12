@@ -56,6 +56,7 @@ public class ServerManager {
 			tagDao = session.getMapper(TagDAO.class);
 			categoryDao = session.getMapper(CategoryDAO.class);
 			menuDao = session.getMapper(MenuDAO.class);
+			incomeDao = session.getMapper(IncomeDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
