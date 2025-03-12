@@ -150,7 +150,7 @@ public class ServerManager {
 				do {
 					num = ois.readInt();
 					runIncomeMenu(num);
-				}while(num != 4);
+				}while(num != 5);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
