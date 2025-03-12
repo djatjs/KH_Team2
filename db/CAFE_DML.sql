@@ -39,6 +39,3 @@ where CO_M_ID = "user0001";
 UPDATE cart
 SET CT_STATUS = "Y"
 WHERE CT_NUM = 1;
-
-INSERT INTO income(IN_MONEY) VALUES
-();

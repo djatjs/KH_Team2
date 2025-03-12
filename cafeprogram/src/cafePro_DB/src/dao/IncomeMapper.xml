@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.IncomeDAO">
+
+	<resultMap type="model.vo.Income" id="IncomeMap">
+		<id property="inNum" column="IN_NUM" />
+		<result property="inDate" column="IN_DATE" />
+		<result property="inMoney" column="IN_MONEY" />
+	</resultMap>
+
+	<select id="incomeDay" resultMap="IncomeMap">
+		select sum(in_money) from income
+		where IN_DATE between date_sub(now(), interval 1 day) and now();
+	</select>
+	<select id="incomeMonth">
+		select sum(in_money) from income
+		where IN_DATE between date_sub(now(), interval 1 month) and now();
+	</select>
+	<select id="incomeYear">
+		select sum(in_money) from income
+		where IN_DATE between date_sub(now(), interval 1 year) and now();
+	</select>
+	<select id="totalIncome">
+		select sum(in_money) from income;
+	</select>
+</mapper>
