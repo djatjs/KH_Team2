@@ -657,7 +657,7 @@ public class ServerManager {
 			System.out.println("[2. 주문 내역 조회]");
 			break;
 		case 3:
-			updateInfo();
+			updateInfo(member);
 			break;
 		case 4:
 			break;
@@ -671,21 +671,45 @@ public class ServerManager {
 
 	}
 
-	private void updateInfo() {
-		boolean res3 = false;
+	private void updateInfo(Member member) {
 		try {
-		
-		
 			String id = ois.readUTF();
 			String pw = ois.readUTF();
-			boolean res1 = false;
-			boolean res2 = false;
-	
-	
-	} catch (Exception e) {
-		e.printStackTrace();
+			
+			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
+				oos.writeBoolean(true);
+				oos.flush();
+				
+				String newNic = ois.readUTF();
+				String newNum = ois.readUTF();
+				String newPw = ois.readUTF();
+				
+				member.setMNickname(newNic);
+	            member.setMNumber(newNum);
+	            member.setMPw(newPw);
+	            
+	            boolean upRes = memberDao.updateMember(member);
+	            
+	            // 업데이트 결과를 클라이언트에 전송
+	            if (upRes) {
+	                oos.writeBoolean(true); // 성공
+	                oos.flush();
+	                System.out.println("회원정보 수정 완료");
+	            } else {
+	                oos.writeBoolean(false); // 실패
+	                oos.flush();
+	                System.out.println("회원정보 수정 실패");
+	            }
+	        } else {
+	            oos.writeBoolean(false); // 로그인 실패
+	            oos.flush();
+	            System.out.println("로그인 실패");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
-}
 
 	private boolean withdrawMembership(Member member) {
 		boolean res3 = false;

@@ -161,7 +161,6 @@ public class CustomerManager {
 	}
 	
 	public void updateInfo() {
-		boolean upRes=false;
 		try {
 			System.out.print("아이디 : ");
 			String id = scan.next();
@@ -173,8 +172,40 @@ public class CustomerManager {
 			oos.writeUTF(pw);
 			oos.flush();
 
-		} catch (Exception e) {
+			boolean upRes = ois.readBoolean();
+			
+			if(!upRes) {
+				System.out.println("[로그인 실패]");
+				return;
+			}
+			System.out.println("------------------");
+			System.out.print("새로운 닉네임 : ");
+			String newNic = scan.nextLine();
+			System.out.print("새로운 전화번호 : ");
+			String newNum = scan.nextLine();
+			System.out.print("새로운 비밀번호 : ");
+            String newPw = scan.nextLine();
+            System.out.print("비밀번호 확인 : ");
+			String checkPw = scan.nextLine();
+			System.out.println("------------------");
+
+			if(!newPw.equals(checkPw)) {
+				System.out.println("[비밀번호가 일치하지 않습니다.]");
+				return;
+			}		
+			oos.writeUTF(newNic);	//서버에 보내기
+	        oos.writeUTF(newNum);
+	        oos.writeUTF(newPw);
+	        oos.flush();
+	        
+	        boolean upRes2 = ois.readBoolean();
+	        if (upRes2) {
+                System.out.println("회원 정보가 성공적으로 수정되었습니다.");
+            } else {
+                System.out.println("회원 정보 수정에 실패했습니다.");
+            }
+		}catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 }
