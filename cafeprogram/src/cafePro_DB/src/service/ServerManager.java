@@ -193,28 +193,28 @@ public class ServerManager {
 		
 	}
 	private void updateMenu() {
-		List<Menu> list = menuDao.seletAllMenu();
+		List<Menu> list = menuDao.selectAllMenu();
 		try {
 			oos.writeObject(list);
 			oos.flush();
-		
+			
 			String meCode = ois.readUTF();
 			String meName = ois.readUTF();
 			int mePrice = ois.readInt();
 
-			Menu dbMenu = menuDao.seletMenuByCode(meCode);
-			Menu dbMenu2 = menuDao.seletMenu(meName, mePrice);
+			Menu dbmenu = menuDao.selectMenuByCode(meCode);
+			Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
 			boolean res = true;
 
-			if(dbMenu == null || dbMenu2 != null) {
+			if(dbmenu == null || dbmenu2 != null) {
 				System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			// 현재 카테고리 이름
-		    String currentMeName = dbMenu.getMeName();
+			// 현재 메뉴 이름
+		    String currentMeName = dbmenu.getMeName();
 		    if (!currentMeName.equals(meName)) {
 		    	boolean exists = menuDao.menuExists(meName);
 		    	if (exists) {
@@ -225,6 +225,7 @@ public class ServerManager {
 		    		return;
 		    	}
 		    }
+		    
 
 			res= menuDao.updateMenu(meCode, meName, mePrice);
 			oos.writeBoolean(res);
@@ -236,14 +237,14 @@ public class ServerManager {
 		
 	}
 	private void deleteMenu() {
-		List<Menu> list = menuDao.seletAllMenu();
+		List<Menu> list = menuDao.selectAllMenu();
 		try {
 			oos.writeObject(list);
 			oos.flush();
 		
 			String meCode = ois.readUTF();
 			
-			Menu dbMenu = menuDao.seletMenuByCode(meCode);
+			Menu dbMenu = menuDao.selectMenuByCode(meCode);
 			
 			boolean res = true;
 
@@ -255,7 +256,7 @@ public class ServerManager {
 			}
 			try {
 		        // 카테고리 삭제
-				res=menuDao.deleteCategory(meCode);
+				res=menuDao.deleteMenu(meCode);
 		    } catch (PersistenceException e) {
 		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
 		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {

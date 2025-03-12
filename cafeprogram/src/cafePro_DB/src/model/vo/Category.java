@@ -19,6 +19,6 @@ public class Category implements Serializable{
 
 	@Override
 	public String toString() {
-		return caName + " : " + caCode;
+		return caNum + caName + " : " + caCode;
 	}
 }

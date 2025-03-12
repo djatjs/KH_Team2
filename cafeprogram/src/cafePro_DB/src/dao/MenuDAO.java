@@ -15,9 +15,9 @@ public interface MenuDAO {
 
 	boolean insertMenu(@Param("menu")Menu menu);
 
-	List<Menu> seletAllMenu();
+	List<Menu> selectAllMenu();
 
-	Menu seletMenuByCode(String meCode);
+	Menu selectMenuByCode(String meCode);
 
 	boolean updateMenu(
 			@Param("meCode")int meCode,
@@ -31,7 +31,7 @@ public interface MenuDAO {
 			
 	boolean deleteMenu(int meCode);
 
-	Menu seletMenu(
+	Menu selectMenu(
 			@Param("meName")String meName, 
 			@Param("mePrice")int mePrice);
 
@@ -39,7 +39,7 @@ public interface MenuDAO {
 
 	boolean updateMenu(@Param("meCode")String meCode, @Param("meName")String meName, @Param("mePrice")int mePrice);
 
-	boolean deleteCategory(String meCode);
+	boolean deleteMenu(String meCode);
 
 	
 

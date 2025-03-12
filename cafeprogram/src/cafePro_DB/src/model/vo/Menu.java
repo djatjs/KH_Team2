@@ -16,14 +16,17 @@ public class Menu implements Serializable{
 	private String meAble = "Y";	//ME_ABLE
 	private String meHotIce = "H";		//ME_HOT_ICE
 	
+
 	
-	public Menu(String meCode, int meCaNum, String meName, int mePrice, String meContent) {
-		
+
+	public Menu(String meCode, int meCaNum, String meName, int mePrice, String meHotIce, String meContent) {
+		super();
 		this.meCode = meCode;
 		this.meCaNum = meCaNum;
 		this.meName = meName;
 		this.mePrice = mePrice;
 		this.meContent = meContent;
+		this.meHotIce = meHotIce;
 	}
 	
 	

@@ -18,27 +18,29 @@
 	<select id="selectMenuByCode">
 		select * from menu where ME_CODE = #{menu.meCode}
 	</select>
+	<select id="selectMenuByName">
+		select * from menu where ME_NAME = #{menu.meName}
+	</select>
+    <select id="selectAllMenu">
+    	select * from menu
+    </select>
+
 	<insert id="insertMenu">
         INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT) 
         VALUES (#{menu.meCode}, #{menu.meCaNum}, #{menu.meName}, #{menu.mePrice}, #{menu.meContent})
     </insert>
-    <select id="seletAllMenu">
-    	select * from menu
-    </select>
-    <select id="seletMenuByCode">
-    	select * from menu where ME_CODE = #{meCode}
-    </select>
     <update id="updateMenu">
     	update menu
     	set ME_NAME = #{meName},
     		ME_PRICE = #{mePrice}
     	where ME_CODE = #{meCode}
+    	
     </update>
     <delete id="deleteMenu">
     	delete from menu
     	where ME_CODE = #{meCode}
     </delete>
-    <select id="seletMenu">
+    <select id="selectMenu">
     	select * from menu 
     	where ME_NAME = #{meName} and ME_PRICE = #{mePrice}
     </select>
