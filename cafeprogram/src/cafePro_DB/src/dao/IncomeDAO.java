@@ -1,5 +1,7 @@
 package dao;
 
+import model.vo.Income;
+
 public interface IncomeDAO {
 
 	int incomeDay();

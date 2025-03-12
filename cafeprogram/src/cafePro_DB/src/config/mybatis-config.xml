@@ -23,5 +23,6 @@
     <mapper resource="dao/CouponMapper.xml"/>
     <mapper resource="dao/TagMapper.xml"/>
     <mapper resource="dao/CategoryMapper.xml"/>
+    <mapper resource="dao/IncomeMapper.xml"/>
 </mappers>
 </configuration>
