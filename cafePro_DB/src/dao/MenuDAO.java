@@ -11,7 +11,7 @@ import model.vo.Tag;
 
 public interface MenuDAO {
 	
-	Menu selectMenuByName(@Param("menu")Menu menu);
+	Menu selectMenuByNameAndHI(@Param("menu")Menu menu);
 
 	boolean insertMenu(@Param("menu")Menu menu);
 
@@ -35,9 +35,14 @@ public interface MenuDAO {
 			@Param("meName")String meName, 
 			@Param("mePrice")int mePrice);
 
-	boolean menuExists(String meName);
+	boolean menuExists(@Param("meName")String meName, @Param("meHotIce")String meHotIce);
 
-	boolean updateMenu(@Param("meCode")String meCode, @Param("meName")String meName, @Param("mePrice")int mePrice);
+	boolean updateMenu(
+			@Param("meCode")String meCode, 
+			@Param("meName")String meName, 
+			@Param("mePrice")int mePrice,
+			@Param("meContent")String meContent, 
+			@Param("meHotIce")String meHotIce);
 
 	boolean deleteMenu(String meCode);
 

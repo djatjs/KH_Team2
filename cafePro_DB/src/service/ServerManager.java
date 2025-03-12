@@ -144,10 +144,17 @@ public class ServerManager {
 			}
 			break;
 		case 4:
-			// 매출확인
+			try {
+				int num = 0;
+				do {
+					num = ois.readInt();
+					runIncomeMenu(num);
+				}while(num != 4);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case 5:
-			// 로그아웃
 			System.out.println("[로그아웃]");
 			break;
 		default:
@@ -174,7 +181,7 @@ public class ServerManager {
 	}
 	private void insertMenu() {
 		try {
-			//카테고리 리스트를 보냄?
+			//카테고리 리스트를 보냄
 			List<Category> list = categoryDao.seletAllCategory();
 			oos.writeObject(list);
 			//받아옴
@@ -182,7 +189,7 @@ public class ServerManager {
 			Menu menu = (Menu) ois.readObject();
 			//중복 있는지 확인 : null이여야 등록 가능
 			boolean is_null = true;
-			Menu dbMenu = menuDao.selectMenuByName(menu);
+			Menu dbMenu = menuDao.selectMenuByNameAndHI(menu);
 			if(dbMenu != null) {
 				is_null = false;
 				oos.writeBoolean(is_null);
@@ -208,24 +215,30 @@ public class ServerManager {
 			String meCode = ois.readUTF();
 			String meName = ois.readUTF();
 			int mePrice = ois.readInt();
-
+			String meContent = ois.readUTF();
+			String meHotIce = ois.readUTF();
+			
+			// db안에 메뉴코드가 meCode인 제품 가져오기 
 			Menu dbmenu = menuDao.selectMenuByCode(meCode);
-			Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
+			//Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
 			boolean res = true;
-
-			if(dbmenu == null || dbmenu2 != null) {
-				System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
+			
+			// db안에 메뉴코드가 meCode인 제품가 있는지
+			// || dbmenu2 != null
+			if(dbmenu == null ) {
+				System.out.println("[업데이트 실패 : 존재하지 않는 메뉴.]");
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			// 현재 메뉴 이름
+			// 현재 메뉴 이름과 입력받은 메뉴 이름이 다를 때 
+			// 입력받은 메뉴 이름과 H or I 상태가 이미 등록되있는게 있을경우 
 		    String currentMeName = dbmenu.getMeName();
 		    if (!currentMeName.equals(meName)) {
-		    	boolean exists = menuDao.menuExists(meName);
+		    	boolean exists = menuDao.menuExists(meName, meHotIce);
 		    	if (exists) {
-		    		System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 이름.]");
+		    		System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
 		    		res = false;
 		    		oos.writeBoolean(res);
 					oos.flush();
@@ -234,7 +247,7 @@ public class ServerManager {
 		    }
 		    
 
-			res= menuDao.updateMenu(meCode, meName, mePrice);
+			res= menuDao.updateMenu(meCode, meName, mePrice, meContent, meHotIce);
 			oos.writeBoolean(res);
 			oos.flush();
 

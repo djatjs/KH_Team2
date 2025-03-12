@@ -16,10 +16,10 @@
 	</resultMap>
 
 	<select id="selectMenuByCode">
-		select * from menu where ME_CODE = #{menu.meCode}
+		select * from menu where ME_CODE = #{meCode}
 	</select>
-	<select id="selectMenuByName">
-		select * from menu where ME_NAME = #{menu.meName}
+	<select id="selectMenuByNameAndHI">
+		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
 	</select>
     <select id="selectAllMenu">
     	select * from menu
@@ -32,7 +32,9 @@
     <update id="updateMenu">
     	update menu
     	set ME_NAME = #{meName},
-    		ME_PRICE = #{mePrice}
+    		ME_PRICE = #{mePrice},
+    		ME_CONTENT = #{meContent},
+    		ME_HOT_ICE = #{meHotIce}
     	where ME_CODE = #{meCode}
     	
     </update>
@@ -45,7 +47,8 @@
     	where ME_NAME = #{meName} and ME_PRICE = #{mePrice}
     </select>
     <select id="menuExists" resultType="boolean">
-    	select count(*) > 0 from menu where ME_NAME = #{meName}
+    	select count(*) > 0 from menu 
+    	where ME_NAME = #{meName} and ME_HOT_ICE = #{meHotIce}
 	</select>
     
 </mapper>
