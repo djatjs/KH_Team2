@@ -10,19 +10,25 @@
 		<result property="inMoney" column="IN_MONEY" />
 	</resultMap>
 
-	<select id="incomeDay" resultMap="IncomeMap">
-		select sum(in_money) from income
-		where IN_DATE between date_sub(now(), interval 1 day) and now();
+	<select id="incomeDay" resultType="int">
+		select sum(IN_MONEY)
+		from income
+		where IN_DATE between date(NOW()) 
+		and DATE_ADD(DATE(NOW()), interval 1 day);
 	</select>
-	<select id="incomeMonth">
-		select sum(in_money) from income
-		where IN_DATE between date_sub(now(), interval 1 month) and now();
+	<select id="incomeMonth" resultType="int">
+		select sum(IN_MONEY)
+		from income
+		where IN_DATE between date_format(now(), '%Y-%m-01')
+		and last_day(now());
 	</select>
-	<select id="incomeYear">
-		select sum(in_money) from income
-		where IN_DATE between date_sub(now(), interval 1 year) and now();
+	<select id="incomeYear"  resultType="int">
+		select sum(IN_MONEY)
+		from income
+		where IN_DATE between date_format(now(), '%Y-01-01')
+		and last_day(now());
 	</select>
-	<select id="totalIncome">
+	<select id="totalIncome"  resultType="int">
 		select sum(in_money) from income;
 	</select>
 </mapper>

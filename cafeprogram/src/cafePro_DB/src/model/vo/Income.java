@@ -17,11 +17,5 @@ public class Income implements Serializable {
 		this.inDate = inDate;
 		this.inMoney = inMoney;
 	}
-
-	@Override
-	public String toString() {
-		return "Income [inDate=" + inDate + ", inMoney=" + inMoney + "]";
-	}
-
 	
 }

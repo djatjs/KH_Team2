@@ -7,5 +7,9 @@
 	<insert id="insertCoupon">
         INSERT INTO coupon (CO_M_ID, CO_COUNT) VALUES (#{memberId}, 0)
     </insert>
+    <delete id="deleteMember">
+    	delete from coupon
+    	where CO_M_ID = #{id}
+    </delete>
   	
   </mapper>

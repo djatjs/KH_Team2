@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import model.vo.Category;
-import model.vo.Income;
 import model.vo.Tag;
 
 public class MenuManager {
@@ -344,6 +343,16 @@ public class MenuManager {
 	}
 
 	private void insertDrink() {
+		// 카테고리 받아오기(어떤 카테고리에 메뉴를 등록할지 결정)
+
+		// 원하는 카테고리의 번호 입력 (num)
+
+		// 메뉴 등록을 위한 정보 입력
+		// 메뉴코드(ex_COF001), num, 메뉴명, 가격, 설명, 썸네일, 온도("H"or"I")
+
+		// 서버로 보낸 후 db작업 결과 받기
+
+		// 결과에 따라 성공 유무 콘솔로 출력
 
 	}
 
@@ -387,16 +396,16 @@ public class MenuManager {
 	private void runIncomeMenu(int num) {
 		switch (num) {
 		case 1:
-			DayIncome(); //일
+			DayIncome(); // 일
 			break;
 		case 2:
-			MonthIncome(); //월
+			MonthIncome(); // 월
 			break;
 		case 3:
-			YearIncome(); //년 
+			YearIncome(); // 년
 			break;
 		case 4:
-			TotalIncome(); //총매출
+			TotalIncome(); // 총매출
 			break;
 		case 5:
 			break;
@@ -408,27 +417,59 @@ public class MenuManager {
 	private void DayIncome() {
 		try {
 			int dbIncome = ois.readInt();
-			
-			System.out.println(dbIncome);
-			
+
+			System.out.println("금일 매출 : " + dbIncome + "원");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	private void MonthIncome() {
-		// TODO Auto-generated method stub
-		
+		try {
+			int dbIncome = ois.readInt();
+
+			System.out.println("이번달 매출 : " + dbIncome + "원");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private void YearIncome() {
-		// TODO Auto-generated method stub
-		
+		try {
+			int dbIncome = ois.readInt();
+
+			System.out.println("올해 매출 : " + dbIncome + "원");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private void TotalIncome() {
+		try {
+			int dbIncome = ois.readInt();
+
+			System.out.println("총매출 : " + dbIncome + "원");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void viewMenuList() {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	public void viewHistory() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

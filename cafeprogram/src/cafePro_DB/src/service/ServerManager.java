@@ -21,7 +21,6 @@ import dao.MemberDAO;
 import dao.StampDAO;
 import dao.TagDAO;
 import model.vo.Category;
-import model.vo.Income;
 import model.vo.Member;
 import model.vo.Tag;
 
@@ -52,8 +51,7 @@ public class ServerManager {
 			couponDao = session.getMapper(CouponDAO.class);
 			tagDao = session.getMapper(TagDAO.class);
 			categoryDao = session.getMapper(CategoryDAO.class);
-			incomeDao= session.getMapper(IncomeDAO.class);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -141,15 +139,7 @@ public class ServerManager {
 			}
 			break;
 		case 4:
-			try {
-				int num = 0;
-				do {
-					num = ois.readInt();
-					runIncomeMenu(num);
-				} while (num != 5);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// 매출확인
 			break;
 		case 5:
 			// 로그아웃
@@ -158,6 +148,39 @@ public class ServerManager {
 		default:
 			System.out.println("[잘못된 입력]");
 		}
+
+	}
+
+	private void runDrinkMenu(int num) {
+		switch (num) {
+		case 1:
+			insertDrink();
+			break;
+		case 2:
+			updateDrink();
+			break;
+		case 3:
+			deleteDrink();
+			break;
+		case 4:
+			break;
+		default:
+		}
+
+	}
+
+	private void insertDrink() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void updateDrink() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void deleteDrink() {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -393,38 +416,6 @@ public class ServerManager {
 
 	}
 
-	private void runDrinkMenu(int num) {
-		switch (num) {
-		case 1:
-			insertDrink();
-			break;
-		case 2:
-			updateDrink();
-			break;
-		case 3:
-			deleteDrink();
-			break;
-		case 4:
-			break;
-		default:
-		}
-
-	}
-
-	private void insertDrink() {
-
-	}
-
-	private void updateDrink() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void deleteDrink() {
-		// TODO Auto-generated method stub
-
-	}
-
 	private void runIncomeMenu(int num) {
 		switch (num) {
 		case 1:
@@ -452,9 +443,8 @@ public class ServerManager {
 			String today = sdf.format(new Date());
 			int total = 0;
 
-			Income dbIncome = incomeDao.incomeDay();
-			int getDayincome = dbIncome.getInMoney();
-			oos.writeInt(getDayincome);
+			int dbIncome = incomeDao.incomeDay();
+			oos.writeInt(dbIncome);
 			oos.flush();
 
 		} catch (Exception e) {
@@ -465,24 +455,140 @@ public class ServerManager {
 	}
 
 	private void MonthIncome() {
-		// TODO Auto-generated method stub
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String today = sdf.format(new Date());
+			int total = 0;
+
+			int dbIncome = incomeDao.incomeMonth();
+			oos.writeInt(dbIncome);
+			oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
 	}
 
 	private void YearIncome() {
-		// TODO Auto-generated method stub
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String today = sdf.format(new Date());
+			int total = 0;
+
+			int dbIncome = incomeDao.incomeYear();
+			oos.writeInt(dbIncome);
+			oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
 	}
 
 	private void TotalIncome() {
-		// TODO Auto-generated method stub
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String today = sdf.format(new Date());
+			int total = 0;
+
+			int dbIncome = incomeDao.totalIncome();
+			oos.writeInt(dbIncome);
+			oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
 	}
 
-	private void runCustomerService(Member dbMember) {
-		System.out.println("고객");
-		System.out.println(dbMember);
+	// 고객 로그인
+	private void runCustomerService(Member member) {
+		try {
+			int menu = 0;
+			do {
+				menu = ois.readInt();
+				// 회원탈퇴를 위한 추가 코드
+				if (menu == 4) {
+					boolean res = withdrawMembership(member);
+					if (res) {
+						menu = 5;
+					}
+				}
+				runCustomerMenu(menu, member);
+			} while (menu != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+	}
+
+	private void runCustomerMenu(int menu, Member member) {
+		switch (menu) {
+		case 1:
+			System.out.println("[1. 메뉴 조회]");
+//			try {
+//				int num = 0;
+//				do {
+//					num = ois.readInt();
+//					runCategoryMenu(num);
+//				}while(num != 4);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+			break;
+		case 2:
+			System.out.println("[2. 주문 내역 조회]");
+			break;
+		case 3:
+			updateInfo();
+			break;
+		case 4:
+			break;
+		case 5:
+			// 로그아웃
+			System.out.println("[로그아웃]");
+			break;
+		default:
+			System.out.println("[잘못된 입력]");
+		}
+
+	}
+
+	private void updateInfo() {
+		
+	}
+
+	private boolean withdrawMembership(Member member) {
+		boolean res3 = false;
+		try {
+			// 클라이언트로부터 신호받음
+			String answer = ois.readUTF();
+			if (answer.equals("N")) {
+				return false;
+			}
+			//
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+			boolean res1 = false;
+			boolean res2 = false;
+			res3 = false;
+			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
+				res1 = stampDao.deleteMember(id);
+				res2 = couponDao.deleteMember(id);
+				res3 = memberDao.deleteMember(member);
+			}
+			oos.writeBoolean(res3);
+			oos.flush();
+			return res3;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res3;
 	}
 
 	public void register() {

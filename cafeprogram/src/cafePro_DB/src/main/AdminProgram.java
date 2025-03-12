@@ -7,12 +7,12 @@ import java.util.Scanner;
 import service.MenuManager;
 
 
-public class MenuProgram {
+public class AdminProgram {
 	private Scanner scan = new Scanner(System.in);
 	private static ObjectOutputStream oos;
 	private static ObjectInputStream ois;
 	
-	public MenuProgram(ObjectOutputStream oos, ObjectInputStream ois) {
+	public AdminProgram(ObjectOutputStream oos, ObjectInputStream ois) {
 		this.oos = oos;
 		this.ois = ois;
 	}
@@ -21,7 +21,7 @@ public class MenuProgram {
 		try {
 			int menu=0;
 			do {
-				printMenu();
+				printAdminMenu();
 				menu = scan.nextInt(); 
 				scan.nextLine();
 				oos.writeInt(menu);
@@ -34,7 +34,7 @@ public class MenuProgram {
 		} 
 		
 	}
-	private static void printMenu() {
+	private static void printAdminMenu() {
 		System.out.println("------------------");
 	    System.out.println("1. 카테고리");
 	    System.out.println("2. 태그");
@@ -67,8 +67,4 @@ public class MenuProgram {
 		}
 	}
 
-	public void runCustomer() {
-		// TODO Auto-generated method stub
-		
-	}
 }

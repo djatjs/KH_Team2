@@ -10,4 +10,6 @@ public interface MemberDAO {
 	void insertMember(@Param("member")Member member);
 
 	Member findPw(@Param("member")Member member);
+
+	boolean deleteMember(@Param("member")Member member);
 }
