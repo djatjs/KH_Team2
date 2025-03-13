@@ -610,9 +610,8 @@ public class MenuManager {
 
 	public void viewMenuList() {
 		try {
-			printListMenu();
 			int num = 0;
-			do {				
+			do {			
 				printCartMenu();
 				num = scan.nextInt();
 				scan.nextLine();
@@ -653,7 +652,7 @@ public class MenuManager {
 	private void runCart(int num) {
 		switch (num) {
 		case 1:
-			System.out.println("구매"); //담기
+			insterCart(); //담기
 			break;
 		case 2:
 			System.out.println("수정"); //수정
@@ -670,10 +669,14 @@ public class MenuManager {
 		}
 
 	}
-
+	
+	private void insterCart() {
+		printListMenu();
 		
+	}
+
 	private void deleteCart() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
