@@ -12,4 +12,8 @@ public interface MemberDAO {
 	Member findPw(@Param("member")Member member);
 
 	boolean deleteMember(@Param("member")Member member);
+
+	boolean updateMember(@Param("member")Member member);
+
+	
 }
