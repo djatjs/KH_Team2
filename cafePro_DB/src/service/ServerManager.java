@@ -674,18 +674,25 @@ public class ServerManager {
 		
 		switch (menu) {
 		case 1:
-			System.out.println("1. 장바구니 담기");
+			try {
+				int num = 0;
+				do {					
+					num = ois.readInt();
+					insterCart();
+				}while(num != 5);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case 2:
 			System.out.println("2. 장바구니 수정");
 			break;
 		case 3:
 			try {
-				printListMenu();
 				int num = 0;
 				do {					
 					num = ois.readInt();
-					rundeleteCart(num);
+					deleteCart();
 				}while(num != 5);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -709,15 +716,18 @@ public class ServerManager {
 		try {
 			oos.writeObject(list);
 			oos.flush();		
-
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	private void insterCart() {
+		printListMenu();
 		
+	}
 
-
-	private void rundeleteCart(int num) {
+	private void deleteCart() {
 	
 		
 	}
