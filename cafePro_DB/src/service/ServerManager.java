@@ -667,7 +667,7 @@ public class ServerManager {
 	private void runCustomerMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			viewMenuList(menu);
+			viewMenuList(member);
 			break;
 		case 2:
 			viewHistory(member);
@@ -688,36 +688,31 @@ public class ServerManager {
 	}
 
 	
-
-	private void viewMenuList(int menu) {
-	
-		printListMenu();	
+	//고객-1.
+	private void viewMenuList(Member member) {
+		printListMenu();
+		try {
+			int menu = 0;
+			do {
+				menu = ois.readInt();
+				runCartListMenu(menu ,member);
+			} while (menu != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 		
+
+	private void runCartListMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			try {
-				int num = 0;
-				do {					
-					num = ois.readInt();
-					insterCart();
-				}while(num != 5);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			insertCart(member);
 			break;
 		case 2:
 			System.out.println("2. 장바구니 수정");
 			break;
 		case 3:
-			try {
-				int num = 0;
-				do {					
-					num = ois.readInt();
-					deleteCart();
-				}while(num != 5);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			System.out.println("3. 장바구니 삭제");
 			break;
 		case 4:
 			System.out.println("4. 장바구니 구매");
@@ -730,7 +725,17 @@ public class ServerManager {
 		}
 		
 	}
+	//고객-1-1.
+	private void insertCart(Member member) {
+		try {
+			Menu menu = (Menu) ois.readObject();
+			int amount = ois.readInt();
+			System.out.println(menu+ " " +amount);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+	}
 
 	private void printListMenu() {
 		List<Menu> list = menuDao.selectAllMenu();
@@ -743,13 +748,8 @@ public class ServerManager {
 		}
 	}
 
-	private void insterCart() {
-		printListMenu();
-		
-	}
-
 	private void deleteCart() {
-	
+		
 		
 	}
 
