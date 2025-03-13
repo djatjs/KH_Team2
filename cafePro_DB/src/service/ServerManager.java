@@ -14,6 +14,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import dao.CartDAO;
 import dao.CategoryDAO;
 import dao.CouponDAO;
 import dao.IncomeDAO;
@@ -22,6 +23,7 @@ import dao.MenuDAO;
 import dao.OrderDAO;
 import dao.StampDAO;
 import dao.TagDAO;
+import model.vo.Cart;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
@@ -37,6 +39,7 @@ public class ServerManager {
 	private IncomeDAO incomeDao;
 	private MenuDAO menuDao;
 	private OrderDAO orderDao;
+	private CartDAO cartDao;
 	
 	
 	private ObjectOutputStream oos;
@@ -61,6 +64,7 @@ public class ServerManager {
 			menuDao = session.getMapper(MenuDAO.class);
 			incomeDao = session.getMapper(IncomeDAO.class);
 			orderDao = session.getMapper(OrderDAO.class);
+			cartDao = session.getMapper(CartDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -728,9 +732,16 @@ public class ServerManager {
 	}
 
 	private void deleteCart() {
+		List<Cart> cartList = cartDao.viewCart();
+		try {
+			oos.writeObject(cartList);
+			oos.flush();		
 	
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+		
 
 	private void viewHistory(Member member) {
 		try {

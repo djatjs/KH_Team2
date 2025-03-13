@@ -26,5 +26,6 @@
     <mapper resource="dao/IncomeMapper.xml"/>
     <mapper resource="dao/MenuMapper.xml"/>
     <mapper resource="dao/OrderMapper.xml"/>
+    <mapper resource="dao/CartMapper.xml"/>
 </mappers>
 </configuration>

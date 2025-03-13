@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.CartDAO">
+
+	<resultMap type="model.vo.Cart" id="CartMap">
+		<id property="clNum" column="CL_NUM" />
+		<result property="clMeCode" column="CL_ME_CODE" />
+		<result property="clCtNum" column="CL_CT_NUM" />
+		<result property="clAmount" column="CL_AMOUNT" />
+	</resultMap>
+
+	<select id="viewCart">
+		select 
+			ME_NAME,
+			CL_AMOUNT
+		from cart
+		join cart_list on  CL_CT_NUM = CT_NUM 
+		join menu on CL_ME_CODE = ME_CODE
+		where CT_M_ID =  #{mId}
+	</select>
+
+</mapper>
