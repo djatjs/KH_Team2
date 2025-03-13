@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.MenuDAO">
+
+	<resultMap type="model.vo.Menu" id="MenuMap">
+		<id property="meCode" column="ME_CODE"/>
+		<result property="meCaNum" column="ME_CA_NUM"/>
+		<result property="meName" column="ME_NAME"/>
+		<result property="mePrice" column="ME_PRICE"/>
+		<result property="meContent" column="ME_CONTENT"/>
+		<result property="meThumb" column="ME_THUMB"/>
+		<result property="meAble" column="ME_ABLE"/>
+		<result property="meHotIce" column="ME_HOT_ICE"/>
+	</resultMap>
+
+	<select id="selectMenuByCode">
+		select * from menu where ME_CODE = #{meCode}
+	</select>
+	<select id="selectMenuByNameAndHI">
+		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
+	</select>
+    <select id="selectAllMenu">
+    	select * from menu
+    </select>
+
+	<insert id="insertMenu">
+        INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_HOT_ICE, ME_CONTENT) 
+        VALUES (#{menu.meCode}, #{menu.meCaNum}, #{menu.meName}, #{menu.mePrice}, #{menu.meHotIce}, #{menu.meContent})
+    </insert>
+    <update id="updateMenu">
+    	update menu
+    	set ME_NAME = #{meName},
+    		ME_PRICE = #{mePrice},
+    		ME_CONTENT = #{meContent},
+    		ME_HOT_ICE = #{meHotIce}
+    	where ME_CODE = #{meCode}
+    	
+    </update>
+    <delete id="deleteMenu">
+    	delete from menu
+    	where ME_CODE = #{meCode}
+    </delete>
+    <select id="selectMenu">
+    	select * from menu 
+    	where ME_NAME = #{meName} and ME_PRICE = #{mePrice}
+    </select>
+    <select id="menuExists" resultType="boolean">
+    	select count(*) > 0 from menu 
+    	where ME_NAME = #{meName} and ME_HOT_ICE = #{meHotIce}
+	</select>
+    
+</mapper>
