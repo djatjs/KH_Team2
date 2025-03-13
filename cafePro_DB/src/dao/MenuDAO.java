@@ -5,7 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import model.vo.Menu;
-
+import model.vo.Order;
+import model.vo.Tag;
 
 
 public interface MenuDAO {
@@ -37,6 +38,7 @@ public interface MenuDAO {
 
 	
 
+	List<Menu> selectMenu();
 	
 
 }

@@ -10,6 +10,7 @@ import java.util.Scanner;
 import dao.CategoryDAO;
 import model.vo.Category;
 import model.vo.Menu;
+import model.vo.Order;
 import model.vo.Tag;
 
 public class MenuManager {
@@ -604,16 +605,90 @@ public class MenuManager {
 	}
 
 	public void viewMenuList() {
-		// TODO Auto-generated method stub
+		try {
+			int num = 0;
+			do {			
+				printCartMenu();
+				num = scan.nextInt();
+				scan.nextLine();
+				oos.writeInt(num);
+				oos.flush();
+				runCart(num);
+			} while (num != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printListMenu() {
+		try {
+			List<Menu> dblist = (List<Menu>) ois.readObject();
+			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
+			for (int i = 0; i < dblist.size(); i++) {
+				Menu menu = dblist.get(i);
+				menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void printCartMenu() {
+		System.out.println("------------------");
+		System.out.println("1. 장바구니 담기");
+		System.out.println("2. 장바구니 수정");
+		System.out.println("3. 장바구니 삭제");
+		System.out.println("4. 장바구니 구매");
+		System.out.println("5. 뒤로 가기");
+		System.out.println("------------------");
+		System.out.print("메뉴 선택 : ");		
+	}
+
+	private void runCart(int num) {
+		switch (num) {
+		case 1:
+			insterCart(); //담기
+			break;
+		case 2:
+			System.out.println("수정"); //수정
+			break;
+		case 3:
+			deleteCart(); //삭제
+			break;
+		case 4:
+			System.out.println(); //구매
+			break;
+		case 5:
+			break;
+		default:
+		}
 
 	}
+	
+	private void insterCart() {
+		printListMenu();
+		
+	}
+
+	private void deleteCart() {
+		
+		
+	}
+
+
 
 	public void viewHistory() {
-		// TODO Auto-generated method stub
+		try {
+	
+			List<Order> dbHistory = (List<Order>) ois.readObject();
+			for (Order order : dbHistory) {
+			    System.out.println(order); 
+			}
 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
-	
-
-	
 }

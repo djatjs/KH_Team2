@@ -33,6 +33,14 @@ public class Member implements Serializable{
 		this.mId = id;
 		this.mPw = pw;
 	}
+
+	// 정보수정
+	public Member(String mPw, String mNumber, String mNickname) {
+		super();
+		this.mPw = mPw;
+		this.mNumber = mNumber;
+		this.mNickname = mNickname;
+	}
 	
 	
 	

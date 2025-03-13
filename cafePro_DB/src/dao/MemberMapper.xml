@@ -31,4 +31,11 @@
 		delete from member
 		where M_ID = #{member.mId} and M_PW = #{member.mPw}
 	</delete>
+	<update id="updateMember">
+		update member 
+		set M_NICKNAME = #{member.mNickname},
+			M_NUMBER = #{member.mNumber},
+			M_PW = #{member.mPw}
+		where M_ID = #{member.mId}
+	</update>
   </mapper>
