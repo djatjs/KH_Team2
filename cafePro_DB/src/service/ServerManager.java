@@ -19,11 +19,13 @@ import dao.CouponDAO;
 import dao.IncomeDAO;
 import dao.MemberDAO;
 import dao.MenuDAO;
+import dao.OrderDAO;
 import dao.StampDAO;
 import dao.TagDAO;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Order;
 import model.vo.Tag;
 
 public class ServerManager {
@@ -34,6 +36,7 @@ public class ServerManager {
 	private CategoryDAO categoryDao;
 	private IncomeDAO incomeDao;
 	private MenuDAO menuDao;
+	private OrderDAO orderDao;
 	
 	
 	private ObjectOutputStream oos;
@@ -57,6 +60,7 @@ public class ServerManager {
 			categoryDao = session.getMapper(CategoryDAO.class);
 			menuDao = session.getMapper(MenuDAO.class);
 			incomeDao = session.getMapper(IncomeDAO.class);
+			orderDao = session.getMapper(OrderDAO.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -642,19 +646,10 @@ public class ServerManager {
 	private void runCustomerMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			System.out.println("[1. 메뉴 조회]");
-//			try {
-//				int num = 0;
-//				do {
-//					num = ois.readInt();
-//					runCategoryMenu(num);
-//				}while(num != 4);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
+			viewMenuList(menu);
 			break;
 		case 2:
-			System.out.println("[2. 주문 내역 조회]");
+			viewHistory(member);
 			break;
 		case 3:
 			updateInfo(member);
@@ -670,6 +665,78 @@ public class ServerManager {
 		}
 
 	}
+
+	
+
+	private void viewMenuList(int menu) {
+	
+		printListMenu();	
+		
+		switch (menu) {
+		case 1:
+			System.out.println("1. 장바구니 담기");
+			break;
+		case 2:
+			System.out.println("2. 장바구니 수정");
+			break;
+		case 3:
+			try {
+				printListMenu();
+				int num = 0;
+				do {					
+					num = ois.readInt();
+					rundeleteCart(num);
+				}while(num != 5);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case 4:
+			System.out.println("4. 장바구니 구매");
+			break;
+		case 5:
+			System.out.println("[로그아웃]");
+			break;
+		default:
+			System.out.println("[잘못된 입력]");
+		}
+		
+	}
+		
+
+	private void printListMenu() {
+		List<Menu> list = menuDao.selectAllMenu();
+		try {
+			oos.writeObject(list);
+			oos.flush();		
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+		
+
+
+	private void rundeleteCart(int num) {
+	
+		
+	}
+
+	private void viewHistory(Member member) {
+		try {
+			String mId = member.getMId();
+			
+			List<Order> dbHistory = orderDao.orderView(mId);
+			
+			oos.writeObject(dbHistory);  // dbHistory가 null일 수도 있으므로 체크 후 전송
+	        oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
 
 	private void updateInfo(Member member) {
 		try {

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import model.vo.Category;
 import model.vo.Menu;
+import model.vo.Order;
 import model.vo.Tag;
 
 
@@ -46,6 +47,7 @@ public interface MenuDAO {
 
 	boolean deleteMenu(String meCode);
 
+	List<Menu> selectMenu();
 	
 
 }
