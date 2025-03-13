@@ -26,18 +26,26 @@
     </select>
 
 	<insert id="insertMenu">
-        INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_HOT_ICE, ME_CONTENT) 
-        VALUES (#{menu.meCode}, #{menu.meCaNum}, #{menu.meName}, #{menu.mePrice}, #{menu.meHotIce}, #{menu.meContent})
-    </insert>
+	    INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT, ME_HOT_ICE)
+	    SELECT 
+	        CONCAT(#{meCode}, LPAD(COUNT(ME_CODE) + 1, 3, '0')),
+	        #{menu.meCaNum},
+	        #{menu.meName},
+	        #{menu.mePrice},
+	        #{menu.meContent},
+	        #{menu.meHotIce}
+	    FROM menu
+	    WHERE ME_CODE LIKE CONCAT(#{meCode}, '%');
+	</insert>
     <update id="updateMenu">
-    	update menu
-    	set ME_NAME = #{meName},
-    		ME_PRICE = #{mePrice},
-    		ME_CONTENT = #{meContent},
-    		ME_HOT_ICE = #{meHotIce}
-    	where ME_CODE = #{meCode}
-    	
-    </update>
+	    UPDATE menu
+	    SET ME_NAME = #{menu.meName},
+	        ME_PRICE = #{menu.mePrice},
+	        ME_CONTENT = #{menu.meContent},
+	        ME_HOT_ICE = #{menu.meHotIce}
+	    WHERE ME_CODE = #{menu.meCode}
+	</update>
+
     <delete id="deleteMenu">
     	delete from menu
     	where ME_CODE = #{meCode}
@@ -46,9 +54,21 @@
     	select * from menu 
     	where ME_NAME = #{meName} and ME_PRICE = #{mePrice}
     </select>
-    <select id="menuExists" resultType="boolean">
-    	select count(*) > 0 from menu 
-    	where ME_NAME = #{meName} and ME_HOT_ICE = #{meHotIce}
+    <select id="menuExists_HI" resultType="boolean">
+    	SELECT COUNT(*) >1
+    	FROM menu 
+    	WHERE 
+    		ME_HOT_ICE = #{meHotIce}
 	</select>
+	<select id="menuExists" resultType="boolean">
+    	SELECT COUNT(*) = 1
+    	FROM menu 
+    	WHERE 
+    		ME_HOT_ICE = #{meHotIce} and ME_NAME = #{meName}
+	</select>
+	<select id="selectMenuByNumAndCode">
+    	select * from menu 
+    	where ME_CA_NUM = #{meCaNum} and ME_CODE = #{meCode}
+    </select>
     
 </mapper>

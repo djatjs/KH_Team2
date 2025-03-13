@@ -198,7 +198,8 @@ public class ServerManager {
 				return;
 			}
 			//등록 후 결과 반환
-			boolean res = menuDao.insertMenu(menu);
+			String caCode = categoryDao.seletCategoryByNum(caNum).getCaCode();
+			boolean res = menuDao.insertMenu(caCode ,menu);
 			oos.writeBoolean(res);
 			oos.flush();
 			
@@ -212,20 +213,16 @@ public class ServerManager {
 		try {
 			oos.writeObject(list);
 			oos.flush();
+			// 수정할 정보
+			Menu menu = (Menu) ois.readObject();
 			
-			String meCode = ois.readUTF();
-			String meName = ois.readUTF();
-			int mePrice = ois.readInt();
-			String meContent = ois.readUTF();
-			String meHotIce = ois.readUTF();
-			
-			// db안에 메뉴코드가 meCode인 제품 가져오기 
-			Menu dbmenu = menuDao.selectMenuByCode(meCode);
-			//Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
+			// db안에 메뉴코드가 meCode인 제품 가져오기 (저장되어 있는 정보. 수정대상)
+			Menu dbmenu = menuDao.selectMenuByCode(menu.getMeCode());
 			boolean res = true;
 			
+			System.out.println(dbmenu);
+			
 			// db안에 메뉴코드가 meCode인 제품가 있는지
-			// || dbmenu2 != null
 			if(dbmenu == null ) {
 				System.out.println("[업데이트 실패 : 존재하지 않는 메뉴.]");
 				res = false;
@@ -233,27 +230,39 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
-			// 현재 메뉴 이름과 입력받은 메뉴 이름이 다를 때 
-			// 입력받은 메뉴 이름과 H or I 상태가 이미 등록되있는게 있을경우 
-		    String currentMeName = dbmenu.getMeName();
-		    if (!currentMeName.equals(meName)) {
-		    	boolean exists = menuDao.menuExists(meName, meHotIce);
-		    	if (exists) {
-		    		System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
-		    		res = false;
-		    		oos.writeBoolean(res);
-					oos.flush();
-		    		return;
-		    	}
-		    }
-		    
-
-			res= menuDao.updateMenu(meCode, meName, mePrice, meContent, meHotIce);
+			System.out.println("확인");
+			// 수정할 메뉴 이름과 입력받은 메뉴 이름이 같고 온도가 다른 경우 -> 	
+			if (dbmenu.getMeName().equals(menu.getMeName()) && !dbmenu.getMeHotIce().equals(menu.getMeHotIce())) {
+	            boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
+	            if (exists) {
+	            	System.out.println("[업데이트 실패 : 온도가 같은 메뉴가 존재합니다.]");
+	                res = false;
+	                oos.writeBoolean(res);
+	                oos.flush();
+	                return;
+	            }    
+	        }
+			// 이름이 다른 경우 
+			else if(!dbmenu.getMeName().equals(menu.getMeName())){
+				// 입력받은 메뉴 이름이 이미 존재하는지 확인
+			    boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
+			    if (exists) {
+			        System.out.println("[업데이트 실패 : 이미 존재하는 메뉴입니다.]");
+			        res = false;
+			        oos.writeBoolean(res);
+			        oos.flush();
+			        return;
+			    }
+	        }
+		    //근데 입력받은 메뉴 이름이 이미 등록되어있는 경우에 H or I 상태도 똑같으면
+			System.out.println("확인2");
+			// 이름도 같고 온도도 같은 경우
+			res = menuDao.updateMenu(menu);
 			oos.writeBoolean(res);
 			oos.flush();
 
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 	}
@@ -347,24 +356,36 @@ public class ServerManager {
 			int caNum = ois.readInt();
 			String caName = ois.readUTF();
 			String caCode = ois.readUTF();
-
+			
+			// 클라이언트로 부터 전송받은 번호대로 저장되어있는지 확인
 			Category dbCategory = categoryDao.seletCategoryByNum(caNum);
-			Category dbCategory2 = categoryDao.seletCategory(caName, caCode);
 			boolean res = true;
 
-			if (dbCategory == null || dbCategory2 != null) {
+			if (dbCategory == null) {
 				System.out.println("[업데이트 실패 : 이미 등록중인 카테고리.]");
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			// 현재 카테고리 이름
+			// 입력 받은 이름이 다른 카테고리 이름과 같은지 확인
 			String currentCaName = dbCategory.getCaName();
 			if (!currentCaName.equals(caName)) {
-				boolean exists = categoryDao.categoryExists(caName);
+				boolean exists = categoryDao.checkExistsByName(caName);
 				if (exists) {
 					System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 이름.]");
+					res = false;
+					oos.writeBoolean(res);
+					oos.flush();
+					return;
+				}
+			}
+			// 입력 받은 코드명이 다른 카테고리 코드명과 같은지 확인
+			String currentCaCode = dbCategory.getCaCode();
+			if (!currentCaCode.equals(caCode)) {
+				boolean exists = categoryDao.checkExistsByCode(caCode);
+				if (exists) {
+					System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 코드.]");
 					res = false;
 					oos.writeBoolean(res);
 					oos.flush();

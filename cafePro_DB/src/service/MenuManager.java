@@ -350,9 +350,7 @@ public class MenuManager {
 			 	if(caNum == 0) {
 			 		//서버에 작업 취소 신호 보내고 return;
 			 	}
-			 	// ex_ COF001 (자동생성 못해서 그냥 적음)
-			 	System.out.print("메뉴코드 : ");
-	        	String meCode = scan.next();
+			 	
 			 	System.out.print("메뉴명 : ");
 	        	String meName = scan.next();
 	        	System.out.print("메뉴 가격 : ");
@@ -364,7 +362,7 @@ public class MenuManager {
 	        	
 	        	scan.nextLine();
 	        	
-	        	Menu menu = new Menu(meCode, caNum, meName, mePrice, meHotIce, meContent);
+	        	Menu menu = new Menu(caNum, meName, mePrice, meHotIce, meContent);
 	        	
 	        	oos.writeInt(caNum);
 				oos.writeObject(menu);
@@ -421,12 +419,12 @@ public class MenuManager {
 	private void updateMenu() {
 		try {
 			List<Menu> dblist = (List<Menu>) ois.readObject();
-			List<String> menuNumList = new ArrayList<>();
+			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
 			for (int i = 0; i < dblist.size(); i++) {
-				Menu menu = dblist.get(i);
-				menuNumList.add(menu.getMeCode()); // 실제 DB meCode 저장
-				System.out.println((i + 1) + ". " + menu.getMeName()); // 1부터 출력
-			}
+	            Menu menu = dblist.get(i);
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
+	        }
 			System.out.println("------------------");
 			int menuIndex = 0;
 			while (true) {
@@ -444,19 +442,17 @@ public class MenuManager {
 			System.out.print("수정할 메뉴 가격 : ");
 			int mePrice= scan.nextInt();
 			System.out.print("수정할 메뉴 설명 : ");
-			String meContent= scan.next();
+			scan.nextLine();
+			String meContent= scan.nextLine();
 			System.out.print("수정할 메뉴 타입(H or I) : ");
 			String meHotIce= scan.next();
 			scan.nextLine();
 			System.out.println("------------------");
 			String meCode = menuNumList.get(menuIndex - 1);
 			
+			 Menu menu = new Menu(meCode, meName, mePrice, meHotIce, meContent);
 			
-			oos.writeUTF(meCode);
-			oos.writeUTF(meName);
-			oos.writeInt(mePrice);
-			oos.writeUTF(meContent);
-			oos.writeUTF(meHotIce);
+			oos.writeObject(menu);
 			oos.flush();
 			
 			boolean res = ois.readBoolean();
