@@ -6,7 +6,6 @@ import model.vo.Cart;
 
 public interface CartDAO {
 
-	List<Cart> viewCart();
-
+	 List<Cart> viewCart(String mId);
 
 }

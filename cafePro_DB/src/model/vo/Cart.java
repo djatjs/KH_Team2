@@ -15,8 +15,9 @@ public class Cart implements Serializable{
 	private List<CartList> cl;
 	private int amount;
 	
-  
 	
-	
-	
+
 }
+
+	
+

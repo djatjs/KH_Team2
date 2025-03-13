@@ -12,6 +12,8 @@
 		<result property="orTotal" column="OR_TOTAL" />
 		<result property="orDate" column="OR_DATE" />
 		<result property="orFinal" column="OR_FINAL" />
+		<result property="meName" column="ME_NAME" />
+		<result property="clAmount" column="CL_AMOUNT" />
 	</resultMap>
 
 	<select id="orderView" resultMap="OrderMap">

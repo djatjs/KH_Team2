@@ -650,7 +650,7 @@ public class ServerManager {
 	private void runCustomerMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			viewMenuList(menu);
+			viewMenuList(menu, member);
 			break;
 		case 2:
 			viewHistory(member);
@@ -672,7 +672,7 @@ public class ServerManager {
 
 	
 
-	private void viewMenuList(int menu) {
+	private void viewMenuList(int menu, Member member) {
 	
 		printListMenu();	
 		
@@ -696,7 +696,7 @@ public class ServerManager {
 				int num = 0;
 				do {					
 					num = ois.readInt();
-					deleteCart();
+					deleteCart(member);
 				}while(num != 5);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -731,9 +731,10 @@ public class ServerManager {
 		
 	}
 
-	private void deleteCart() {
-		List<Cart> cartList = cartDao.viewCart();
+	private void deleteCart(Member member) {
 		try {
+			String mId = member.getMId();
+			List<Cart> cartList = cartDao.viewCart(mId);
 			oos.writeObject(cartList);
 			oos.flush();		
 	
@@ -741,7 +742,7 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
-		
+
 
 	private void viewHistory(Member member) {
 		try {

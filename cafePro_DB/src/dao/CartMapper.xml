@@ -4,21 +4,25 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dao.CartDAO">
 
-	<resultMap type="model.vo.Cart" id="CartMap">
-		<id property="clNum" column="CL_NUM" />
-		<result property="clMeCode" column="CL_ME_CODE" />
-		<result property="clCtNum" column="CL_CT_NUM" />
-		<result property="clAmount" column="CL_AMOUNT" />
-	</resultMap>
+ <resultMap id="CartMap" type="model.vo.Cart">
+        <!-- 쿼리에서 필요한 값만 반환하고, 필요한 속성만 매핑합니다 -->
+        <result property="ctNum" column="CT_NUM"/>
+        <result property="ctMId" column="CT_M_ID"/>
+        <result property="ctPrice" column="CT_PRICE"/>
+        <result property="status" column="CT_STATUS"/>
+         <result property="amount" column="CL_AMOUNT"/>
+    </resultMap>
 
-	<select id="viewCart">
-		select 
-			ME_NAME,
-			CL_AMOUNT
-		from cart
-		join cart_list on  CL_CT_NUM = CT_NUM 
-		join menu on CL_ME_CODE = ME_CODE
-		where CT_M_ID =  #{mId}
-	</select>
+    <!-- 실제 데이터 조회 쿼리 -->
+    <select id="viewCart" resultMap="CartMap">
+        select 
+            ME_NAME,
+            CL_AMOUNT,	
+            CT_PRICE
+        from cart
+        join cart_list on CL_CT_NUM = CT_NUM 
+        join menu on CL_ME_CODE = ME_CODE
+        where CT_M_ID = #{mId}
+    </select>
 
 </mapper>

@@ -11,24 +11,24 @@
 	</resultMap>
 
 	<select id="incomeDay" resultType="int">
-		select ifnull(sum(IN_MONEY), 0) 
+		select IFNULL(sum(IN_MONEY), 0)
 		from income
 		where IN_DATE between date(NOW()) 
 		and DATE_ADD(DATE(NOW()), interval 1 day);
 	</select>
 	<select id="incomeMonth" resultType="int">
-		select ifnull(sum(IN_MONEY), 0) 
+		select IFNULL(sum(IN_MONEY), 0)
 		from income
 		where IN_DATE between date_format(now(), '%Y-%m-01')
 		and last_day(now());
 	</select>
 	<select id="incomeYear"  resultType="int">
-		select ifnull(sum(IN_MONEY), 0) 
+		select IFNULL(sum(IN_MONEY), 0)
 		from income
 		where IN_DATE between date_format(now(), '%Y-01-01')
 		and last_day(now());
 	</select>
 	<select id="totalIncome"  resultType="int">
-		select ifnull(sum(IN_MONEY), 0)  from income;
+		select IFNULL(sum(IN_MONEY), 0) from income;
 	</select>
 </mapper>
