@@ -24,6 +24,7 @@ import dao.TagDAO;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Order;
 import model.vo.Tag;
 
 public class ServerManager {
@@ -671,6 +672,116 @@ public class ServerManager {
 
 	private void updateInfo() {
 		
+		switch (menu) {
+		case 1:
+			try {
+				int num = 0;
+				do {					
+					num = ois.readInt();
+					insterCart();
+				}while(num != 5);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case 2:
+			System.out.println("2. 장바구니 수정");
+			break;
+		case 3:
+			try {
+				int num = 0;
+				do {					
+					num = ois.readInt();
+					deleteCart();
+				}while(num != 5);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case 4:
+			System.out.println("4. 장바구니 구매");
+			break;
+		case 5:
+			System.out.println("[로그아웃]");
+			break;
+		default:
+			System.out.println("[잘못된 입력]");
+		}
+		
+	}
+		
+
+	private void printListMenu() {
+		List<Menu> list = menuDao.selectAllMenu();
+		try {
+			oos.writeObject(list);
+			oos.flush();		
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void insterCart() {
+		printListMenu();
+		
+	}
+
+	private void deleteCart() {
+	
+		
+	}
+
+	private void viewHistory(Member member) {
+		try {
+			String mId = member.getMId();
+			
+			List<Order> dbHistory = orderDao.orderView(mId);
+			
+			oos.writeObject(dbHistory);  // dbHistory가 null일 수도 있으므로 체크 후 전송
+	        oos.flush();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+
+	private void updateInfo(Member member) {
+		try {
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+
+			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
+				oos.writeBoolean(true);
+				oos.flush();
+
+				String newNic = ois.readUTF();
+				String newNum = ois.readUTF();
+				String newPw = ois.readUTF();
+
+				member.setMNickname(newNic);
+				member.setMNumber(newNum);
+				member.setMPw(newPw);
+
+				boolean upRes = memberDao.updateMember(member);
+
+				// 업데이트 결과를 클라이언트에 전송
+				if (upRes) {
+					oos.writeBoolean(true); // 성공
+					oos.flush();
+					System.out.println("회원정보 수정 완료");
+				} else {
+					oos.writeBoolean(false); // 실패
+					oos.flush();
+					System.out.println("회원정보 수정 실패");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private boolean withdrawMembership(Member member) {
