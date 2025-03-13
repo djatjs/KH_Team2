@@ -175,7 +175,7 @@ public class CustomerManager {
 			boolean upRes = ois.readBoolean();
 			
 			if(!upRes) {
-				System.out.println("[로그인 실패]");
+				System.out.println("[아이디/비밀번호가 틀렸습니다.]");
 				return;
 			}
 			System.out.println("------------------");

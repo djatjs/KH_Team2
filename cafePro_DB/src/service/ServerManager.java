@@ -675,40 +675,35 @@ public class ServerManager {
 		try {
 			String id = ois.readUTF();
 			String pw = ois.readUTF();
-			
+
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
 				oos.writeBoolean(true);
 				oos.flush();
-				
+
 				String newNic = ois.readUTF();
 				String newNum = ois.readUTF();
 				String newPw = ois.readUTF();
-				
-				member.setMNickname(newNic);
-	            member.setMNumber(newNum);
-	            member.setMPw(newPw);
-	            
-	            boolean upRes = memberDao.updateMember(member);
-	            
-	            // 업데이트 결과를 클라이언트에 전송
-	            if (upRes) {
-	                oos.writeBoolean(true); // 성공
-	                oos.flush();
-	                System.out.println("회원정보 수정 완료");
-	            } else {
-	                oos.writeBoolean(false); // 실패
-	                oos.flush();
-	                System.out.println("회원정보 수정 실패");
-	            }
-	        } else {
-	            oos.writeBoolean(false); // 로그인 실패
-	            oos.flush();
-	            System.out.println("로그인 실패");
-	        }
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+				member.setMNickname(newNic);
+				member.setMNumber(newNum);
+				member.setMPw(newPw);
+
+				boolean upRes = memberDao.updateMember(member);
+
+				// 업데이트 결과를 클라이언트에 전송
+				if (upRes) {
+					oos.writeBoolean(true); // 성공
+					oos.flush();
+					System.out.println("회원정보 수정 완료");
+				} else {
+					oos.writeBoolean(false); // 실패
+					oos.flush();
+					System.out.println("회원정보 수정 실패");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean withdrawMembership(Member member) {
