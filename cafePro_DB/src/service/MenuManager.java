@@ -614,7 +614,7 @@ public class MenuManager {
 				scan.nextLine();
 				oos.writeInt(num);
 				oos.flush();
-				runCart(num);
+				runCartListMenu(num);
 			} while (num != 5);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -673,7 +673,7 @@ public class MenuManager {
 		System.out.print("메뉴 선택 : ");		
 	}
 
-	private void runCart(int num) {
+	private void runCartListMenu(int num) {
 		switch (num) {
 		case 1:
 			insterCart(); //담기

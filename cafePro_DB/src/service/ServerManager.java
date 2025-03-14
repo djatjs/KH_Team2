@@ -14,6 +14,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import dao.CartDAO;
+import dao.CartListDAO;
 import dao.CategoryDAO;
 import dao.CouponDAO;
 import dao.IncomeDAO;
@@ -22,6 +24,8 @@ import dao.MenuDAO;
 import dao.OrderDAO;
 import dao.StampDAO;
 import dao.TagDAO;
+import model.vo.Cart;
+import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
@@ -37,6 +41,8 @@ public class ServerManager {
 	private IncomeDAO incomeDao;
 	private MenuDAO menuDao;
 	private OrderDAO orderDao;
+	private CartDAO cartDao;
+	private CartListDAO cartListDao;
 	
 	
 	private ObjectOutputStream oos;
@@ -61,7 +67,9 @@ public class ServerManager {
 			menuDao = session.getMapper(MenuDAO.class);
 			incomeDao = session.getMapper(IncomeDAO.class);
 			orderDao = session.getMapper(OrderDAO.class);
-
+			cartDao = session.getMapper(CartDAO.class);
+			cartListDao = session.getMapper(CartListDAO.class);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -712,13 +720,13 @@ public class ServerManager {
 			System.out.println("2. 장바구니 수정");
 			break;
 		case 3:
+			deleteCart(member);
 			System.out.println("3. 장바구니 삭제");
 			break;
 		case 4:
 			System.out.println("4. 장바구니 구매");
 			break;
 		case 5:
-			System.out.println("[로그아웃]");
 			break;
 		default:
 			System.out.println("[잘못된 입력]");
@@ -728,9 +736,25 @@ public class ServerManager {
 	//고객-1-1.
 	private void insertCart(Member member) {
 		try {
+			// 구매할 제품과 수량 전달받음
 			Menu menu = (Menu) ois.readObject();
 			int amount = ois.readInt();
 			System.out.println(menu+ " " +amount);
+			
+			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
+			Cart dbCart = cartDao.selectCart(member);
+			//없다면
+			if(dbCart == null) {
+				// 카트 생성(유저 아이디 사용)
+				Boolean createCart = cartDao.insertCart(member);
+			}
+			//있다면
+			else {
+				// 카트 번호와 제품 번호, 수량을 카트리스트에 담기
+				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart.getCtNum(),menu,amount);
+				System.out.println(dbCartList);
+			}
+			System.out.println(dbCart);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -748,9 +772,14 @@ public class ServerManager {
 		}
 	}
 
-	private void deleteCart() {
-		
-		
+	private void deleteCart(Member member) {
+		Cart cart = cartDao.selectCart(member);
+		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+		// System.out.println(cart);
+		// System.out.println(cartLists);
+		for(int i=0; i<cartLists.size();i++) {
+			System.out.println(cartLists.get(i));
+		}
 	}
 
 	private void viewHistory(Member member) {

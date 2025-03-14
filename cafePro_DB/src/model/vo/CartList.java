@@ -9,9 +9,9 @@ public class CartList implements Serializable{
 
    private static final long serialVersionUID = 1L;
    private int clNum;      		//CL_NUM
-   private int clMeCode;      	//CL_ME_CODE
+   private String clMeCode;      	//CL_ME_CODE
    private int clCtNum;      		//CL_CT_NUM
    private int clAmount = 0;     	//CL_AMOUNT
-   Member member;
+   Menu menu;
    
 }
