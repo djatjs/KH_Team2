@@ -731,7 +731,7 @@ public class MenuManager {
 	}
 	//고객_1_4.
 	private void purchase() {
-		// TODO Auto-generated method stub
+		// 
 		
 	}
 	//고객_2.
