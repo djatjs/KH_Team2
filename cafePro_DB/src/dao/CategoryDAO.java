@@ -23,11 +23,8 @@ public interface CategoryDAO {
 
 	boolean deleteCategory(int caNum);
 
-	Category seletCategory(
-			@Param("caName")String caName, 
-			@Param("caCode")String caCode);
-
-	boolean categoryExists(String caName);
+	boolean checkExistsByName(String caName);
+	boolean checkExistsByCode(String caCode);
 
 	boolean updateMenu(String meCode, String meName, int mePrice);
 

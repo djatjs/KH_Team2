@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.CartListDAO">
+
+	<resultMap type="model.vo.CartList" id="CartListMap">
+		<id property="clNum" column="CL_NUM"/>
+		<result property="clMeCode" column="CL_ME_CODE"/>
+		<result property="clCtNum" column="CL_CT_NUM"/>
+		<result property="clAmount" column="CL_AMOUNT"/>
+		
+		<association property="menu" javaType="model.vo.Menu">
+        	<id property="meCode" column="ME_CODE"/>
+			<result property="meCaNum" column="ME_CA_NUM"/>
+			<result property="meName" column="ME_NAME"/>
+			<result property="mePrice" column="ME_PRICE"/>
+			<result property="meContent" column="ME_CONTENT"/>
+			<result property="meThumb" column="ME_THUMB"/>
+			<result property="meAble" column="ME_ABLE"/>
+			<result property="meHotIce" column="ME_HOT_ICE"/>
+    	</association>
+	</resultMap>
+
+	<insert id="insertMenuToCartList">
+		insert into cart_list(CL_ME_CODE, CL_CT_NUM, CL_AMOUNT) 
+		values (#{menu.meCode}, #{ctNum}, #{amount});
+	</insert>
+	
+    
+</mapper>
