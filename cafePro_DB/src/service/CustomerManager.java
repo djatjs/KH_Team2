@@ -147,6 +147,7 @@ public class CustomerManager {
 			oos.flush();
 			// 서버의 db작업 성공 유무 받음
 			res = ois.readBoolean();
+			System.out.println("4");
 			
 			
 			if(res) {

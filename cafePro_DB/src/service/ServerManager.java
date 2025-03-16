@@ -880,9 +880,10 @@ public class ServerManager {
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
 				res1 = stampDao.deleteMember(id);
 				res2 = couponDao.deleteMember(id);
-				res3 = memberDao.deleteMember(member);
+				res3 = memberDao.UpdateDeleteEvent(member);
 			}
 			oos.writeBoolean(res3);
+			System.out.println("333" + member);
 			oos.flush();
 			return res3;
 

@@ -27,10 +27,6 @@
 		select M_PW from member
 		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
 	</select>
-	<delete id ="deleteMember">
-		delete from member
-		where M_ID = #{member.mId} and M_PW = #{member.mPw}
-	</delete>
 	<update id="updateMember">
 		update member 
 		set M_NICKNAME = #{member.mNickname},
@@ -38,4 +34,30 @@
 			M_PW = #{member.mPw}
 		where M_ID = #{member.mId}
 	</update>
+	
+	<update id="UpdateDeleteEvent" parameterType="map">
+    create event update_delete_event
+    on schedule every 1 minute starts now() + INTERVAL 1 SECOND
+    on completion not preserve
+    do
+    begin
+        if not exists (select 1 from `member` where M_ID = #{member.mId} and
+        M_DEL = 'y') then
+            update `Member`
+            set M_DEL = 'Y', M_DEL_TIME = now()
+            where M_ID = #{member.mId};
+        end if;
+
+        delete from `member`
+            where M_ID = #{member.mId}
+            and M_DEL = 'y'
+            and M_DEL_TIME &lt; now() - INTERVAL 7 DAY;
+
+        if row_count() > 0 then
+            drop event if exists update_delete_event;
+        end if;
+    end
+</update>
+
+
   </mapper>
