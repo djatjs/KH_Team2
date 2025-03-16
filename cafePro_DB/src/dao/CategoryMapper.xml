@@ -33,12 +33,11 @@
     	delete from category
     	where CA_NUM = #{caNum}
     </delete>
-    <select id="seletCategory">
-    	select * from category 
-    	where CA_NAME = #{caName} and CA_CODE = #{caCode}
-    </select>
-    <select id="categoryExists" resultType="boolean">
+    <select id="checkExistsByName" resultType="boolean">
     	select count(*) > 0 from category where CA_NAME = #{caName}
+	</select>
+	<select id="checkExistsByCode" resultType="boolean">
+    	select count(*) > 0 from category where CA_CODE = #{caCode}
 	</select>
     
 </mapper>

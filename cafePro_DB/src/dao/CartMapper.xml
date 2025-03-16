@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.CartDAO">
+
+	<resultMap type="model.vo.CartList" id="CartListMap">
+		<id property="clNum" column="CL_NUM"/>
+		<result property="clMeCode" column="CL_ME_CODE"/>
+		<result property="clCtNum" column="CL_CT_NUM"/>
+		<result property="clAmount" column="CL_AMOUNT"/>
+		
+		<association property="menu" javaType="model.vo.Menu">
+			<id property="meCode" column="ME_CODE"/>
+			<result property="meCaNum" column="ME_CA_NUM"/>
+			<result property="meName" column="ME_NAME"/>
+			<result property="mePrice" column="ME_PRICE"/>
+			<result property="meContent" column="ME_CONTENT"/>
+			<result property="meThumb" column="ME_THUMB"/>
+			<result property="meAble" column="ME_ABLE"/>
+			<result property="meHotIce" column="ME_HOT_ICE"/>
+		</association>
+	</resultMap>
+	
+	<resultMap type="model.vo.Cart" id="CartMap">
+		<id property="ctNum" column="CT_NUM"/>
+		<result property="ctMId" column="CT_M_ID"/>
+		<result property="ctPrice" column="CT_PRICE"/>
+		<result property="ctstatus" column="CT_STATUS"/>
+		
+		<association property="member" javaType="model.vo.Member">
+        	<id property="mId" column="M_ID"/>
+			<result property="mPw" column="M_PW"/>
+			<result property="mNumber" column="M_NUMBER"/>
+			<result property="mNickname" column="M_NICKNAME"/>
+			<result property="mAuthority" column="M_AUTHORITY"/>
+			<result property="mDel" column="M_DEL"/>
+			<result property="mDelTime" column="M_DEL_TIME"/>
+    	</association>
+  
+    	<collection property="list" select="selectCartList" column="CT_NUM" ofType="model.vo.CartList" />
+    	
+	</resultMap>
+	<select id="selectCart" resultMap="CartMap">
+		select * from cart 
+		join member on m_id = ct_m_id
+		where CT_M_ID = #{mId} and CT_STATUS ="N"
+		
+	</select>
+	<insert id="insertCart">
+		insert into cart(CT_M_ID) values(#{mId});
+	</insert>
+	<select id="selectCartList" resultMap="CartListMap">
+		select *
+		from cart_list
+		join menu on CL_ME_CODE = ME_CODE
+		where CL_CT_NUM = #{ctNum}
+		order by CL_NUM asc
+	</select>
+	
+    
+</mapper>

@@ -36,7 +36,6 @@ public class Member implements Serializable{
 
 	// 정보수정
 	public Member(String mPw, String mNumber, String mNickname) {
-		super();
 		this.mPw = mPw;
 		this.mNumber = mNumber;
 		this.mNickname = mNickname;

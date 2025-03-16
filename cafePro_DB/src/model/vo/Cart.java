@@ -1,6 +1,7 @@
 package model.vo;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
 
@@ -10,8 +11,7 @@ public class Cart implements Serializable{
 	private int ctNum;				//CT_NUM
 	private String ctMId; 			//CT_M_ID
 	private int ctPrice;			//CT_PRICE
-	private String status;			//CT_STATUS 		ENUM("Y","N") DEFAULT "N"
-	
-	//생성자?
-	
+	private String ctstatus;			//CT_STATUS 		ENUM("Y","N") DEFAULT "N"
+	List<CartList> list;
+	Member member;
 }

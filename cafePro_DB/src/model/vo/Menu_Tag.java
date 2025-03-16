@@ -9,7 +9,7 @@ public class Menu_Tag implements Serializable{
 
    private static final long serialVersionUID = 1L;
    private int mtNum;      		//MT_NUM
-   private int mtThgNum;   		//MT-TAG-NUM
-   private String mtMeCode;     //MT-ME-CODE
+   private int mtThgNum;   		//MT_TAG_NUM
+   private String mtMeCode;     //MT_ME_CODE
 
 }

@@ -14,6 +14,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import dao.CartDAO;
+import dao.CartListDAO;
 import dao.CategoryDAO;
 import dao.CouponDAO;
 import dao.IncomeDAO;
@@ -22,6 +24,8 @@ import dao.MenuDAO;
 import dao.OrderDAO;
 import dao.StampDAO;
 import dao.TagDAO;
+import model.vo.Cart;
+import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
@@ -37,6 +41,8 @@ public class ServerManager {
 	private IncomeDAO incomeDao;
 	private MenuDAO menuDao;
 	private OrderDAO orderDao;
+	private CartDAO cartDao;
+	private CartListDAO cartListDao;
 	
 	
 	private ObjectOutputStream oos;
@@ -61,7 +67,9 @@ public class ServerManager {
 			menuDao = session.getMapper(MenuDAO.class);
 			incomeDao = session.getMapper(IncomeDAO.class);
 			orderDao = session.getMapper(OrderDAO.class);
-
+			cartDao = session.getMapper(CartDAO.class);
+			cartListDao = session.getMapper(CartListDAO.class);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -202,7 +210,8 @@ public class ServerManager {
 				return;
 			}
 			//등록 후 결과 반환
-			boolean res = menuDao.insertMenu(menu);
+			String caCode = categoryDao.seletCategoryByNum(caNum).getCaCode();
+			boolean res = menuDao.insertMenu(caCode ,menu);
 			oos.writeBoolean(res);
 			oos.flush();
 			
@@ -216,20 +225,16 @@ public class ServerManager {
 		try {
 			oos.writeObject(list);
 			oos.flush();
+			// 수정할 정보
+			Menu menu = (Menu) ois.readObject();
 			
-			String meCode = ois.readUTF();
-			String meName = ois.readUTF();
-			int mePrice = ois.readInt();
-			String meContent = ois.readUTF();
-			String meHotIce = ois.readUTF();
-			
-			// db안에 메뉴코드가 meCode인 제품 가져오기 
-			Menu dbmenu = menuDao.selectMenuByCode(meCode);
-			//Menu dbmenu2 = menuDao.selectMenu(meName, mePrice);
+			// db안에 메뉴코드가 meCode인 제품 가져오기 (저장되어 있는 정보. 수정대상)
+			Menu dbmenu = menuDao.selectMenuByCode(menu.getMeCode());
 			boolean res = true;
 			
+			System.out.println(dbmenu);
+			
 			// db안에 메뉴코드가 meCode인 제품가 있는지
-			// || dbmenu2 != null
 			if(dbmenu == null ) {
 				System.out.println("[업데이트 실패 : 존재하지 않는 메뉴.]");
 				res = false;
@@ -237,27 +242,39 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
-			// 현재 메뉴 이름과 입력받은 메뉴 이름이 다를 때 
-			// 입력받은 메뉴 이름과 H or I 상태가 이미 등록되있는게 있을경우 
-		    String currentMeName = dbmenu.getMeName();
-		    if (!currentMeName.equals(meName)) {
-		    	boolean exists = menuDao.menuExists(meName, meHotIce);
-		    	if (exists) {
-		    		System.out.println("[업데이트 실패 : 이미 존재하는 메뉴.]");
-		    		res = false;
-		    		oos.writeBoolean(res);
-					oos.flush();
-		    		return;
-		    	}
-		    }
-		    
-
-			res= menuDao.updateMenu(meCode, meName, mePrice, meContent, meHotIce);
+			System.out.println("확인");
+			// 수정할 메뉴 이름과 입력받은 메뉴 이름이 같고 온도가 다른 경우 -> 	
+			if (dbmenu.getMeName().equals(menu.getMeName()) && !dbmenu.getMeHotIce().equals(menu.getMeHotIce())) {
+	            boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
+	            if (exists) {
+	            	System.out.println("[업데이트 실패 : 온도가 같은 메뉴가 존재합니다.]");
+	                res = false;
+	                oos.writeBoolean(res);
+	                oos.flush();
+	                return;
+	            }    
+	        }
+			// 이름이 다른 경우 
+			else if(!dbmenu.getMeName().equals(menu.getMeName())){
+				// 입력받은 메뉴 이름이 이미 존재하는지 확인
+			    boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
+			    if (exists) {
+			        System.out.println("[업데이트 실패 : 이미 존재하는 메뉴입니다.]");
+			        res = false;
+			        oos.writeBoolean(res);
+			        oos.flush();
+			        return;
+			    }
+	        }
+		    //근데 입력받은 메뉴 이름이 이미 등록되어있는 경우에 H or I 상태도 똑같으면
+			System.out.println("확인2");
+			// 이름도 같고 온도도 같은 경우
+			res = menuDao.updateMenu(menu);
 			oos.writeBoolean(res);
 			oos.flush();
 
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 	}
@@ -351,24 +368,36 @@ public class ServerManager {
 			int caNum = ois.readInt();
 			String caName = ois.readUTF();
 			String caCode = ois.readUTF();
-
+			
+			// 클라이언트로 부터 전송받은 번호대로 저장되어있는지 확인
 			Category dbCategory = categoryDao.seletCategoryByNum(caNum);
-			Category dbCategory2 = categoryDao.seletCategory(caName, caCode);
 			boolean res = true;
 
-			if (dbCategory == null || dbCategory2 != null) {
+			if (dbCategory == null) {
 				System.out.println("[업데이트 실패 : 이미 등록중인 카테고리.]");
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			// 현재 카테고리 이름
+			// 입력 받은 이름이 다른 카테고리 이름과 같은지 확인
 			String currentCaName = dbCategory.getCaName();
 			if (!currentCaName.equals(caName)) {
-				boolean exists = categoryDao.categoryExists(caName);
+				boolean exists = categoryDao.checkExistsByName(caName);
 				if (exists) {
 					System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 이름.]");
+					res = false;
+					oos.writeBoolean(res);
+					oos.flush();
+					return;
+				}
+			}
+			// 입력 받은 코드명이 다른 카테고리 코드명과 같은지 확인
+			String currentCaCode = dbCategory.getCaCode();
+			if (!currentCaCode.equals(caCode)) {
+				boolean exists = categoryDao.checkExistsByCode(caCode);
+				if (exists) {
+					System.out.println("[업데이트 실패 : 이미 사용 중인 카테고리 코드.]");
 					res = false;
 					oos.writeBoolean(res);
 					oos.flush();
@@ -646,7 +675,7 @@ public class ServerManager {
 	private void runCustomerMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			viewMenuList(menu);
+			viewMenuList(member);
 			break;
 		case 2:
 			viewHistory(member);
@@ -667,49 +696,76 @@ public class ServerManager {
 	}
 
 	
-
-	private void viewMenuList(int menu) {
-	
-		printListMenu();	
+	//고객-1.
+	private void viewMenuList(Member member) {
+		//printListMenu();
+		try {
+			int menu = 0;
+			do {
+				menu = ois.readInt();
+				runCartListMenu(menu ,member);
+			} while (menu != 5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 		
+
+	private void runCartListMenu(int menu, Member member) {
 		switch (menu) {
 		case 1:
-			try {
-				int num = 0;
-				do {					
-					num = ois.readInt();
-					insterCart();
-				}while(num != 5);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			insertCart(member);
 			break;
 		case 2:
 			System.out.println("2. 장바구니 수정");
 			break;
 		case 3:
-			try {
-				int num = 0;
-				do {					
-					num = ois.readInt();
-					deleteCart();
-				}while(num != 5);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			deleteCart(member);
+			System.out.println("3. 장바구니 삭제");
 			break;
 		case 4:
 			System.out.println("4. 장바구니 구매");
+			purchase(member);
 			break;
 		case 5:
-			System.out.println("[로그아웃]");
 			break;
 		default:
 			System.out.println("[잘못된 입력]");
 		}
 		
 	}
+	
+
+	//고객-1-1.
+	private void insertCart(Member member) {
+		try {
+			printListMenu();
+			// 구매할 제품과 수량 전달받음
+			Menu menu = (Menu) ois.readObject();
+			int amount = ois.readInt();
+			System.out.println(menu+ " " +amount);
+			
+			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
+			Cart dbCart = cartDao.selectCart(member);
+			//없다면
+			if(dbCart == null) {
+				// 카트 생성(유저 아이디 사용)
+				Boolean createCart = cartDao.insertCart(member);
+				Cart dbCart2 = cartDao.selectCart(member);
+				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart2.getCtNum(),menu,amount);
+			}
+			//있다면
+			else {
+				// 카트 번호와 제품 번호, 수량을 카트리스트에 담기
+				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart.getCtNum(),menu,amount);
+				System.out.println(dbCartList);
+			}
+			System.out.println(dbCart);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+	}
 
 	private void printListMenu() {
 		List<Menu> list = menuDao.selectAllMenu();
@@ -721,15 +777,34 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
-
-	private void insterCart() {
-		printListMenu();
-		
+	//고객_1_3.
+	private void deleteCart(Member member) {
+		sendCartLists(member);
+		// 삭제할 장바구니리스트 번호 받기
+		// 번호를 통해 해당 장바구니 리스트 삭제하기
+	}
+	// 장바구니 리스트 전송 메소드
+	private void sendCartLists(Member member) {
+		try {
+			Cart cart = cartDao.selectCart(member);
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			for(int i=0; i<cartLists.size();i++) {System.out.println(cartLists.get(i));}
+			oos.writeObject(cartLists);
+			oos.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void deleteCart() {
-	
-		
+	//고객_1_4.
+	private void purchase(Member member) {
+		sendCartLists(member);
+		// 구매할건지 응답 받기
+		// 구매할 경우
+		// 고객의 쿠폰 사용해서 최종 결제하기로한 정보를 order 객체로 받기
+		// order객체 저장, 쿠폰 사용량만큼 쿠폰 차감, 스탬프 1적립
+			// 스탬프가 10개가되면 0으로 초기화 및 쿠폰 1 추가
+		// 최종 결제금액 income에 추가
 	}
 
 	private void viewHistory(Member member) {

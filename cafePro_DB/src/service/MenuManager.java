@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import dao.CategoryDAO;
+import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Menu;
 import model.vo.Order;
@@ -351,9 +351,7 @@ public class MenuManager {
 			 	if(caNum == 0) {
 			 		//서버에 작업 취소 신호 보내고 return;
 			 	}
-			 	// ex_ COF001 (자동생성 못해서 그냥 적음)
-			 	System.out.print("메뉴코드 : ");
-	        	String meCode = scan.next();
+			 	
 			 	System.out.print("메뉴명 : ");
 	        	String meName = scan.next();
 	        	System.out.print("메뉴 가격 : ");
@@ -365,7 +363,7 @@ public class MenuManager {
 	        	
 	        	scan.nextLine();
 	        	
-	        	Menu menu = new Menu(meCode, caNum, meName, mePrice, meHotIce, meContent);
+	        	Menu menu = new Menu(caNum, meName, mePrice, meHotIce, meContent);
 	        	
 	        	oos.writeInt(caNum);
 				oos.writeObject(menu);
@@ -422,12 +420,12 @@ public class MenuManager {
 	private void updateMenu() {
 		try {
 			List<Menu> dblist = (List<Menu>) ois.readObject();
-			List<String> menuNumList = new ArrayList<>();
+			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
 			for (int i = 0; i < dblist.size(); i++) {
-				Menu menu = dblist.get(i);
-				menuNumList.add(menu.getMeCode()); // 실제 DB meCode 저장
-				System.out.println((i + 1) + ". " + menu.getMeName()); // 1부터 출력
-			}
+	            Menu menu = dblist.get(i);
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
+	        }
 			System.out.println("------------------");
 			int menuIndex = 0;
 			while (true) {
@@ -445,19 +443,17 @@ public class MenuManager {
 			System.out.print("수정할 메뉴 가격 : ");
 			int mePrice= scan.nextInt();
 			System.out.print("수정할 메뉴 설명 : ");
-			String meContent= scan.next();
+			scan.nextLine();
+			String meContent= scan.nextLine();
 			System.out.print("수정할 메뉴 타입(H or I) : ");
 			String meHotIce= scan.next();
 			scan.nextLine();
 			System.out.println("------------------");
 			String meCode = menuNumList.get(menuIndex - 1);
 			
+			 Menu menu = new Menu(meCode, meName, mePrice, meHotIce, meContent);
 			
-			oos.writeUTF(meCode);
-			oos.writeUTF(meName);
-			oos.writeInt(mePrice);
-			oos.writeUTF(meContent);
-			oos.writeUTF(meHotIce);
+			oos.writeObject(menu);
 			oos.flush();
 			
 			boolean res = ois.readBoolean();
@@ -607,7 +603,8 @@ public class MenuManager {
 		}
 
 	}
-
+	
+	//고객-1.
 	public void viewMenuList() {
 		try {
 			int num = 0;
@@ -617,26 +614,53 @@ public class MenuManager {
 				scan.nextLine();
 				oos.writeInt(num);
 				oos.flush();
-				runCart(num);
+				runCartListMenu(num);
 			} while (num != 5);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void printListMenu() {
-		try {
-			List<Menu> dblist = (List<Menu>) ois.readObject();
-			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
-			for (int i = 0; i < dblist.size(); i++) {
-				Menu menu = dblist.get(i);
-				menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
-				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private Menu printListMenu() {
+	    Menu selectedMenu = null;  // 선택된 메뉴 객체 저장
+	    try {
+	        List<Menu> dblist = (List<Menu>) ois.readObject();
+	        System.out.println("=== 현재 등록된 메뉴 목록 ===");
+
+	        if (dblist.isEmpty()) {
+	            System.out.println("등록된 메뉴가 없습니다.");
+	            return null; // 메뉴가 없으면 null 반환
+	        }
+
+	        for (int i = 0; i < dblist.size(); i++) {
+	            Menu menu = dblist.get(i);
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
+	        }
+
+	        int index = 0;
+	        while (true) {
+	            System.out.print("제품 번호를 입력하세요 : ");
+	            if (scan.hasNextInt()) {
+	                index = scan.nextInt();
+	                scan.nextLine();
+
+	                if (index >= 1 && index <= dblist.size()) {
+	                    selectedMenu = dblist.get(index - 1);
+	                    break;
+	                } else {
+	                    System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	                }
+	            } else {
+	                System.out.println("[숫자를 입력하세요.]");
+	                scan.nextLine();
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return selectedMenu;
 	}
+
 	
 	private void printCartMenu() {
 		System.out.println("------------------");
@@ -649,7 +673,7 @@ public class MenuManager {
 		System.out.print("메뉴 선택 : ");		
 	}
 
-	private void runCart(int num) {
+	private void runCartListMenu(int num) {
 		switch (num) {
 		case 1:
 			insterCart(); //담기
@@ -661,7 +685,7 @@ public class MenuManager {
 			deleteCart(); //삭제
 			break;
 		case 4:
-			System.out.println(); //구매
+			purchase(); //구매
 			break;
 		case 5:
 			break;
@@ -670,26 +694,53 @@ public class MenuManager {
 
 	}
 	
+
+	//고객_1_1.
 	private void insterCart() {
-		printListMenu();
+		try {
+			Menu menu = printListMenu();
+			System.out.print("장바구니에 담을 메뉴 갯수 : ");
+			int menuAmount = scan.nextInt();
+			scan.nextLine();
+			oos.writeObject(menu);
+			oos.writeInt(menuAmount);
+			oos.flush();
+			
+//			boolean res = ois.readBoolean();
+//			if(res) {
+//				System.out.println("[장바구니에 담기 성공]");
+//			}else {
+//				System.out.println("[장바구니에 담기 실패]");
+//			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
-
+	//고객_1_3.
 	private void deleteCart() {
-		
+		try {
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			for(CartList aa : cartLists) {
+				System.out.println(aa);
+			}
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	//고객_1_4.
+	private void purchase() {
+		// 
 		
 	}
-
-
-
+	//고객_2.
 	public void viewHistory() {
 		try {
-	
 			List<Order> dbHistory = (List<Order>) ois.readObject();
 			for (Order order : dbHistory) {
 			    System.out.println(order); 
 			}
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
