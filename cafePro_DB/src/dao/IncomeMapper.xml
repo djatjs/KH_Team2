@@ -31,4 +31,8 @@
 	<select id="totalIncome"  resultType="int">
 		select IFNULL(sum(IN_MONEY), 0) from income;
 	</select>
+	<insert id="insertIncome">
+		insert into income(IN_MONEY) 
+		values (#{resMoney});
+	</insert>
 </mapper>
