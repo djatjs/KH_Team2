@@ -11,5 +11,9 @@
     	delete from coupon
     	where CO_M_ID = #{id}
     </delete>
+    <select id="selectCoupon">
+    	select * from coupon
+    	where CO_M_ID = #{id}
+    </select> 
   	
   </mapper>

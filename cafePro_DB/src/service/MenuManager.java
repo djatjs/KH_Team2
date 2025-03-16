@@ -687,7 +687,7 @@ public class MenuManager {
 			deleteCart(); //삭제
 			break;
 		case 4:
-			System.out.println(); //구매
+			buyCart(); //구매
 			break;
 		case 5:
 			break;
@@ -719,30 +719,37 @@ public class MenuManager {
 	}
 
 	private void deleteCart() {
+
 		try {
 			List<CartList> cartLists = (List<CartList>) ois.readObject();
 			List<Integer> cartListsNumList = new ArrayList<>();
+			
+			int totalAmount = 0;
 
-			int sum = 0;
-			for (int i = 0; i < cartLists.size(); i++) {
-				CartList cartLists2 = cartLists.get(i);
-				cartListsNumList.add(cartLists2.getClCtNum()); // 실제 DB tagNum 저장
-				System.out.println((i + 1) + ". " + cartLists.get(i).getMenu().getMeName() + "("
-						+ cartLists.get(i).getMenu().getMeHotIce() + ")" + " " + cartLists.get(i).getClAmount() + "개"
-						+ " " + cartLists.get(i).getMenu().getMePrice() + " → "
-						+ cartLists.get(i).getClAmount() * cartLists.get(i).getMenu().getMePrice() + "원");
-				sum = sum + cartLists.get(i).getClAmount() * cartLists.get(i).getMenu().getMePrice();
-
+			 for (int i = 0; i < cartLists.size(); i++) {
+			     CartList cartItem = cartLists.get(i);
+			     cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
+			     int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
+			     totalAmount += itemTotalPrice;
+			     printCartItem(i + 1, cartItem, itemTotalPrice);
 			}
 			System.out.println("------------------");
-			System.out.println("최종금액 : " + sum + "원");
+			System.out.println("최종금액 : " + totalAmount + "원");
+
 			int cartListsIndex = 0;
+
 			while (true) {
-				System.out.print("삭제할 카테고리의 번호를 입력하세요 : ");
-				cartListsIndex = scan.nextInt();
+				System.out.print("삭제할 장바구니의 번호를 입력하세요(0번 : 뒤로가기) : ");
+				cartListsIndex = scan.nextInt();			
 				if (cartListsIndex >= 1 && cartListsIndex <= cartListsNumList.size()) {
-					break;
-				} else {
+					break;				
+				}
+				if (cartListsIndex == 0) {
+					oos.writeInt(cartListsIndex);
+					oos.flush();
+				    return; 
+				}
+				 else {
 					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
 					scan.nextLine();
 				}
@@ -755,15 +762,28 @@ public class MenuManager {
 
 			boolean res = ois.readBoolean();
 			if (res == true) {
-				System.out.println("[카테고리 삭제 성공!]");
+				System.out.println("[장바구니 삭제 성공!]");
 			} else {
-				System.out.println("[이 카테고리는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
+				System.out.println("[장바구니 삭제에 실패했습니다.]");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void buyCart() {
+		
+	}
+
+	private void printCartItem(int index, CartList cartItem, int itemTotalPrice) {
+		try {
+			System.out.println(index + ". " + cartItem.getMenu().getMeName() + "(" + cartItem.getMenu().getMeHotIce()
+					+ ")" + " " + cartItem.getClAmount() + "개" + " " + cartItem.getMenu().getMePrice() + " → "
+					+ itemTotalPrice + "원");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	public void viewHistory() {
 		try {
 			List<Order> dbHistory = (List<Order>) ois.readObject();

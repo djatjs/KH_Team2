@@ -55,9 +55,8 @@
 		from cart_list
 		join menu on CL_ME_CODE = ME_CODE
 		where CL_CT_NUM = #{ctNum}
+		order by CL_NUM asc
 	</select>
-	<insert id="deletertCart">
-		delete into cart(CT_M_ID) values(#{mId});
-	</insert>
+
     
 </mapper>

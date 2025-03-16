@@ -17,4 +17,10 @@ public interface CartListDAO {
 			@Param("ctNum")int ctNum, 
 			@Param("menu") Menu menu, 
 			@Param("amount") int amount);
+
+	CartList seletCartByNum(@Param("clNum")int clNum);
+
+	boolean deleteCart(@Param("clNum")int clNum);
+
+
 }

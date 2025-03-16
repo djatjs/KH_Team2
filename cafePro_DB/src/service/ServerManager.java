@@ -27,6 +27,7 @@ import dao.TagDAO;
 import model.vo.Cart;
 import model.vo.CartList;
 import model.vo.Category;
+import model.vo.Coupon;
 import model.vo.Member;
 import model.vo.Menu;
 import model.vo.Order;
@@ -721,10 +722,9 @@ public class ServerManager {
 			break;
 		case 3:
 			deleteCart(member);
-			System.out.println("3. 장바구니 삭제");
 			break;
 		case 4:
-			System.out.println("4. 장바구니 구매");
+			buyCart(member);
 			break;
 		case 5:
 			break;
@@ -779,10 +779,38 @@ public class ServerManager {
 		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
 			
 		oos.writeObject(cartLists);
+		oos.flush();
+		
+		int clNum = ois.readInt();
+		
+		if (clNum == 0) {
+            System.out.println("뒤로 가기");
+            return;  
+        }
+		
+		CartList dbCart = cartListDao.seletCartByNum(clNum);
+
+		boolean res = true;
+		if (dbCart == null) {
+			res = false;
+			oos.writeBoolean(res);
+			oos.flush();
+			return;
+		}
+			res = cartListDao.deleteCart(clNum);
+			oos.writeBoolean(res);
+			oos.flush();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
+
+
+	private void buyCart(Member member) {
+		
+			
+		}
 
 	private void viewHistory(Member member) {
 		try {
