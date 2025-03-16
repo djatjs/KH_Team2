@@ -9,8 +9,6 @@ public interface CouponDAO {
 	void insertCoupon(String mId);
 
 	boolean deleteMember(String id);
-
-	Coupon selectCouponByMember(String mId);
 	
 
 }
