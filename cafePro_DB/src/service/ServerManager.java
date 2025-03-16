@@ -698,7 +698,7 @@ public class ServerManager {
 	
 	//고객-1.
 	private void viewMenuList(Member member) {
-		printListMenu();
+		//printListMenu();
 		try {
 			int menu = 0;
 			do {
@@ -725,6 +725,7 @@ public class ServerManager {
 			break;
 		case 4:
 			System.out.println("4. 장바구니 구매");
+			purchase(member);
 			break;
 		case 5:
 			break;
@@ -733,9 +734,12 @@ public class ServerManager {
 		}
 		
 	}
+	
+
 	//고객-1-1.
 	private void insertCart(Member member) {
 		try {
+			printListMenu();
 			// 구매할 제품과 수량 전달받음
 			Menu menu = (Menu) ois.readObject();
 			int amount = ois.readInt();
@@ -747,6 +751,8 @@ public class ServerManager {
 			if(dbCart == null) {
 				// 카트 생성(유저 아이디 사용)
 				Boolean createCart = cartDao.insertCart(member);
+				Cart dbCart2 = cartDao.selectCart(member);
+				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart2.getCtNum(),menu,amount);
 			}
 			//있다면
 			else {
@@ -771,15 +777,34 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
-
+	//고객_1_3.
 	private void deleteCart(Member member) {
-		Cart cart = cartDao.selectCart(member);
-		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-		// System.out.println(cart);
-		// System.out.println(cartLists);
-		for(int i=0; i<cartLists.size();i++) {
-			System.out.println(cartLists.get(i));
+		sendCartLists(member);
+		// 삭제할 장바구니리스트 번호 받기
+		// 번호를 통해 해당 장바구니 리스트 삭제하기
+	}
+	// 장바구니 리스트 전송 메소드
+	private void sendCartLists(Member member) {
+		try {
+			Cart cart = cartDao.selectCart(member);
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			for(int i=0; i<cartLists.size();i++) {System.out.println(cartLists.get(i));}
+			oos.writeObject(cartLists);
+			oos.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
+
+	//고객_1_4.
+	private void purchase(Member member) {
+		sendCartLists(member);
+		// 구매할건지 응답 받기
+		// 구매할 경우
+		// 고객의 쿠폰 사용해서 최종 결제하기로한 정보를 order 객체로 받기
+		// order객체 저장, 쿠폰 사용량만큼 쿠폰 차감, 스탬프 1적립
+			// 스탬프가 10개가되면 0으로 초기화 및 쿠폰 1 추가
+		// 최종 결제금액 income에 추가
 	}
 
 	private void viewHistory(Member member) {

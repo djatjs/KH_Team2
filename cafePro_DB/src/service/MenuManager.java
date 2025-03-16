@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import dao.CategoryDAO;
+import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Menu;
 import model.vo.Order;
@@ -652,7 +652,7 @@ public class MenuManager {
 	                }
 	            } else {
 	                System.out.println("[숫자를 입력하세요.]");
-	                scan.nextLine(); // 잘못된 입력 제거
+	                scan.nextLine();
 	            }
 	        }
 	    } catch (Exception e) {
@@ -685,7 +685,7 @@ public class MenuManager {
 			deleteCart(); //삭제
 			break;
 		case 4:
-			System.out.println(); //구매
+			purchase(); //구매
 			break;
 		case 5:
 			break;
@@ -694,6 +694,8 @@ public class MenuManager {
 
 	}
 	
+
+	//고객_1_1.
 	private void insterCart() {
 		try {
 			Menu menu = printListMenu();
@@ -715,22 +717,30 @@ public class MenuManager {
 		}
 		
 	}
-
+	//고객_1_3.
 	private void deleteCart() {
-		
+		try {
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			for(CartList aa : cartLists) {
+				System.out.println(aa);
+			}
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	//고객_1_4.
+	private void purchase() {
+		// 
 		
 	}
-
-
-
+	//고객_2.
 	public void viewHistory() {
 		try {
-	
 			List<Order> dbHistory = (List<Order>) ois.readObject();
 			for (Order order : dbHistory) {
 			    System.out.println(order); 
 			}
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
