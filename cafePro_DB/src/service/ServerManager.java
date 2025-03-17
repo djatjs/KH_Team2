@@ -798,8 +798,6 @@ public class ServerManager {
 	private void orderCart(Member member) {
 		try {
 			boolean is_ready = sendCartLists(member);
-			oos.writeBoolean(is_ready);
-			oos.flush();
 			if(!is_ready) {
 				return;
 			}
@@ -810,9 +808,7 @@ public class ServerManager {
 			
 			// 구매할건지 응답 받기
 			boolean answer = ois.readBoolean();
-			System.out.println("z0");
 			if(!answer) {
-				System.out.println("z1");
 				return;
 			}
 			// 구매할 경우 -> 사용할 쿠폰 개수, 원금액, 최종금액 반환받기
@@ -833,7 +829,7 @@ public class ServerManager {
 			// 구매상태로 전환 및 매출에 기록
 			cartDao.setStatus(mId);
 			// 장바구니 내역들 삭제도 잊지 않기
-			cartListDao.deleteList(mId);
+			cartListDao.deleteList(cart.getCtNum());
 			boolean resIncome = incomeDao.insertIncome(resMoney);
 			oos.writeBoolean(resIncome);
 			oos.flush();
@@ -843,19 +839,29 @@ public class ServerManager {
 	}
 	// 장바구니 리스트 가져오기
 	private boolean sendCartLists(Member member) {
-		try {
-			Cart cart = cartDao.selectCart(member);
-			if(cart == null) {
-				return false;
-			}
-			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-			oos.writeObject(cartLists);
-			oos.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return true;
+	    try {
+	        Cart cart = cartDao.selectCart(member);
+	        if (cart == null) {
+	        	oos.writeBoolean(false);
+	        	oos.flush();
+	            return false;
+	        }
+	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+	        if (cartLists == null) {
+	        	oos.writeBoolean(false);
+	        	oos.flush();
+	        	return false;
+	        }
+	        oos.writeBoolean(true);
+	        oos.writeObject(cartLists);
+	        oos.flush();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false; // 예외 발생 시 false 반환
+	    }
+	    return true; // 모든 조건을 만족할 때만 true 반환
 	}
+
 	private void viewHistory(Member member) {
 		try {
 			String mId = member.getMId();

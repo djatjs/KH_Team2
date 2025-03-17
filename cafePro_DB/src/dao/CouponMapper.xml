@@ -21,7 +21,7 @@
   		where CO_M_ID = #{mId}
   	</select>
   	<update id="plusCoupon">
-  		update stamp
+  		update coupon
     	set CO_COUNT = CO_COUNT + 1
     	where CO_M_ID = #{mId}
   	</update>
