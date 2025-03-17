@@ -15,6 +15,12 @@ public interface MemberDAO {
 
 	boolean UpdateDeleteEvent(@Param("member")Member member);
 
+	void Updat(@Param("member")Member member);
+
+	boolean restory(@Param("member")Member member);
+
+
+
 
 	
 }

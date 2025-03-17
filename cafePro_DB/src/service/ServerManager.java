@@ -874,16 +874,17 @@ public class ServerManager {
 			//
 			String id = ois.readUTF();
 			String pw = ois.readUTF();
-			boolean res1 = false;
-			boolean res2 = false;
+
 			res3 = false;
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
-				res1 = stampDao.deleteMember(id);
-				res2 = couponDao.deleteMember(id);
-				res3 = memberDao.UpdateDeleteEvent(member);
+				
+				stampDao.deleteMember(id);
+				couponDao.deleteMember(id);
+				memberDao.Updat(member);
+				memberDao.UpdateDeleteEvent(member);
+				res3 = true;
 			}
 			oos.writeBoolean(res3);
-			System.out.println("333" + member);
 			oos.flush();
 			return res3;
 
@@ -962,4 +963,31 @@ public class ServerManager {
 		}
 		return false;
 	}
+
+	public boolean restory() {
+		boolean logres = false;
+
+		try {
+			// 클라이언트로부터 신호받음
+			String answer = ois.readUTF();
+			if (answer.equals("N")) {
+				return false;
+			}
+			//
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+			Member member = new Member(id, pw);
+
+			logres = memberDao.restory(member);
+
+			oos.writeBoolean(logres);
+			oos.flush();
+			return logres;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return logres;
+	}
+
 }
