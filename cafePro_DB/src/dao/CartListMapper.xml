@@ -28,7 +28,7 @@
 	</insert>
 	<delete id="deleteList">
 		delete from cart_list
-		where CL_CT_NUM = #{}
+		where CL_CT_NUM = #{ctNum}
 	</delete>
     
 </mapper>

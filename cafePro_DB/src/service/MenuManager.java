@@ -754,6 +754,9 @@ public class MenuManager {
 			System.out.print("사용할 쿠폰 개수를 입력하시오(보유중인 쿠폰 개수 : "+  haveCoupon +") : ");
 			useCoupon = scan.nextInt();
 			scan.nextLine();
+			if(useCoupon*1000>=totalAmount) {
+				System.out.println("사용후 금액이 0 미만입니다. 다시 입력해주세요");
+			}
 			if(useCoupon>haveCoupon) {
 				System.out.println("사용하려는 쿠폰 수가 보유한 쿠폰 개수를 초과합니다. 다시 입력해주세요.");
 			}
