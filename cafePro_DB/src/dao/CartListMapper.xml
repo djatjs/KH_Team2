@@ -30,5 +30,17 @@
 		delete from cart_list
 		where CL_CT_NUM = #{ctNum}
 	</delete>
+	
+	<select id="selectCartList">
+		select * from cart_list
+		where CL_NUM = #{clNum};
+	</select>
+	
+	<update id="updateCartList">
+		update cart_list
+		set CL_AMOUNT = #{clAmount}
+		where CL_NUM = #{clNum};
+	
+	</update>
     
 </mapper>

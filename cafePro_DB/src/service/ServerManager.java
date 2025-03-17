@@ -781,8 +781,29 @@ public class ServerManager {
 	}
 	
 	private void updateCart(Member member) {
+	try {
 		sendCartLists(member);
+		int clAmount = ois.readInt();
+		int clNum = ois.readInt();
 		
+		boolean isNull = cartListDao.selectCartList(clNum);
+		if(!isNull) {
+			oos.writeBoolean(isNull);
+			oos.flush();
+			return;
+		}
+		
+		oos.writeBoolean(isNull);
+		oos.flush();
+		
+		boolean res = cartListDao.updateCartList(clNum, clAmount);
+		
+		oos.writeBoolean(res);
+		oos.flush();
+	}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

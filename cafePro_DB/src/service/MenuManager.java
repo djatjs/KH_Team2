@@ -721,7 +721,11 @@ public class MenuManager {
 	}
 	
 	private void updateCart() {
-		try { 
+		try {
+			boolean isReady = ois.readBoolean();
+			if(!isReady) {
+				System.out.println("장바구니가 없습니다.");
+			}
 			List<CartList> cartLists = (List<CartList>) ois.readObject();
 			List<Integer> cartListsNumList = new ArrayList<>();
 			
@@ -756,11 +760,26 @@ public class MenuManager {
 			System.out.print("수정할 메뉴 수량 : ");
 			int clAmount = scan.nextInt();
 			
-			//메뉴 수정하는 코드
-			clAmount = cartLists.get(menuIndex - 1);
-			// 수정한 수량을 서버로 보냄
+			//사용자가 입력한 인덱스에 해당하는 장바구니를 가져와서
+			int clNum = cartListsNumList.get(menuIndex - 1);
+			// 사용자가 입력한 수량을 설정
+			cartListsNumList.set(menuIndex, clAmount);
+			
+			//서버로 수량 보냄, 몇번째인지 보냄
 			oos.writeInt(clAmount);
+			oos.writeInt(clNum);
 			oos.flush();
+			
+			boolean isNull = ois.readBoolean();
+			if(!isNull) {
+				System.out.println("장바구니에 상품이 없습니다.");
+			}
+			boolean res = ois.readBoolean();
+			if(!res) {
+				System.out.println("업데이트 실패");
+			}else {
+				System.out.println("업데이트 성공");
+			}
 			
 			}catch (Exception e) {
 				e.printStackTrace();
