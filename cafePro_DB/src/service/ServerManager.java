@@ -784,7 +784,9 @@ public class ServerManager {
 	try {
 		sendCartLists(member);
 		int clAmount = ois.readInt();
+		System.out.println(clAmount);
 		int clNum = ois.readInt();
+		System.out.println(clNum);
 		
 		boolean isNull = cartListDao.selectCartList(clNum);
 		if(!isNull) {
