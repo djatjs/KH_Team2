@@ -452,7 +452,7 @@ public class MenuManager {
 			System.out.println("------------------");
 			String meCode = menuNumList.get(menuIndex - 1);
 			
-			 Menu menu = new Menu(meCode, meName, mePrice, meHotIce, meContent);
+			Menu menu = new Menu(meCode, meName, mePrice, meHotIce, meContent);
 			
 			oos.writeObject(menu);
 			oos.flush();
@@ -680,6 +680,7 @@ public class MenuManager {
 			insterCart(); //담기
 			break;
 		case 2:
+			updateCart();
 			System.out.println("수정"); //수정
 			break;
 		case 3:
@@ -718,6 +719,58 @@ public class MenuManager {
 		}
 		
 	}
+	
+	private void updateCart() {
+		try { 
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			List<Integer> cartListsNumList = new ArrayList<>();
+			
+			int totalAmount = 0;
+
+		    for (int i = 0; i < cartLists.size(); i++) {
+		        CartList cartItem = cartLists.get(i);
+		        cartListsNumList.add(cartItem.getClCtNum()); // DB tagNum 저장
+		        int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
+		        totalAmount += itemTotalPrice;
+
+		        printCartItem(i + 1, cartItem, itemTotalPrice);
+		    }
+
+		    System.out.println("------------------");
+		    System.out.println("최종금액 : " + totalAmount + "원");
+		
+		    //수정할 메뉴의 인덱스 번호를 입력 받음 
+		    //인덱스번호가 메뉴 범위 밖이면 경고 메시지 출력
+		    int menuIndex = 0;
+		    while (true) {
+				System.out.print("수정할 메뉴의 번호를 입력하세요 : ");
+				menuIndex = scan.nextInt();
+				if (menuIndex >= 1 && menuIndex <= cartListsNumList.size()) {
+					break;
+				} else {
+					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					scan.nextLine();
+				}
+			}	    
+		
+			System.out.print("수정할 메뉴 수량 : ");
+			int clAmount = scan.nextInt();
+			
+			//메뉴 수정하는 코드
+			clAmount = cartLists.get(menuIndex - 1);
+			// 수정한 수량을 서버로 보냄
+			oos.writeInt(clAmount);
+			oos.flush();
+			
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		
+		
+		
+	}
+	
 	//고객_1_3.
 	private void deleteCart() {
 		

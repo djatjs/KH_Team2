@@ -717,6 +717,7 @@ public class ServerManager {
 			insertCart(member);
 			break;
 		case 2:
+			updateCart(member);
 			System.out.println("2. 장바구니 수정");
 			break;
 		case 3:
@@ -736,6 +737,7 @@ public class ServerManager {
 	}
 	
 
+	
 	//고객-1-1.
 	private void insertCart(Member member) {
 		try {
@@ -777,6 +779,13 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
+	
+	private void updateCart(Member member) {
+		sendCartLists(member);
+		
+	}
+
+	
 	//고객_1_3.
 	private void deleteCart(Member member) {
 		sendCartLists(member);
