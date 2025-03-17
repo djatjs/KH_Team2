@@ -2,6 +2,7 @@ package model.vo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class Member implements Serializable{
 	private String mAuthority;  					//M_AUTHORITY
 	private String mDel;							//M_DEL
 	private Date mDelTime;							//M_DEL_TIME
-	
+	List<Menu_Tag> list;
 	
 	public Member() {}
 	
