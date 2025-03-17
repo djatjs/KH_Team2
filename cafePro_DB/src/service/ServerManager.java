@@ -725,7 +725,7 @@ public class ServerManager {
 			break;
 		case 4:
 			System.out.println("4. 장바구니 구매");
-			purchase(member);
+			orderCart(member);
 			break;
 		case 5:
 			break;
@@ -783,30 +783,70 @@ public class ServerManager {
 		// 삭제할 장바구니리스트 번호 받기
 		// 번호를 통해 해당 장바구니 리스트 삭제하기
 	}
-	// 장바구니 리스트 전송 메소드
-	private void sendCartLists(Member member) {
+	
+
+	//고객_1_4.
+	private void orderCart(Member member) {
 		try {
+			boolean is_ready = sendCartLists(member);
+			oos.writeBoolean(is_ready);
+			oos.flush();
+			if(!is_ready) {
+				return;
+			}
+			// 고객이 보유하고 있는 쿠폰                               니 리스트 전송 
+			int haveCoupon = couponDao.selectCoupon(member.getMId());
+			oos.writeInt(haveCoupon);
+			oos.flush();
+			
+			// 구매할건지 응답 받기
+			boolean answer = ois.readBoolean();
+			System.out.println("z0");
+			if(!answer) {
+				System.out.println("z1");
+				return;
+			}
+			// 구매할 경우 -> 사용할 쿠폰 개수, 원금액, 최종금액 반환받기
+			int useCoupon = ois.readInt();
+			int totalAmount = ois.readInt();
+			int resMoney = ois.readInt();
+			String mId = member.getMId();
+			// order객체 저장, 쿠폰 사용량만큼 쿠폰 차감, 스탬프 1적립
 			Cart cart = cartDao.selectCart(member);
-			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-			for(int i=0; i<cartLists.size();i++) {System.out.println(cartLists.get(i));}
-			oos.writeObject(cartLists);
+			orderDao.insertOrder(cart.getCtNum(), mId, useCoupon, totalAmount, resMoney);
+			stampDao.plusStamp(member.getMId());
+			// 스탬프가 10개가되면 0으로 초기화 및 쿠폰 1 추가
+			int haveStamp = stampDao.selectStamp(mId);
+			if(haveStamp>=10) {
+				stampDao.resetStamp(mId);
+				couponDao.plusCoupon(mId);
+			}
+			// 구매상태로 전환 및 매출에 기록
+			cartDao.setStatus(mId);
+			// 장바구니 내역들 삭제도 잊지 않기
+			cartListDao.deleteList(mId);
+			boolean resIncome = incomeDao.insertIncome(resMoney);
+			oos.writeBoolean(resIncome);
 			oos.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	//고객_1_4.
-	private void purchase(Member member) {
-		sendCartLists(member);
-		// 구매할건지 응답 받기
-		// 구매할 경우
-		// 고객의 쿠폰 사용해서 최종 결제하기로한 정보를 order 객체로 받기
-		// order객체 저장, 쿠폰 사용량만큼 쿠폰 차감, 스탬프 1적립
-			// 스탬프가 10개가되면 0으로 초기화 및 쿠폰 1 추가
-		// 최종 결제금액 income에 추가
+	// 장바구니 리스트 가져오기
+	private boolean sendCartLists(Member member) {
+		try {
+			Cart cart = cartDao.selectCart(member);
+			if(cart == null) {
+				return false;
+			}
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			oos.writeObject(cartLists);
+			oos.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
-
 	private void viewHistory(Member member) {
 		try {
 			String mId = member.getMId();

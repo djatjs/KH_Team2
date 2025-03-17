@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import model.vo.CartList;
 import model.vo.Category;
+import model.vo.Member;
 import model.vo.Menu;
 import model.vo.Order;
 import model.vo.Tag;
@@ -685,7 +686,7 @@ public class MenuManager {
 			deleteCart(); //삭제
 			break;
 		case 4:
-			purchase(); //구매
+			orderCart(); //구매
 			break;
 		case 5:
 			break;
@@ -719,21 +720,92 @@ public class MenuManager {
 	}
 	//고객_1_3.
 	private void deleteCart() {
-		try {
-			List<CartList> cartLists = (List<CartList>) ois.readObject();
-			for(CartList aa : cartLists) {
-				System.out.println(aa);
-			}
-		}catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	//고객_1_4.
-	private void purchase() {
-		// 
 		
 	}
+	//고객_1_4.
+	private void orderCart() {
+		try {
+			boolean is_ready = ois.readBoolean();
+			if(!is_ready) {
+				System.out.println("장바구니가 비어있습니다.");
+				return;
+			}
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			List<Integer> cartListsNumList = new ArrayList<>();
+			
+			int totalAmount = 0;
+
+		    for (int i = 0; i < cartLists.size(); i++) {
+		        CartList cartItem = cartLists.get(i);
+		        cartListsNumList.add(cartItem.getClCtNum()); // DB tagNum 저장
+		        int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
+		        totalAmount += itemTotalPrice;
+
+		        printCartItem(i + 1, cartItem, itemTotalPrice);
+		    }
+
+		    System.out.println("------------------");
+		    System.out.println("최종금액 : " + totalAmount + "원");
+		    
+		    //쿠폰 갯수 확인
+			int haveCoupon = ois.readInt();
+			int useCoupon = 0;
+			do {
+			System.out.print("사용할 쿠폰 개수를 입력하시오(보유중인 쿠폰 개수 : "+  haveCoupon +") : ");
+			useCoupon = scan.nextInt();
+			scan.nextLine();
+			if(useCoupon>haveCoupon) {
+				System.out.println("사용하려는 쿠폰 수가 보유한 쿠폰 개수를 초과합니다. 다시 입력해주세요.");
+			}
+			if(useCoupon<0) {
+				System.out.println("0보다 큰 수로 입력해주세요.");
+			}
+			}while(useCoupon>haveCoupon || useCoupon<0);
+			
+			//최종 결제 금액
+			int resMoney = totalAmount - useCoupon*1000;
+			System.out.println("------------------");
+			System.out.println("최종 결제 금액 : " + resMoney + "원");
+		    //구매여부 물어보기
+		    System.out.print("구매 하시겠습니까?(Y or N) : ");
+		    String answer = "";
+		    while(true) {
+	    		answer = scan.next();
+				scan.nextLine();
+				if(answer.equals("Y") || answer.equals("N")
+			    		|| answer.equals("y") || answer.equals("n")) {
+					break;
+				}
+		    }
+		    System.out.println(answer);
+		    switch(answer) {
+		    case "Y","y":
+		    	oos.writeBoolean(true);
+		    	oos.writeInt(useCoupon);
+		    	oos.writeInt(totalAmount);
+		    	oos.writeInt(resMoney);
+		    	oos.flush();
+		    	boolean res = ois.readBoolean();
+		    	if(res) {
+		    		System.out.println("구매완료");
+		    	}else {System.out.println("구매실패");}
+		    	break;
+		    case "N","n":
+		    	oos.writeBoolean(false);
+			    System.out.println("구매를 취소합니다");
+		    	break;
+		    }
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	private void printCartItem(int index, CartList cartItem, int itemTotalPrice) {
+	    System.out.println(index + ". " + cartItem.getMenu().getMeName() + "(" +
+	            cartItem.getMenu().getMeHotIce() + ")" + " " + cartItem.getClAmount() + "개" +
+	            " " + cartItem.getMenu().getMePrice() + " → " + itemTotalPrice + "원");
+	}
+	
 	//고객_2.
 	public void viewHistory() {
 		try {

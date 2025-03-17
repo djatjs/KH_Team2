@@ -13,4 +13,6 @@ public interface CartListDAO {
 			@Param("menu") Menu menu, 
 			@Param("amount") int amount);
 
+	void deleteList(String mId);
+
 }

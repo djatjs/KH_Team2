@@ -3,7 +3,11 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   <mapper namespace="dao.StampDAO">
-  	
+  	<resultMap type="model.vo.Stamp" id="StampMap">
+		<id property="stKey" column="ST_KEY" />
+		<result property="stMId" column="ST_M_ID" />
+		<result property="stCount" column="ST_COUNT" />
+	</resultMap>
 	<insert id="insertStamp">
         INSERT INTO stamp (ST_M_ID, ST_COUNT) VALUES (#{memberId}, 0)
     </insert>
@@ -11,5 +15,19 @@
     	delete from stamp
     	where ST_M_ID = #{id}
     </delete>
+    <update id="plusStamp">
+    	update stamp
+    	set ST_COUNT = ST_COUNT + 1
+    	where ST_M_ID = #{mId}
+    </update>
+    <select id="selectStamp">
+    	select ST_COUNT from stamp
+    	where ST_M_ID = #{mId}
+    </select>
+    <update id="resetStamp">
+    	update stamp
+    	set ST_COUNT = 0
+    	where ST_M_ID = #{mId}
+    </update>
   	
   </mapper>
