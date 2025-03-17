@@ -788,15 +788,16 @@ public class ServerManager {
 	//고객_1_4.
 	private void orderCart(Member member) {
 		try {
-			sendCartLists(member);
+			boolean is_ready = sendCartLists(member);
+			oos.writeBoolean(is_ready);
+			oos.flush();
+			if(!is_ready) {
+				return;
+			}
 			// 고객이 보유하고 있는 쿠폰                               니 리스트 전송 
 			int haveCoupon = couponDao.selectCoupon(member.getMId());
 			oos.writeInt(haveCoupon);
 			oos.flush();
-			boolean is_null = ois.readBoolean();
-			if(is_null) {
-				return;
-			}
 			
 			// 구매할건지 응답 받기
 			boolean answer = ois.readBoolean();
@@ -822,6 +823,8 @@ public class ServerManager {
 			}
 			// 구매상태로 전환 및 매출에 기록
 			cartDao.setStatus(mId);
+			// 장바구니 내역들 삭제도 잊지 않기
+			cartListDao.deleteList(mId);
 			boolean resIncome = incomeDao.insertIncome(resMoney);
 			oos.writeBoolean(resIncome);
 			oos.flush();
@@ -830,18 +833,19 @@ public class ServerManager {
 		}
 	}
 	// 장바구니 리스트 가져오기
-	private void sendCartLists(Member member) {
-		Cart cart = cartDao.selectCart(member);
-		if(cart == null) {
-			return;
-		}
-		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+	private boolean sendCartLists(Member member) {
 		try {
+			Cart cart = cartDao.selectCart(member);
+			if(cart == null) {
+				return false;
+			}
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
 			oos.writeObject(cartLists);
 			oos.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	private void viewHistory(Member member) {
 		try {

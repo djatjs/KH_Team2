@@ -26,6 +26,9 @@
 		insert into cart_list(CL_ME_CODE, CL_CT_NUM, CL_AMOUNT) 
 		values (#{menu.meCode}, #{ctNum}, #{amount});
 	</insert>
-	
+	<delete id="deleteList">
+		delete from cart_list
+		where CL_CT_NUM = #{}
+	</delete>
     
 </mapper>

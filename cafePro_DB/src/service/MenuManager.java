@@ -725,14 +725,13 @@ public class MenuManager {
 	//고객_1_4.
 	private void orderCart() {
 		try {
-			List<CartList> cartLists = (List<CartList>) ois.readObject();
-			List<Integer> cartListsNumList = new ArrayList<>();
-			if(cartLists == null) {
-				oos.writeBoolean(true);
-				oos.flush();
-				System.out.println("");
+			boolean is_ready = ois.readBoolean();
+			if(!is_ready) {
+				System.out.println("장바구니가 비어있습니다.");
 				return;
 			}
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			List<Integer> cartListsNumList = new ArrayList<>();
 			
 			int totalAmount = 0;
 
