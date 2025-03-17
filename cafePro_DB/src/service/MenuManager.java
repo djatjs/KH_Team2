@@ -785,9 +785,6 @@ public class MenuManager {
 				e.printStackTrace();
 			}
 			
-		
-		
-		
 	}
 	
 	//고객_1_3.

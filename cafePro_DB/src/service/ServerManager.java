@@ -82,6 +82,17 @@ public class ServerManager {
 			Member login = (Member) ois.readObject();
 			// 로그인 확인
 			boolean loginRes = true;
+			
+			// 휴면 계정인지 여부 확인
+			// M_DEL 가 Y 이면 로그인 불가능
+			boolean isY = memberDao.selectDeletedId(login);
+			if(isY) {
+				oos.writeBoolean(isY);
+				oos.flush();
+				return;
+			}
+			
+			
 			Member dbMember = memberDao.selectMember(login);
 			if (dbMember == null) {
 				loginRes = false;

@@ -15,5 +15,7 @@ public interface MemberDAO {
 
 	boolean updateMember(@Param("member")Member member);
 
+	boolean selectDeletedId(@Param("member")Member login);
+
 	
 }
