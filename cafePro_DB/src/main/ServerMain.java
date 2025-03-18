@@ -26,7 +26,7 @@ public class ServerMain {
 				do {
 					menu = ois.readInt();
 					runMenu(menu);
-				} while (menu!=4);
+				} while (menu!=5);
 				System.out.println("[클라이언트 연결 해제]");
 			}
 			
@@ -47,6 +47,9 @@ public class ServerMain {
 			serverManager.findPw();
 			break;
 		case 4:
+			serverManager.restory();
+			break;		
+		case 5:
 			System.out.println("[종료]");
 			break;
 		default:

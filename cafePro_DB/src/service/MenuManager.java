@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import dao.CategoryDAO;
+import model.vo.Cart;
 import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
@@ -653,7 +655,7 @@ public class MenuManager {
 	                }
 	            } else {
 	                System.out.println("[숫자를 입력하세요.]");
-	                scan.nextLine();
+	                scan.nextLine(); // 잘못된 입력 제거
 	            }
 	        }
 	    } catch (Exception e) {

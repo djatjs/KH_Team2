@@ -4,7 +4,7 @@ insert into income(IN_DATE, IN_MONEY) values
 (now(), 1000);
 
 
-select ifnull(sum(IN_MONEY), 0) ) from income;
+select ifnull(sum(IN_MONEY), 0)  from income;
 
 #일
 /*

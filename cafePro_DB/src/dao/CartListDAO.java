@@ -12,11 +12,15 @@ public interface CartListDAO {
 			@Param("ctNum")int ctNum, 
 			@Param("menu") Menu menu, 
 			@Param("amount") int amount);
+	
+	Boolean deletetMenuToCartList(
+			@Param("ctNum")int ctNum, 
+			@Param("menu") Menu menu, 
+			@Param("amount") int amount);
 
-	void deleteList(@Param("ctNum")int ctNum);
+	CartList seletCartByNum(@Param("clNum")int clNum);
 
-	boolean selectCartList(int clNum);
+	boolean deleteCart(@Param("clNum")int clNum);
 
-	boolean updateCartList(@Param("clNum")int clNum, @Param("clAmount")int clAmount);
 
 }

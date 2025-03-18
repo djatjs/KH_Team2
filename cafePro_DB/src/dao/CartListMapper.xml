@@ -42,5 +42,14 @@
 		where CL_NUM = #{clNum};
 	
 	</update>
+	
+	<select id="seletCartByNum">
+		select * from cart_list 
+		where CL_NUM = #{clNum}
+	</select>
+	<delete id="deleteCart">
+    	delete from cart_list   	
+    	where CL_NUM = #{clNum}
+    </delete>
     
 </mapper>

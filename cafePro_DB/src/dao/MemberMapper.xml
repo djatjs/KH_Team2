@@ -44,5 +44,36 @@
 			M_NUMBER = #{member.mNumber},
 			M_PW = #{member.mPw}
 		where M_ID = #{member.mId}
+	</update>	
+	<update id="Updat">
+		update member 
+		set 
+			M_DEL = 'Y',
+			M_DEL_TIME = NOW()
+		where M_ID = #{member.mId}
 	</update>
+
+	<update id="UpdateDeleteEvent" parameterType="map">
+		create event update_delete_event_${member.mId}
+		on schedule
+		at adddate(now(), 7)
+		on completion not preserve
+		do
+		begin
+		delete from `member`
+		where M_ID = #{member.mId}
+		and M_DEL = 'y'
+		and M_DEL_TIME &lt; now() - INTERVAL 7 DAY;
+		end
+	</update>
+	
+	<update id="restory">
+		update member
+		set
+		M_DEL = 'N',
+		M_DEL_TIME = null
+		where M_ID = #{member.mId} and
+		M_DEL = 'Y'
+	</update>
+	
   </mapper>

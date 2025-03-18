@@ -27,6 +27,7 @@ import dao.TagDAO;
 import model.vo.Cart;
 import model.vo.CartList;
 import model.vo.Category;
+import model.vo.Coupon;
 import model.vo.Member;
 import model.vo.Menu;
 import model.vo.Order;
@@ -792,30 +793,31 @@ public class ServerManager {
 	}
 	
 	private void updateCart(Member member) {
-	try {
-		sendCartLists(member);
-		int clAmount = ois.readInt();
-		System.out.println(clAmount);
-		int clNum = ois.readInt();
-		System.out.println(clNum);
-		
-		boolean isNull = cartListDao.selectCartList(clNum);
-		if(!isNull) {
+		try {
+			sendCartLists(member);
+			int clAmount = ois.readInt();
+			System.out.println(clAmount);
+			int clNum = ois.readInt();
+			System.out.println(clNum);
+
+			boolean isNull = cartListDao.selectCartList(clNum);
+			if(!isNull) {
+				oos.writeBoolean(isNull);
+				oos.flush();
+				return;
+			}
+			
 			oos.writeBoolean(isNull);
 			oos.flush();
-			return;
-		}
+			
+			boolean res = cartListDao.updateCartList(clNum, clAmount);
+			
+			oos.writeBoolean(res);
+			oos.flush();
 		
-		oos.writeBoolean(isNull);
-		oos.flush();
-		
-		boolean res = cartListDao.updateCartList(clNum, clAmount);
-		
-		oos.writeBoolean(res);
-		oos.flush();
-	}
-		catch (IOException e) {
-			e.printStackTrace();
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -825,6 +827,36 @@ public class ServerManager {
 		sendCartLists(member);
 		// 삭제할 장바구니리스트 번호 받기
 		// 번호를 통해 해당 장바구니 리스트 삭제하기
+
+		try {
+		Cart cart = cartDao.selectCart(member);
+		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			
+		oos.writeObject(cartLists);
+		oos.flush();
+		
+		int clNum = ois.readInt();
+		
+		if (clNum == 0) {
+            System.out.println("뒤로 가기");
+            return;  
+        }
+		
+		CartList dbCart = cartListDao.seletCartByNum(clNum);
+
+		boolean res = true;
+		if (dbCart == null) {
+			res = false;
+			oos.writeBoolean(res);
+			oos.flush();
+			return;
+		}
+			res = cartListDao.deleteCart(clNum);
+			oos.writeBoolean(res);
+			oos.flush();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -958,13 +990,15 @@ public class ServerManager {
 			//
 			String id = ois.readUTF();
 			String pw = ois.readUTF();
-			boolean res1 = false;
-			boolean res2 = false;
+
 			res3 = false;
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
-				res1 = stampDao.deleteMember(id);
-				res2 = couponDao.deleteMember(id);
-				res3 = memberDao.deleteMember(member);
+				
+				stampDao.deleteMember(id);
+				couponDao.deleteMember(id);
+				memberDao.Updat(member);
+				memberDao.UpdateDeleteEvent(member);
+				res3 = true;
 			}
 			oos.writeBoolean(res3);
 			oos.flush();
@@ -1045,4 +1079,31 @@ public class ServerManager {
 		}
 		return false;
 	}
+
+	public boolean restory() {
+		boolean logres = false;
+
+		try {
+			// 클라이언트로부터 신호받음
+			String answer = ois.readUTF();
+			if (answer.equals("N")) {
+				return false;
+			}
+			//
+			String id = ois.readUTF();
+			String pw = ois.readUTF();
+			Member member = new Member(id, pw);
+
+			logres = memberDao.restory(member);
+
+			oos.writeBoolean(logres);
+			oos.flush();
+			return logres;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return logres;
+	}
+
 }

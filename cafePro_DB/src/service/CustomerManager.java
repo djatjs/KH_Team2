@@ -125,48 +125,6 @@ public class CustomerManager {
 	}
 	
 	
-	public boolean withdrawMembership() {
-		boolean res=false;
-		try {
-			// 여유생기면 비밀번호 입력해서 본인 맞는지 재인증 단계 거쳐보기
-			System.out.print("아이디 : ");
-	        String id = scan.next();
-	        System.out.print("비밀번호 : ");
-	        String pw = scan.next();
-	        scan.nextLine();
-			// 탈퇴할지 말지 여부를 다시 한 번 물어봄
-			String answer ="";
-			while(true) {
-				System.out.print("정말 탈퇴하시겠습니까? (Y or N)");
-				answer = scan.next();
-				scan.nextLine();
-				if(answer.equals("Y") || answer.equals("N")) {break;}
-				else {System.out.println("잘못된 입력");}
-			}
-			oos.writeUTF(answer);
-			oos.flush();
-			if(answer.equals("N")) {
-				return false;
-			}
-			// 탈퇴한다는 신호를 서버로 보냄
-			oos.writeUTF(id);
-			oos.writeUTF(pw);
-			oos.flush();
-			// 서버의 db작업 성공 유무 받음
-			res = ois.readBoolean();
-			
-			
-			if(res) {
-				System.out.println("[삭제 성공! 로그인 화면으로 돌아갑니다.]");
-			}else {
-				System.out.println("[삭제 실패 : 잘못된 아이디 또는 비밀번호 입력]");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return res;
-	}
-	
 	public void updateInfo() {
 		try {
 			System.out.print("아이디 : ");
@@ -215,4 +173,86 @@ public class CustomerManager {
 			e.printStackTrace();
 		} 
 	}
+	public boolean withdrawMembership() {
+		boolean res=false;
+		try {
+			// 여유생기면 비밀번호 입력해서 본인 맞는지 재인증 단계 거쳐보기
+			System.out.print("아이디 : ");
+	        String id = scan.next();
+	        System.out.print("비밀번호 : ");
+	        String pw = scan.next();
+	        scan.nextLine();
+			// 탈퇴할지 말지 여부를 다시 한 번 물어봄
+			String answer ="";
+			while(true) {
+				System.out.print("정말 탈퇴하시겠습니까? (Y or N)");
+				answer = scan.next();
+				scan.nextLine();
+				if(answer.equals("Y") || answer.equals("N")) {break;}
+				else {System.out.println("잘못된 입력");}
+			}
+			oos.writeUTF(answer);
+			oos.flush();
+			if(answer.equals("N")) {
+				return false;
+			}
+			// 탈퇴한다는 신호를 서버로 보냄
+			oos.writeUTF(id);
+			oos.writeUTF(pw);
+			oos.flush();
+			// 서버의 db작업 성공 유무 받음
+			res = ois.readBoolean();
+			
+			if(res) {
+				System.out.println("[삭제 성공! 로그인 화면으로 돌아갑니다.]");
+			}else {
+				System.out.println("[삭제 실패 : 잘못된 아이디 또는 비밀번호 입력]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	public void restory() {
+		boolean logres=false;
+		try {
+		
+			System.out.print("아이디 : ");
+	        String id = scan.next();
+	        System.out.print("비밀번호 : ");
+	        String pw = scan.next();
+	        scan.nextLine();
+		
+			String answer ="";
+			while(true) {
+				System.out.print("계정을 복귀하시겠습니까? (Y or N)");
+				answer = scan.next();
+				scan.nextLine();
+				if(answer.equals("Y") || answer.equals("N")) {break;}
+				else {System.out.println("잘못된 입력");}
+			}
+			oos.writeUTF(answer);
+			oos.flush();
+			if(answer.equals("N")) {
+				return;
+			}
+			// 탈퇴한다는 신호를 서버로 보냄
+			oos.writeUTF(id);
+			oos.writeUTF(pw);
+			oos.flush();
+			// 서버의 db작업 성공 유무 받음
+			logres = ois.readBoolean();
+			
+			if(logres) {
+				System.out.println("[복구 성공! 로그인 화면으로 돌아갑니다.]");
+			}else {
+				System.out.println("[복구 실패 : 잘못된 아이디 또는 비밀번호 입력]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return;
+	}
+		
 }

@@ -13,5 +13,8 @@ public class CartList implements Serializable{
    private int clCtNum;      		//CL_CT_NUM
    private int clAmount = 0;     	//CL_AMOUNT
    Menu menu;
+
+
+   
    
 }

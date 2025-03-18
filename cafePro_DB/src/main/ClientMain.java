@@ -31,7 +31,7 @@ public class ClientMain {
 				oos.writeInt(menu);
 				oos.flush();
 				runMenu(menu);
-			} while (menu!=4);
+			} while (menu!=5);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,6 +64,9 @@ public class ClientMain {
 			memberManager.findPw();
 			break;
 		case 4:
+			memberManager.restory();
+			break;
+		case 5:
 			System.out.println("[프로그램을 종료합니다.]");
 			break;
 		default : 
@@ -77,7 +80,8 @@ public class ClientMain {
 		System.out.println("1. 로그인");
 		System.out.println("2. 회원가입");
 		System.out.println("3. 비밀번호 찾기");
-		System.out.println("4. 종료");
+		System.out.println("4. 아이디 복구");
+		System.out.println("5. 종료");
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 		System.out.print("입력 : ");
 	}

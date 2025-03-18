@@ -4,6 +4,7 @@ import java.util.List;
 
 import model.vo.Cart;
 import model.vo.CartList;
+import model.vo.Category;
 import model.vo.Member;
 
 public interface CartDAO {
@@ -13,15 +14,8 @@ public interface CartDAO {
 	Cart selectCart(Member member);
 	
 	List<CartList> selectCartList(int ctNum);
-
-	void setStatus(String mId);
-
 	
 	
-	
-	
-
-
 
 
 	
