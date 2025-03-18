@@ -24,19 +24,20 @@ public class CustomerManager {
 			Member login = inputToLogin();
 			oos.writeObject(login);
 			oos.flush();
-			
-			//아이디가 탈퇴신청한 상태인지 확인
-			boolean is_Del = ois.readBoolean();
-			if(is_Del) {
-				System.out.println("탈퇴신청된 아이디입니다. 탈퇴취소를 해주세요");
-				return type;
-			}
-			
+
 			//로그인 결과
 			boolean loginRes = ois.readBoolean();
 			if(!loginRes) {
 				return type;
 			}
+			//아이디가 탈퇴신청한 상태인지 확인
+//			boolean is_Del = ois.readBoolean();
+//			System.out.println(is_Del);
+//			if(is_Del) {
+//				System.out.println(is_Del);
+//				System.out.println("탈퇴신청된 아이디입니다. 탈퇴취소를 해주세요");
+//				return type;
+//			}
 			 type = ois.readUTF();
 		} catch (Exception e) {
 			e.printStackTrace();

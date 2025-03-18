@@ -22,5 +22,11 @@ public interface CartListDAO {
 
 	boolean deleteCart(@Param("clNum")int clNum);
 
+	boolean selectCartList(int clNum);
+
+	boolean updateCartList(@Param("clNum")int clNum, @Param("clAmount")int clAmount);
+
+	void deleteList(int ctNum);
+
 
 }

@@ -84,16 +84,6 @@ public class ServerManager {
 			// 로그인 확인
 			boolean loginRes = true;
 			
-			// 휴면 계정인지 여부 확인
-			// M_DEL 가 Y 이면 로그인 불가능
-			boolean isY = memberDao.selectDeletedId(login);
-			if(isY) {
-				oos.writeBoolean(isY);
-				oos.flush();
-				return;
-			}
-			
-			
 			Member dbMember = memberDao.selectMember(login);
 			if (dbMember == null) {
 				loginRes = false;
@@ -101,8 +91,20 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
+			// 휴면 계정인지 여부 확인
+			// M_DEL 가 Y 이면 로그인 불가능
+//			System.out.println(dbMember);
+//			boolean isY = memberDao.selectDeletedId(dbMember);
+//			if(isY) {
+//				oos.writeBoolean(isY);
+//				oos.flush();
+//				System.out.println(isY);
+//				return;
+//			}
+
 			String type = dbMember.getMAuthority();
 			oos.writeBoolean(loginRes);
+			//oos.writeBoolean(isY);
 			oos.writeUTF(type);
 			oos.flush();
 
@@ -814,12 +816,11 @@ public class ServerManager {
 			
 			oos.writeBoolean(res);
 			oos.flush();
-		
-			catch (IOException e) {
+		}catch (IOException e) {
 				e.printStackTrace();
-			}
 		}
 	}
+
 
 	
 	//고객_1_3.
