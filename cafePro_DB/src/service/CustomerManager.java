@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
+import dao.MemberDAO;
 import main.CustomerProgram;
 import main.AdminProgram;
 import model.vo.Member;
@@ -83,7 +84,7 @@ public class CustomerManager {
 	        // 서버로부터 비밀번호 응답 받기
 	        String pw = ois.readUTF();
 	        // 응답 출력
-	        if (pw != null) {
+	        if (pw != null && !pw.isEmpty()) {
 	            System.out.println("[비밀번호는: " + pw + " 입니다.]");
 	        } else {
 	            System.out.println("[아이디나 전화번호가 일치하지 않습니다.]");
@@ -198,6 +199,7 @@ public class CustomerManager {
 			
 			if(res) {
 				System.out.println("[삭제 성공! 로그인 화면으로 돌아갑니다.]");
+				System.out.println("[7일후 계정정보가 완전히 삭제됩니다.]");
 			}else {
 				System.out.println("[삭제 실패 : 잘못된 아이디 또는 비밀번호 입력]");
 			}
@@ -209,6 +211,7 @@ public class CustomerManager {
 	
 	public void restory() {
 		boolean logres=false;
+		
 		try {
 		
 			System.out.print("아이디 : ");
@@ -238,7 +241,7 @@ public class CustomerManager {
 			logres = ois.readBoolean();
 			
 			if(logres) {
-				System.out.println("[복구 성공! 로그인 화면으로 돌아갑니다.]");
+				System.out.println("[복구 성공! 로그인 화면으로 돌아갑니다.]");			
 			}else {
 				System.out.println("[복구 실패 : 잘못된 아이디 또는 비밀번호 입력]");
 			}

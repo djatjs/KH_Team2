@@ -878,9 +878,7 @@ public class ServerManager {
 			res3 = false;
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
 				
-				stampDao.deleteMember(id);
-				couponDao.deleteMember(id);
-				memberDao.Updat(member);
+				memberDao.Updat(member);	
 				memberDao.UpdateDeleteEvent(member);
 				res3 = true;
 			}
@@ -933,24 +931,24 @@ public class ServerManager {
 	}
 
 	public void findPw() {
-		try {
-			// 클라이언트로부터 Member 객체를 받음
-			Member member = (Member) ois.readObject();
-			// 비밀번호 조회
-			String pw = memberDao.findPw(member).getMPw();
-			// 클라이언트로 결과 반환
-			oos.writeUTF(pw);
-			oos.flush();
-			if (pw != null) {
-				System.out.println("[서버 : 비밀번호 조회 완료]");
-			} else {
-				System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	    try {
+	        // 클라이언트로부터 Member 객체를 받음
+	        Member member = (Member) ois.readObject();
+	        // 비밀번호 조회
+	        Member foundMember = memberDao.findPw(member);  // findPw() 호출 후, 반환값을 foundMember에 저장
+	        if (foundMember != null) {
+	            String pw = foundMember.getMPw();  // null이 아니면 비밀번호 가져오기
+	            oos.writeUTF(pw);
+	            oos.flush();
+	            System.out.println("[서버 : 비밀번호 조회 완료]");
+	        } else {           
+	            oos.writeUTF(""); 
+	            oos.flush();
+	            System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	public boolean contains(Member member) {
@@ -979,7 +977,9 @@ public class ServerManager {
 			Member member = new Member(id, pw);
 
 			logres = memberDao.restory(member);
-
+			memberDao.dropEvent(member);
+	
+			
 			oos.writeBoolean(logres);
 			oos.flush();
 			return logres;

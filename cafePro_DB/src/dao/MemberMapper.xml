@@ -65,4 +65,8 @@
 		M_DEL = 'Y'
 	</update>
 	
+	<update id="dropEvent">
+   	 	DROP EVENT IF EXISTS update_delete_event_${member.mId};
+	</update>
+	
   </mapper>
