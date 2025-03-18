@@ -31,8 +31,8 @@
 		where CL_CT_NUM = #{ctNum}
 	</delete>
 	
-	<select id="selectCartList">
-		select * from cart_list
+	<select id="selectCartList" resultType="boolean" >
+		select count(*) >0 from cart_list
 		where CL_NUM = #{clNum};
 	</select>
 	

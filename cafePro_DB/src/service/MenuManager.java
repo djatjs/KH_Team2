@@ -733,7 +733,7 @@ public class MenuManager {
 
 		    for (int i = 0; i < cartLists.size(); i++) {
 		        CartList cartItem = cartLists.get(i);
-		        cartListsNumList.add(cartItem.getClCtNum()); // DB tagNum 저장
+		        cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
 		        int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
 		        totalAmount += itemTotalPrice;
 
@@ -763,7 +763,7 @@ public class MenuManager {
 			//사용자가 입력한 인덱스에 해당하는 장바구니를 가져와서
 			int clNum = cartListsNumList.get(menuIndex - 1);
 			// 사용자가 입력한 수량을 설정
-			cartListsNumList.set(menuIndex, clAmount);
+			//cartListsNumList.set(menuIndex, clAmount);
 			
 			//서버로 수량 보냄, 몇번째인지 보냄
 			oos.writeInt(clAmount);
