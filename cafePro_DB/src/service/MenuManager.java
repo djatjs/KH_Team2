@@ -23,7 +23,18 @@ public class MenuManager {
 		this.oos = oos;
 		this.ois = ois;
 	}
-
+	//category, tag 공동 메뉴
+	private void printMenu() {
+		System.out.println("------------------");
+		System.out.println("1. 등록");
+		System.out.println("2. 수정");
+		System.out.println("3. 삭제");
+		System.out.println("4. 뒤로가기");
+		System.out.println("------------------");
+		System.out.print("메뉴 선택: ");
+	}
+	
+	//관리자_카테고리
 	public void category() {
 		try {
 			int num = 0;
@@ -167,7 +178,8 @@ public class MenuManager {
 		System.out.println("------------------");
 		return new Category(caName, caCode);
 	}
-
+	
+	//관리자_태그
 	public void tag() {
 		try {
 			int num = 0;
@@ -183,16 +195,7 @@ public class MenuManager {
 			e.printStackTrace();
 		}
 	}
-	private void printMenu() {
-		System.out.println("------------------");
-		System.out.println("1. 등록");
-		System.out.println("2. 수정");
-		System.out.println("3. 삭제");
-		System.out.println("4. 뒤로가기");
-		System.out.println("------------------");
-		System.out.print("메뉴 선택: ");
-	}
-
+	
 	private void runTagMenu(int num) {
 		switch (num) {
 		case 1:
@@ -205,11 +208,11 @@ public class MenuManager {
 			deleteTag();
 			break;
 		case 4:
+			System.out.println("[로그아웃]");
 			break;
 		default:
 		}
 	}
-
 	private void insertTag() {
 		try {
 			System.out.print("태그명 : ");
@@ -311,21 +314,33 @@ public class MenuManager {
 		}
 	}
 	
-	// 3. 메뉴
+	//관리자_메뉴
 	public void menu() {
 		try {
 			int num =0;
 			do {				
-				printMenu();
+				printMenuMenu();
 				num = scan.nextInt();
 				scan.nextLine();
 				oos.writeInt(num);
 				oos.flush();
 				runMenuMenu(num);
-			} while (num != 4);
+			} while (num != 6);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	private void printMenuMenu() {
+		System.out.println("------------------");
+		System.out.println("1. 등록");
+		System.out.println("2. 수정");
+		System.out.println("3. 삭제");
+		System.out.println("4. 태그 등록");
+		System.out.println("5. 태그 삭제");
+		System.out.println("6. 뒤로가기");
+		System.out.println("------------------");
+		System.out.print("메뉴 선택: ");
+		
 	}
 
 	private void runMenuMenu(int num) {
@@ -340,46 +355,52 @@ public class MenuManager {
 			deleteMenu();
 			break;
 		case 4:
+			insertMenuTag();
+			break;
+		case 5:
+			deleteMenuTag();
+			break;
+		case 6:
 			break;
 		default:
 		}
 		
 	}
-
+	
 	private void insertMenu() {
 		 try {
-			 	int caNum = showCategories();
-			 	if(caNum == 0) {
-			 		//서버에 작업 취소 신호 보내고 return;
-			 	}
+		 	int caNum = showCategories();
+		 	if(caNum == 0) {
+		 		//서버에 작업 취소 신호 보내고 return;
+		 	}
 			 	
-			 	System.out.print("메뉴명 : ");
-	        	String meName = scan.next();
-	        	System.out.print("메뉴 가격 : ");
-	        	int mePrice = scan.nextInt();
-	        	System.out.print("따뜻한/차가운(H/I) : ");
-	        	String meHotIce = scan.next();
-	        	System.out.print("메뉴 설명 : ");
-	        	String meContent = scan.next();
+		 	System.out.print("메뉴명 : ");
+        	String meName = scan.next();
+        	System.out.print("메뉴 가격 : ");
+        	int mePrice = scan.nextInt();
+        	System.out.print("따뜻한/차가운(H/I) : ");
+        	String meHotIce = scan.next();
+        	System.out.print("메뉴 설명 : ");
+        	String meContent = scan.next();
 	        	
-	        	scan.nextLine();
-	        	
-	        	Menu menu = new Menu(caNum, meName, mePrice, meHotIce, meContent);
-	        	
-	        	oos.writeInt(caNum);
-				oos.writeObject(menu);
-				oos.flush();
-				
-				boolean res = ois.readBoolean();
-				if(res) {
-					System.out.println("[메뉴 등록 완료]");
-				}
-				else {
-					System.out.println("[메뉴 등록 실패]");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+        	scan.nextLine();
+        	
+        	Menu menu = new Menu(caNum, meName, mePrice, meHotIce, meContent);
+        	
+        	oos.writeInt(caNum);
+			oos.writeObject(menu);
+			oos.flush();
+			
+			boolean res = ois.readBoolean();
+			if(res) {
+				System.out.println("[메뉴 등록 완료]");
 			}
+			else {
+				System.out.println("[메뉴 등록 실패]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -508,6 +529,58 @@ public class MenuManager {
 		}
 		
 	}
+	
+	private void insertMenuTag() {
+		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
+		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
+		// 메뉴 출력
+		// 1. 아메리카노(I)
+		// 2. 아메리카노(H)
+		
+		// 태그를 등록할 제품의 번호 선택
+		// 번호 입력 : 1
+		
+		// 등록할 태그 가져와서 출력
+		// 1. 인기메뉴
+		// 2. 한정메뉴
+		
+		// 등록할 태그의 번호 선택
+		// 번호 입력 : 1
+		
+		//-> 아메리카노(I) / 인기메뉴
+		
+		// 제품번호와 태그번호 서버로 전송
+		
+		// 등록 결과 받고나서 값에 따라 메시지 출력
+		// System.out.println("메뉴태그 등록 완료");
+		// System.out.println("메뉴태그 등록 실패");
+	}
+	private void deleteMenuTag() {
+		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
+		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
+		// 메뉴 출력
+		// 1. 아메리카노(I)
+		// 2. 아메리카노(H)
+		
+		// 태그를 삭제할 제품의 번호 선택
+		// 번호 입력 : 1
+		
+		// 삭제할 태그 가져와서 출력
+		// 1. 인기메뉴
+		// 2. 한정메뉴
+		
+		// 삭제할 태그의 번호 선택
+		// 번호 입력 : 1
+		
+		// 제품번호와 태그번호 서버로 전송
+		
+		// 등록 결과 받고나서 값에 따라 메시지 출력
+		// System.out.println("메뉴태그 삭제 완료");
+		// System.out.println("메뉴태그 삭제 실패");
+		
+	}
+	
+	//관리자_매출확인
 	// 4. 매출
 	public void income() {
 		try {
@@ -606,6 +679,8 @@ public class MenuManager {
 	}
 	
 	//고객-1.
+	
+	//고객_메뉴조회
 	public void viewMenuList() {
 		try {
 			int num = 0;
@@ -621,48 +696,6 @@ public class MenuManager {
 			e.printStackTrace();
 		}
 	}
-
-	private Menu printListMenu() {
-	    Menu selectedMenu = null;  // 선택된 메뉴 객체 저장
-	    try {
-	        List<Menu> dblist = (List<Menu>) ois.readObject();
-	        System.out.println("=== 현재 등록된 메뉴 목록 ===");
-
-	        if (dblist.isEmpty()) {
-	            System.out.println("등록된 메뉴가 없습니다.");
-	            return null; // 메뉴가 없으면 null 반환
-	        }
-
-	        for (int i = 0; i < dblist.size(); i++) {
-	            Menu menu = dblist.get(i);
-	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
-	        }
-
-	        int index = 0;
-	        while (true) {
-	            System.out.print("제품 번호를 입력하세요 : ");
-	            if (scan.hasNextInt()) {
-	                index = scan.nextInt();
-	                scan.nextLine();
-
-	                if (index >= 1 && index <= dblist.size()) {
-	                    selectedMenu = dblist.get(index - 1);
-	                    break;
-	                } else {
-	                    System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-	                }
-	            } else {
-	                System.out.println("[숫자를 입력하세요.]");
-	                scan.nextLine();
-	            }
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return selectedMenu;
-	}
-
-	
 	private void printCartMenu() {
 		System.out.println("------------------");
 		System.out.println("1. 장바구니 담기");
@@ -680,8 +713,7 @@ public class MenuManager {
 			insterCart(); //담기
 			break;
 		case 2:
-			updateCart();
-			System.out.println("수정"); //수정
+			updateCart();//수정
 			break;
 		case 3:
 			deleteCart(); //삭제
@@ -695,8 +727,43 @@ public class MenuManager {
 		}
 
 	}
-	
-
+	//메뉴리스트 보여주고 원하는 메뉴 입력받기
+	private Menu printListMenu() {
+		Menu selectedMenu = null;  // 선택된 메뉴 객체 저장
+		try {
+			List<Menu> dblist = (List<Menu>) ois.readObject();
+			System.out.println("=== 현재 등록된 메뉴 목록 ===");
+			if (dblist.isEmpty()) {
+				System.out.println("등록된 메뉴가 없습니다.");
+				return null; // 메뉴가 없으면 null 반환
+			}
+			for (int i = 0; i < dblist.size(); i++) {
+				Menu menu = dblist.get(i);
+				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
+			}
+			int index = 0;
+			while (true) {
+				System.out.print("제품 번호를 입력하세요 : ");
+				if (scan.hasNextInt()) {
+					index = scan.nextInt();
+					scan.nextLine();
+					
+					if (index >= 1 && index <= dblist.size()) {
+						selectedMenu = dblist.get(index - 1);
+						break;
+					} else {
+						System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					}
+				} else {
+					System.out.println("[숫자를 입력하세요.]");
+					scan.nextLine();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return selectedMenu;
+	}
 	//고객_1_1.
 	private void insterCart() {
 		try {
@@ -881,6 +948,7 @@ public class MenuManager {
 	            " " + cartItem.getMenu().getMePrice() + " → " + itemTotalPrice + "원");
 	}
 	
+	//고객_주문내역조회
 	//고객_2.
 	public void viewHistory() {
 		try {

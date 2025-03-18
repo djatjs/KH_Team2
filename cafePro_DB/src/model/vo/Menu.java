@@ -1,6 +1,7 @@
 package model.vo;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
 @Data
@@ -15,7 +16,7 @@ public class Menu implements Serializable{
 	private String meThumb;			//ME_THUMB
 	private String meAble = "Y";	//ME_ABLE
 	private String meHotIce = "H";		//ME_HOT_ICE
-	
+	List<Menu_Tag> list;
 	
 	public Menu() {
     }
