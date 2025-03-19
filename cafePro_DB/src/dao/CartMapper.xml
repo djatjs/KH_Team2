@@ -57,6 +57,11 @@
 		where CL_CT_NUM = #{ctNum}
 		order by CL_NUM asc
 	</select>
-
+	<update id="setStatus">
+		update cart
+		set CT_STATUS = "Y"
+		where CT_M_ID = #{mId}
+	</update>
+	
     
 </mapper>

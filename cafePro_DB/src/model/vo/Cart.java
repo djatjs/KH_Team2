@@ -14,5 +14,4 @@ public class Cart implements Serializable{
 	private String ctstatus;			//CT_STATUS 		ENUM("Y","N") DEFAULT "N"
 	List<CartList> list;
 	Member member;
-
 }

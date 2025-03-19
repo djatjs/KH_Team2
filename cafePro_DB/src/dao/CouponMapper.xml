@@ -3,7 +3,12 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   <mapper namespace="dao.CouponDAO">
-  	
+
+  	<resultMap type="model.vo.Coupon" id="CouponMap">
+		<id property="coKey" column="CO_KEY" />
+		<result property="coMId" column="CO_M_ID" />
+		<result property="coCount" column="CO_COUNT" />
+	</resultMap>
 	<insert id="insertCoupon">
         INSERT INTO coupon (CO_M_ID, CO_COUNT) VALUES (#{memberId}, 0)
     </insert>
@@ -11,5 +16,13 @@
     	delete from coupon
     	where CO_M_ID = #{id}
     </delete>
-  	
+  	<select id="selectCoupon">
+  		select CO_COUNT from coupon
+  		where CO_M_ID = #{mId}
+  	</select>
+  	<update id="plusCoupon">
+  		update coupon
+    	set CO_COUNT = CO_COUNT + 1
+    	where CO_M_ID = #{mId}
+  	</update>
   </mapper>

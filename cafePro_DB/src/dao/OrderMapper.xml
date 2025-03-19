@@ -30,4 +30,8 @@
 	join `member` on OR_M_ID = M_ID
 	where OR_M_ID = #{mId}
 	</select>
+	<insert id="insertOrder">
+		insert into `order`(OR_CT_NUM, OR_M_ID, OR_USE, OR_TOTAL, OR_FINAL)
+		values (#{ctNum}, #{mId}, #{useCoupon}, #{totalAmount}, #{resMoney});
+	</insert>
 </mapper>

@@ -12,4 +12,6 @@ public interface IncomeDAO {
 
 	int totalIncome();
 
+	boolean insertIncome(int resMoney);
+
 }

@@ -35,5 +35,17 @@
     	delete from cart_list   	
     	where CL_NUM = #{clNum}
     </delete>
+	
+	<select id="selectCartList" resultType="boolean" >
+		select count(*) >0 from cart_list
+		where CL_NUM = #{clNum};
+	</select>
+	
+	<update id="updateCartList">
+		update cart_list
+		set CL_AMOUNT = #{clAmount}
+		where CL_NUM = #{clNum};
+	
+	</update>
     
 </mapper>

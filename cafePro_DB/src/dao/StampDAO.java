@@ -11,6 +11,12 @@ public interface StampDAO {
 	void insertStamp(String mId);
 
 	boolean deleteMember(String id);
+
+	void plusStamp(String mId);
+
+	int selectStamp(String mId);
+
+	void resetStamp(String mId);
 	
 
 }
