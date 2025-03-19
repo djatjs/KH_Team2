@@ -27,7 +27,6 @@ import dao.TagDAO;
 import model.vo.Cart;
 import model.vo.CartList;
 import model.vo.Category;
-import model.vo.Coupon;
 import model.vo.Member;
 import model.vo.Menu;
 import model.vo.Order;
@@ -175,150 +174,7 @@ public class ServerManager {
 		}
 		
 	}
-	private void runMenuMenu(int num) {
-		switch(num) {
-		case 1:
-			insertMenu();
-			break;
-		case 2:
-			updateMenu();
-			break;
-		case 3:
-			deleteMenu();
-			break;
-		case 4:
-			break;
-		default:
-		}
-		
-	}
-	private void insertMenu() {
-		try {
-			//카테고리 리스트를 보냄
-			List<Category> list = categoryDao.seletAllCategory();
-			oos.writeObject(list);
-			//받아옴
-			int caNum = ois.readInt();
-			Menu menu = (Menu) ois.readObject();
-			//중복 있는지 확인 : null이여야 등록 가능
-			boolean is_null = true;
-			Menu dbMenu = menuDao.selectMenuByNameAndHI(menu);
-			if(dbMenu != null) {
-				is_null = false;
-				oos.writeBoolean(is_null);
-				oos.flush();
-				return;
-			}
-			//등록 후 결과 반환
-			String caCode = categoryDao.seletCategoryByNum(caNum).getCaCode();
-			boolean res = menuDao.insertMenu(caCode ,menu);
-			oos.writeBoolean(res);
-			oos.flush();
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	private void updateMenu() {
-		List<Menu> list = menuDao.selectAllMenu();
-		try {
-			oos.writeObject(list);
-			oos.flush();
-			// 수정할 정보
-			Menu menu = (Menu) ois.readObject();
-			
-			// db안에 메뉴코드가 meCode인 제품 가져오기 (저장되어 있는 정보. 수정대상)
-			Menu dbmenu = menuDao.selectMenuByCode(menu.getMeCode());
-			boolean res = true;
-			
-			System.out.println(dbmenu);
-			
-			// db안에 메뉴코드가 meCode인 제품가 있는지
-			if(dbmenu == null ) {
-				System.out.println("[업데이트 실패 : 존재하지 않는 메뉴.]");
-				res = false;
-				oos.writeBoolean(res);
-				oos.flush();
-				return;
-			}
-			System.out.println("확인");
-			// 수정할 메뉴 이름과 입력받은 메뉴 이름이 같고 온도가 다른 경우 -> 	
-			if (dbmenu.getMeName().equals(menu.getMeName()) && !dbmenu.getMeHotIce().equals(menu.getMeHotIce())) {
-	            boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
-	            if (exists) {
-	            	System.out.println("[업데이트 실패 : 온도가 같은 메뉴가 존재합니다.]");
-	                res = false;
-	                oos.writeBoolean(res);
-	                oos.flush();
-	                return;
-	            }    
-	        }
-			// 이름이 다른 경우 
-			else if(!dbmenu.getMeName().equals(menu.getMeName())){
-				// 입력받은 메뉴 이름이 이미 존재하는지 확인
-			    boolean exists = menuDao.menuExists(menu.getMeName(), menu.getMeHotIce());
-			    if (exists) {
-			        System.out.println("[업데이트 실패 : 이미 존재하는 메뉴입니다.]");
-			        res = false;
-			        oos.writeBoolean(res);
-			        oos.flush();
-			        return;
-			    }
-	        }
-		    //근데 입력받은 메뉴 이름이 이미 등록되어있는 경우에 H or I 상태도 똑같으면
-			System.out.println("확인2");
-			// 이름도 같고 온도도 같은 경우
-			res = menuDao.updateMenu(menu);
-			oos.writeBoolean(res);
-			oos.flush();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	private void deleteMenu() {
-		List<Menu> list = menuDao.selectAllMenu();
-		try {
-			oos.writeObject(list);
-			oos.flush();
-		
-			String meCode = ois.readUTF();
-			
-			Menu dbMenu = menuDao.selectMenuByCode(meCode);
-			
-			boolean res = true;
-
-			if(dbMenu == null) {
-				res = false;
-				oos.writeBoolean(res);
-				oos.flush();
-				return;
-			}
-			try {
-		        // 카테고리 삭제
-				res=menuDao.deleteMenu(meCode);
-		    } catch (PersistenceException e) {
-		        // SQLException을 확인하여 외래 키 제약 조건 위반인지 확인
-		        if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException) {
-		            System.out.println("[해당 메뉴는 다른 데이터와 연결되어 있어 삭제할 수 없습니다.]");
-		            res = false;
-		        } else {
-		            System.out.println("[카테고리 삭제 중 오류가 발생했습니다]");
-		        }
-		    }
-			
-			
-			oos.writeBoolean(res);
-			oos.flush();
-
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-		}
-		
-	}
-	
 	//관리자_카테고리
 	private void runCategoryMenu(int num) {
 		switch (num) {
@@ -655,6 +511,7 @@ public class ServerManager {
 		}
 		
 	}
+
 	private void deleteMenu() {
 		List<Menu> list = menuDao.selectAllMenu();
 		try {
@@ -878,7 +735,7 @@ public class ServerManager {
 			// 구매할 제품과 수량 전달받음
 			Menu menu = (Menu) ois.readObject();
 			int amount = ois.readInt();
-			System.out.println(menu+ " " +amount);
+		
 			
 			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
 			Cart dbCart = cartDao.selectCart(member);
@@ -893,9 +750,9 @@ public class ServerManager {
 			else {
 				// 카트 번호와 제품 번호, 수량을 카트리스트에 담기
 				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart.getCtNum(),menu,amount);
-				System.out.println(dbCartList);
+			
 			}
-			System.out.println(dbCart);
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

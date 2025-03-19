@@ -35,6 +35,11 @@
     	delete from cart_list   	
     	where CL_NUM = #{clNum}
     </delete>
+    
+    <delete id="deleteList">
+		delete from cart_list
+		where CL_CT_NUM = #{ctNum}
+	</delete>
 	
 	<select id="selectCartList" resultType="boolean" >
 		select count(*) >0 from cart_list
