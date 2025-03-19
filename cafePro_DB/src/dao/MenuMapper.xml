@@ -13,6 +13,11 @@
 		<result property="meThumb" column="ME_THUMB"/>
 		<result property="meAble" column="ME_ABLE"/>
 		<result property="meHotIce" column="ME_HOT_ICE"/>
+		<!-- 태그 리스트 추가 -->
+	  	<collection property="list" ofType="model.vo.Menu_Tag">
+	      <id property="tagNum" column="TAG_NUM"/>
+	      <result property="tagName" column="TAG_NAME"/>
+	  	</collection>
 	</resultMap>
 
 	<select id="selectMenuByCode">
@@ -24,7 +29,10 @@
     <select id="selectAllMenu">
     	select * from menu
     </select>
-
+	<select id="selectAllMenuWithTags">
+		select * from menu
+		join tag
+	</select>
 	<insert id="insertMenu">
 	    INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT, ME_HOT_ICE)
 	    SELECT 

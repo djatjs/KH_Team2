@@ -39,6 +39,8 @@ public interface MenuDAO {
 	
 
 	List<Menu> selectMenu();
+
+	List<Menu> selectAllMenuWithTags();
 	
 
 }

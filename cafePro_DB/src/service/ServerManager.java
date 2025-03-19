@@ -565,14 +565,21 @@ public class ServerManager {
 				return;
 			}
 			oos.writeBoolean(true);
-			oos.writeObject(tagList);
 			oos.writeObject(menuList);
+			oos.writeObject(tagList);
 			oos.flush();
-			//int 자료 2개 받아옴
+			// 클라이언트에서 선택한 메뉴 코드와 태그 번호 받기
+	        String menuCode = ois.readUTF();
+	        int tagNum = ois.readInt();
+	        System.out.println("클라이언트 선택 - 메뉴 코드: " + menuCode + 
+	        		", 태그 번호: " + tagNum);
 			
-			//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
+	        //DB에 해당 메뉴와 태그 추가
+	        boolean result = tagDao.insertMenuTag(menuCode, tagNum);
 			
-			//db작업 결과 반환
+	        //클라이언트에게 DB 작업 결과 전송
+	        oos.writeBoolean(result);
+	        oos.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -747,7 +754,7 @@ public class ServerManager {
 	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
 	//메뉴 태그 적용 후 여기 먼저 수정해보기
 	private void printListMenu() {
-		List<Menu> list = menuDao.selectAllMenu();
+		List<Menu> list = menuDao.selectAllMenuWithTags();
 		try {
 			oos.writeObject(list);
 			oos.flush();		

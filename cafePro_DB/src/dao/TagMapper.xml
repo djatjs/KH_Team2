@@ -32,5 +32,9 @@
   	<select id="selectTagByName">
   		select * from tag where TAG_NAME = #{tagName}
   	</select>
+  	<insert id="insertMenuTag">
+	    INSERT INTO menu_tag (MT_ME_CODE, MT_TAG_NUM)
+	    VALUES (#{menuCode}, #{tagNum})
+	</insert>
   	
   </mapper>

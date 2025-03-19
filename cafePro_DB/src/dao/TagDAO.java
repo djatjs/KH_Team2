@@ -22,6 +22,10 @@ public interface TagDAO {
 
 	Tag selectTagByName(@Param("tagName")String tagName);
 
+	boolean insertMenuTag(
+			@Param("menuCode")String menuCode, 
+			@Param("tagNum")int tagNum);
+
 	
 
 }
