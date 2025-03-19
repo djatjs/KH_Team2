@@ -89,6 +89,7 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
+			System.out.println(dbMember);
 			String type = dbMember.getMAuthority();
 			oos.writeBoolean(loginRes);
 			oos.writeUTF(type);
@@ -551,15 +552,31 @@ public class ServerManager {
 		
 	}
 	private void insertMenuTag() {
-		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
-		
-		//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
-		
-		//int 자료 2개 받아옴
-		
-		//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
-		
-		//db작업 결과 반환
+		try {
+			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
+			List<Menu> menuList = menuDao.selectAllMenu();
+			List<Tag> tagList = tagDao.selectAllTag();
+			
+			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
+			if(menuList == null || tagList == null) {
+				oos.writeBoolean(false);
+				oos.flush();
+				System.out.println("메뉴or태그가 없음");
+				return;
+			}
+			oos.writeBoolean(true);
+			oos.writeObject(tagList);
+			oos.writeObject(menuList);
+			oos.flush();
+			//int 자료 2개 받아옴
+			
+			//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
+			
+			//db작업 결과 반환
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+			
 		
 	}
 	
