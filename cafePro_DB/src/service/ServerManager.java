@@ -601,15 +601,32 @@ public class ServerManager {
 	}
 
 	private void deleteMenuTag() {
-		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
-		
-		//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
-		
-		//int 자료 2개 받아옴
-		
-		//db에서 해당 제품에 해당 태그 삭제하기.(menu_tagDao)
-		
-		//db작업 결과 반환
+		try {
+			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
+			List<Menu> menuList = menuDao.selectAllMenu();
+			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
+			if(menuList == null || menuList.isEmpty()) {
+				oos.writeBoolean(false);
+				oos.flush();
+				return;
+			}
+			oos.writeBoolean(true);
+			oos.writeObject(menuList);
+			oos.flush();
+			// 클라이언트로부터 삭제할 제품 코드와 태그 번호를 받음
+			String meCode = ois.readUTF();
+			int tagNum = ois.readInt();
+			
+			//db에서 해당 제품에 해당 태그 삭제하기.(menu_tagDao)
+			// 데이터베이스에서 해당 태그를 삭제하는 메소드 호출
+			boolean res = menuTagDao.deleteMenuTag(meCode, tagNum);
+			// 삭제 결과 클라이언트에게 전송
+			oos.writeBoolean(res);
+			oos.flush();
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
