@@ -536,6 +536,7 @@ public class MenuManager {
 		try {
 			boolean ready = ois.readBoolean();
 			if(!ready) {
+				System.out.println("없습니다");
 				return;
 			}
 			// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기

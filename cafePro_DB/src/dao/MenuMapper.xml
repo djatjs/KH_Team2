@@ -28,7 +28,7 @@
 	</select>
     <select id="selectAllMenu" resultMap="MenuMap">
     	select * from menu
-    	join menu_tag on MT_ME_CODE = ME_CODE
+    	
     </select>
 
 	<insert id="insertMenu">

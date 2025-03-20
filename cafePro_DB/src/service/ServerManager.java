@@ -567,7 +567,9 @@ public class ServerManager {
 					|| menuList.isEmpty()|| tagList.isEmpty()) {
 				oos.writeBoolean(false);
 				oos.flush();
+				return;
 			}
+			
 			oos.writeBoolean(true);
 			oos.writeObject(menuList);
 			oos.writeObject(tagList);
@@ -585,9 +587,6 @@ public class ServerManager {
 		}
 		
 	}
-	
-	
-	
 	
 	private void deleteMenuTag() {
 		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
