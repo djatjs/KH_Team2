@@ -813,77 +813,45 @@ public class ServerManager {
 		}
 	}
 	
-	private void updateCart(Member member) {
+	//고객_1_3.
+	private void deleteCart(Member member) {
 		try {
-			sendCartLists(member);
-			int clAmount = ois.readInt();
-			System.out.println(clAmount);
+			Cart cart = cartDao.selectCart(member);
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+				
+			oos.writeObject(cartLists);
+			oos.flush();
+			
 			int clNum = ois.readInt();
-			System.out.println(clNum);
+			
+			if (clNum == 0) {
+	            System.out.println("뒤로 가기");
+	            return;  
+	        }
+			
+			CartList dbCart = cartListDao.seletCartByNum(clNum);
 
-			boolean isNull = cartListDao.selectCartList(clNum);
-			if(!isNull) {
-				oos.writeBoolean(isNull);
+			boolean res = true;
+			if (dbCart == null) {
+				res = false;
+				oos.writeBoolean(res);
 				oos.flush();
 				return;
 			}
-			
-			oos.writeBoolean(isNull);
-			oos.flush();
-			
-			boolean res = cartListDao.updateCartList(clNum, clAmount);
-			
-			oos.writeBoolean(res);
-			oos.flush();
-		}catch (IOException e) {
+				res = cartListDao.deleteCart(clNum);
+				oos.writeBoolean(res);
+				oos.flush();
+			}catch (Exception e) {
 				e.printStackTrace();
-		}
-	}
-
-
-	
-	//고객_1_3.
-	private void deleteCart(Member member) {
-		sendCartLists(member);
-		// 삭제할 장바구니리스트 번호 받기
-		// 번호를 통해 해당 장바구니 리스트 삭제하기
-
-		try {
-		Cart cart = cartDao.selectCart(member);
-		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			}
 			
-		oos.writeObject(cartLists);
-		oos.flush();
-		
-		int clNum = ois.readInt();
-		
-		if (clNum == 0) {
-            System.out.println("뒤로 가기");
-            return;  
-        }
-		
-		CartList dbCart = cartListDao.seletCartByNum(clNum);
-
-		boolean res = true;
-		if (dbCart == null) {
-			res = false;
-			oos.writeBoolean(res);
-			oos.flush();
-			return;
 		}
-			res = cartListDao.deleteCart(clNum);
-			oos.writeBoolean(res);
-			oos.flush();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
 	
 	//고객_메뉴조회_장바구니 구매
 	private void orderCart(Member member) {
 		try {
 			boolean is_ready = sendCartLists(member);
+			System.out.println(is_ready);
 			if(!is_ready) {
 				return;
 			}
