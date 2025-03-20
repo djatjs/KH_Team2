@@ -533,30 +533,76 @@ public class MenuManager {
 	}
 	
 	private void insertMenuTag() {
-		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
-		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
-		// 메뉴 출력
-		// 1. 아메리카노(I)
-		// 2. 아메리카노(H)
-		
-		// 태그를 등록할 제품의 번호 선택
-		// 번호 입력 : 1
-		
-		// 등록할 태그 가져와서 출력
-		// 1. 인기메뉴
-		// 2. 한정메뉴
-		
-		// 등록할 태그의 번호 선택
-		// 번호 입력 : 1
-		
-		//-> 아메리카노(I) / 인기메뉴
-		
-		// 제품번호와 태그번호 서버로 전송
-		
-		// 등록 결과 받고나서 값에 따라 메시지 출력
-		// System.out.println("메뉴태그 등록 완료");
-		// System.out.println("메뉴태그 등록 실패");
+		try {
+			boolean ready = ois.readBoolean();
+			if (!ready) {
+				System.out.println("없습니다");
+				return;
+			}
+			// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
+			List<Menu> menuList = (List<Menu>) ois.readObject();
+			List<Tag> tagList = (List<Tag>) ois.readObject();
+			// 메뉴 출력
+			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
+			for (int i = 0; i < menuList.size(); i++) {
+				Menu menu = menuList.get(i);
+				menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")" + menu.getList());
+			}
+			// 태그를 등록할 제품의 번호 선택
+			System.out.println("------------------");
+			int menuIndex = 0;
+			while (true) {
+				System.out.print("태그를 등록할 메뉴의 번호를 입력하세요 : ");
+				menuIndex = scan.nextInt();
+				if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+					break;
+				} else {
+					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					scan.nextLine();
+				}
+			}
+			String meCode = menuNumList.get(menuIndex - 1);
+
+			List<Integer> tagNumList = new ArrayList<>();
+			for (int i = 0; i < tagList.size(); i++) {
+				Tag tag = tagList.get(i);
+				tagNumList.add(tag.getTagNum()); // 실제 DB tagNum 저장
+				System.out.println((i + 1) + ". " + tag.getTagName()); // 1부터 출력
+			}
+			// 등록할 태그의 번호 선택
+			// 바꿀 태그 번호와 새 태그명 입력받기
+			int userIndex = 0;
+			while (true) {
+				// 사용자 입력 받기
+				System.out.print("등록할 태그의 번호를 입력하세요 : ");
+				userIndex = scan.nextInt();
+				// 입력값 검증 (리스트 범위를 벗어나면 오류)
+				if (userIndex >= 1 && userIndex <= tagNumList.size()) {
+					break; // 유효한 입력이면 루프 종료
+				} else {
+					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					scan.nextLine();
+				}
+			}
+			int tagNum = tagNumList.get(userIndex - 1);
+			// 제품번호와 태그번호 서버로 전송
+			oos.writeUTF(meCode);
+			oos.writeInt(tagNum);
+			oos.flush();
+
+			// 등록 결과 받고나서 값에 따라 메시지 출력
+			boolean res = ois.readBoolean();
+			if (res) {
+				System.out.println("메뉴태그 등록 완료");
+			} else {
+				System.out.println("메뉴태그 등록 실패");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
 	private void deleteMenuTag() {
 		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
 		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
@@ -914,7 +960,7 @@ public class MenuManager {
 	private void orderCart() {
 		try {
 			boolean is_ready = ois.readBoolean();
-			System.out.println(is_ready);
+			
 			if(!is_ready) {
 				System.out.println("장바구니가 비어있습니다.");
 				return;

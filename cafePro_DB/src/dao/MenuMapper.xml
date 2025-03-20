@@ -13,7 +13,12 @@
 		<result property="meThumb" column="ME_THUMB"/>
 		<result property="meAble" column="ME_ABLE"/>
 		<result property="meHotIce" column="ME_HOT_ICE"/>
-	</resultMap>
+		<collection property="list" ofType="model.vo.Menu_Tag">
+			<id property="mtNum" column="MT_NUM"/>
+			<result property="mtThgNum" column="MT_TAG_NUM"/>
+			<result property="mtMeCode" column="MT_ME_CODE"/>
+        </collection>
+    </resultMap>
 
 	<select id="selectMenuByCode">
 		select * from menu where ME_CODE = #{meCode}
@@ -70,5 +75,6 @@
     	select * from menu 
     	where ME_CA_NUM = #{meCaNum} and ME_CODE = #{meCode}
     </select>
+    
     
 </mapper>
