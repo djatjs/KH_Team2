@@ -27,6 +27,17 @@
 		select M_PW from member
 		where M_ID = #{member.mId} and M_NUMBER = #{member.mNumber}
 	</select>
+	
+	<select id="selectDeletedId" resultType="boolean">
+		select count(*) > 0 from member
+		where M_ID = #{member.mId} AND M_DEL = "Y"
+	</select>
+	
+	
+	<delete id ="deleteMember">
+		delete from member
+		where M_ID = #{member.mId} and M_PW = #{member.mPw}
+	</delete>
 	<update id="updateMember">
 		update member 
 		set M_NICKNAME = #{member.mNickname},

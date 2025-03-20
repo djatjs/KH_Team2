@@ -52,6 +52,9 @@ public class ClientMain {
 				CustomerProgram customerProgram = new CustomerProgram(oos, ois);
 				customerProgram.runCustomer();
 				break;
+			case "탈퇴":
+				System.out.println("탈퇴신청된 아이디입니다. 탈퇴취소를 해주세요");
+				break;
 			default:
 				System.out.println("[로그인 실패 : 아이디 또는 비밀번호 오류]");
 			}

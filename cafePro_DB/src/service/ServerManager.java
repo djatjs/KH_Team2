@@ -86,6 +86,7 @@ public class ServerManager {
 			Member login = (Member) ois.readObject();
 			// 로그인 확인
 			boolean loginRes = true;
+			
 			Member dbMember = memberDao.selectMember(login);
 			if (dbMember == null) {
 				loginRes = false;
@@ -93,8 +94,20 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
+			// 휴면 계정인지 여부 확인
+			// M_DEL 가 Y 이면 로그인 불가능
+//			System.out.println(dbMember);
+//			boolean isY = memberDao.selectDeletedId(dbMember);
+//			if(isY) {
+//				oos.writeBoolean(isY);
+//				oos.flush();
+//				System.out.println(isY);
+//				return;
+//			}
+
 			String type = dbMember.getMAuthority();
 			oos.writeBoolean(loginRes);
+			//oos.writeBoolean(isY);
 			oos.writeUTF(type);
 			oos.flush();
 
@@ -822,39 +835,40 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
-
+	
+	//고객_1_3.
 	private void deleteCart(Member member) {
 		try {
-		Cart cart = cartDao.selectCart(member);
-		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+			Cart cart = cartDao.selectCart(member);
+			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+				
+			oos.writeObject(cartLists);
+			oos.flush();
 			
-		oos.writeObject(cartLists);
-		oos.flush();
-		
-		int clNum = ois.readInt();
-		
-		if (clNum == 0) {
-            System.out.println("뒤로 가기");
-            return;  
-        }
-		
-		CartList dbCart = cartListDao.seletCartByNum(clNum);
+			int clNum = ois.readInt();
+			
+			if (clNum == 0) {
+	            System.out.println("뒤로 가기");
+	            return;  
+	        }
+			
+			CartList dbCart = cartListDao.seletCartByNum(clNum);
 
-		boolean res = true;
-		if (dbCart == null) {
-			res = false;
-			oos.writeBoolean(res);
-			oos.flush();
-			return;
+			boolean res = true;
+			if (dbCart == null) {
+				res = false;
+				oos.writeBoolean(res);
+				oos.flush();
+				return;
+			}
+				res = cartListDao.deleteCart(clNum);
+				oos.writeBoolean(res);
+				oos.flush();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
-			res = cartListDao.deleteCart(clNum);
-			oos.writeBoolean(res);
-			oos.flush();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
 	
 	//고객_메뉴조회_장바구니 구매
 	private void orderCart(Member member) {
@@ -910,6 +924,7 @@ public class ServerManager {
 	            return false;
 	        }
 	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+	        System.out.println(cartLists);
 	        if (cartLists == null) {
 	        	oos.writeBoolean(false);
 	        	oos.flush();

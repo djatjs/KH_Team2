@@ -737,7 +737,6 @@ public class MenuManager {
 			e.printStackTrace();
 		}
 	}
-
 	
 	private void printCartMenu() {
 		System.out.println("------------------");
@@ -848,6 +847,7 @@ public class MenuManager {
 			boolean isReady = ois.readBoolean();
 			if(!isReady) {
 				System.out.println("장바구니가 없습니다.");
+				return;
 			}
 			List<CartList> cartLists = (List<CartList>) ois.readObject();
 			List<Integer> cartListsNumList = new ArrayList<>();
@@ -908,25 +908,22 @@ public class MenuManager {
 				e.printStackTrace();
 			}
 			
-		
-		
-		
 	}
 	
 	//고객_1_3.
 	private void deleteCart() {
 		try {	
-					List<CartList> cartLists = (List<CartList>) ois.readObject();
-					List<Integer> cartListsNumList = new ArrayList<>();
-			
-					int totalAmount = 0;
+			List<CartList> cartLists = (List<CartList>) ois.readObject();
+			List<Integer> cartListsNumList = new ArrayList<>();
+	
+			int totalAmount = 0;
 
-					 for (int i = 0; i < cartLists.size(); i++) {
-			     CartList cartItem = cartLists.get(i);
-			     cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
-			     int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
-			     totalAmount += itemTotalPrice;
-			     printCartItem(i + 1, cartItem, itemTotalPrice);
+			 for (int i = 0; i < cartLists.size(); i++) {
+		     CartList cartItem = cartLists.get(i);
+		     cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
+		     int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
+		     totalAmount += itemTotalPrice;
+		     printCartItem(i + 1, cartItem, itemTotalPrice);
 			}
 			System.out.println("------------------");
 			System.out.println("최종금액 : " + totalAmount + "원");
@@ -970,6 +967,7 @@ public class MenuManager {
 	private void orderCart() {
 		try {
 			boolean is_ready = ois.readBoolean();
+			System.out.println(is_ready);
 			if(!is_ready) {
 				System.out.println("장바구니가 비어있습니다.");
 				return;
