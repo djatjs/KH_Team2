@@ -16,10 +16,4 @@ public class Tag implements Serializable{
 	   this.tagName = tagName;
    }
 
-   
-   @Override
-   public String toString() {
-	   return tagNum + ". " + tagName;
-   }
-   
 }

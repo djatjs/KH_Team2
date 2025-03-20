@@ -13,6 +13,7 @@ import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Menu_Tag;
 import model.vo.Order;
 import model.vo.Tag;
 
@@ -546,9 +547,20 @@ public class MenuManager {
 			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
 			for (int i = 0; i < menuList.size(); i++) {
 	            Menu menu = menuList.get(i);
-	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
-	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")"
-	            		+ menu.getList());
+	            StringBuilder tagsString = new StringBuilder();
+
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+	                }
+	            }
+
+	            // 문자열 앞뒤 공백 제거
+	            String formattedTags = tagsString.toString().trim();
+
+	            // 메뉴와 태그 출력
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
 	        }
 			// 태그를 등록할 제품의 번호 선택
 			System.out.println("------------------");
@@ -606,29 +618,9 @@ public class MenuManager {
 	}
 	
 	private void deleteMenuTag() {
-		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
-		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
-		// 메뉴 출력
-		// 1. 아메리카노(I)
-		// 2. 아메리카노(H)
-		
-		// 태그를 삭제할 제품의 번호 선택
-		// 번호 입력 : 1
-		
-		// 삭제할 태그 가져와서 출력
-		// 1. 인기메뉴
-		// 2. 한정메뉴
-		
-		// 삭제할 태그의 번호 선택
-		// 번호 입력 : 1
-		
-		// 제품번호와 태그번호 서버로 전송
-		
-		// 등록 결과 받고나서 값에 따라 메시지 출력
-		// System.out.println("메뉴태그 삭제 완료");
-		// System.out.println("메뉴태그 삭제 실패");
-		
+
 	}
+
 	
 	//관리자_매출확인
 	// 4. 매출
@@ -789,9 +781,22 @@ public class MenuManager {
 				return null; // 메뉴가 없으면 null 반환
 			}
 			for (int i = 0; i < dblist.size(); i++) {
-				Menu menu = dblist.get(i);
-				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
-			}
+	            Menu menu = dblist.get(i);
+	            StringBuilder tagsString = new StringBuilder();
+
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+	                }
+	            }
+
+	            // 문자열 앞뒤 공백 제거
+	            String formattedTags = tagsString.toString().trim();
+
+	            // 메뉴와 태그 출력
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
+	        }
 			int index = 0;
 			while (true) {
 				System.out.print("제품 번호를 입력하세요 : ");
@@ -843,6 +848,7 @@ public class MenuManager {
 			boolean isReady = ois.readBoolean();
 			if(!isReady) {
 				System.out.println("장바구니가 없습니다.");
+				return;
 			}
 			List<CartList> cartLists = (List<CartList>) ois.readObject();
 			List<Integer> cartListsNumList = new ArrayList<>();
