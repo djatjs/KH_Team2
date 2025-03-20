@@ -795,6 +795,7 @@ public class MenuManager {
 			boolean isReady = ois.readBoolean();
 			if(!isReady) {
 				System.out.println("장바구니가 없습니다.");
+				return;
 			}
 			List<CartList> cartLists = (List<CartList>) ois.readObject();
 			List<Integer> cartListsNumList = new ArrayList<>();
