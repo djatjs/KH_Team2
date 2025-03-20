@@ -869,12 +869,12 @@ public class MenuManager {
 	            Menu menu = dblist.get(i);
 	            StringBuilder tagsString = new StringBuilder();
 
-//	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
-//	            for (Menu_Tag menuTag : menu.getList()) {
-//	                for (Tag tag : menuTag.getTags()) {
-//	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
-//	                }
-//	            }
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+	                }
+	            }
 
 	            // 문자열 앞뒤 공백 제거
 	            String formattedTags = tagsString.toString().trim();
