@@ -17,6 +17,10 @@
 			<id property="mtNum" column="MT_NUM"/>
 			<result property="mtThgNum" column="MT_TAG_NUM"/>
 			<result property="mtMeCode" column="MT_ME_CODE"/>
+			<collection property="tags" ofType="model.vo.Tag">
+				<id property="tagNum" column="TAG_NUM"/>
+				<result property="tagName" column="TAG_NAME"/>
+			</collection>
 		</collection>
 	</resultMap>
 
@@ -28,7 +32,8 @@
 	</select>
     <select id="selectAllMenu" resultMap="MenuMap">
     	select * from menu
-    	
+    	join menu_tag on MT_ME_CODE = ME_CODE
+    	join tag on MT_TAG_NUM = TAG_NUM	
     </select>
 
 	<insert id="insertMenu">

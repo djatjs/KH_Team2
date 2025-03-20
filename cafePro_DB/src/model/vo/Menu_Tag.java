@@ -1,6 +1,7 @@
 package model.vo;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
 
@@ -11,6 +12,6 @@ public class Menu_Tag implements Serializable{
    private int mtNum;      		//MT_NUM
    private int mtThgNum;   		//MT_TAG_NUM
    private String mtMeCode;     //MT_ME_CODE
-   
+   List<Tag> tags; 
    
 }
