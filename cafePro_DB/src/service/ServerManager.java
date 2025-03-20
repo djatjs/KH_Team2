@@ -21,6 +21,7 @@ import dao.CouponDAO;
 import dao.IncomeDAO;
 import dao.MemberDAO;
 import dao.MenuDAO;
+import dao.MenuTagDAO;
 import dao.OrderDAO;
 import dao.StampDAO;
 import dao.TagDAO;
@@ -29,6 +30,7 @@ import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Menu_Tag;
 import model.vo.Order;
 import model.vo.Tag;
 
@@ -43,6 +45,7 @@ public class ServerManager {
 	private OrderDAO orderDao;
 	private CartDAO cartDao;
 	private CartListDAO cartListDao;
+	private MenuTagDAO menuTagDao;
 	
 	
 	private ObjectOutputStream oos;
@@ -69,6 +72,7 @@ public class ServerManager {
 			orderDao = session.getMapper(OrderDAO.class);
 			cartDao = session.getMapper(CartDAO.class);
 			cartListDao = session.getMapper(CartListDAO.class);
+			menuTagDao = session.getMapper(MenuTagDAO.class);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -553,17 +557,37 @@ public class ServerManager {
 		
 	}
 	private void insertMenuTag() {
-		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
-		
-		//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
-		
-		//int 자료 2개 받아옴
-		
-		//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
-		
-		//db작업 결과 반환
+		try {
+			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
+			List<Menu> menuList = menuDao.selectAllMenu();
+			List<Tag> tagList = tagDao.selectAllTag();
+			
+			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
+			if(menuList == null || tagList == null
+					|| menuList.isEmpty()|| tagList.isEmpty()) {
+				oos.writeBoolean(false);
+				oos.flush();
+			}
+			oos.writeBoolean(true);
+			oos.writeObject(menuList);
+			oos.writeObject(tagList);
+			oos.flush();
+			//int 자료 2개 받아옴
+			String meCode = ois.readUTF();
+			int tagNum = ois.readInt();
+			//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
+			boolean res = menuTagDao.insertMenuTag(meCode,tagNum);
+			oos.writeBoolean(res);
+			oos.flush();
+			//db작업 결과 반환
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
+	
+	
+	
 	
 	private void deleteMenuTag() {
 		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
@@ -728,7 +752,7 @@ public class ServerManager {
 			System.out.println("[잘못된 입력]");
 		}
 	}
-//고객_메뉴조회_장바구니담기
+	//고객_메뉴조회_장바구니담기
 	private void insertCart(Member member) {
 		try {
 			printListMenu();

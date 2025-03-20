@@ -13,6 +13,11 @@
 		<result property="meThumb" column="ME_THUMB"/>
 		<result property="meAble" column="ME_ABLE"/>
 		<result property="meHotIce" column="ME_HOT_ICE"/>
+		<collection property="list" ofType="model.vo.Menu_Tag">
+			<id property="mtNum" column="MT_NUM"/>
+			<result property="mtThgNum" column="MT_TAG_NUM"/>
+			<result property="mtMeCode" column="MT_ME_CODE"/>
+		</collection>
 	</resultMap>
 
 	<select id="selectMenuByCode">
@@ -21,8 +26,9 @@
 	<select id="selectMenuByNameAndHI">
 		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
 	</select>
-    <select id="selectAllMenu">
+    <select id="selectAllMenu" resultMap="MenuMap">
     	select * from menu
+    	join menu_tag on MT_ME_CODE = ME_CODE
     </select>
 
 	<insert id="insertMenu">

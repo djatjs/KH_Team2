@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="dao.MenuTagDAO">
+  	
+  	<resultMap type="model.vo.Menu_Tag" id="MenuTagMap">
+		<id property="mtNum" column="MT_NUM"/>
+		<result property="mtThgNum" column="MT_TAG_NUM"/>
+		<result property="mtMeCode" column="MT_ME_CODE"/>
+	</resultMap>
+  	
+  	<insert id="insertMenuTag">
+  		insert into menu_tag(MT_TAG_NUM, MT_ME_CODE)
+  		values(#{tagNum},#{meCode})
+  	</insert>
+  	
+  </mapper>

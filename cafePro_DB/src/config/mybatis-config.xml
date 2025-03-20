@@ -28,5 +28,6 @@
     <mapper resource="dao/OrderMapper.xml"/>
     <mapper resource="dao/CartMapper.xml"/>
     <mapper resource="dao/CartListMapper.xml"/>
+    <mapper resource="dao/MenuTagMapper.xml"/>
 </mappers>
 </configuration>
