@@ -793,7 +793,7 @@ public class ServerManager {
 			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
 			Cart dbCart = cartDao.selectCart(member);
 			//없다면
-			if(dbCart == null) {
+			if(dbCart == null ) {
 				// 카트 생성(유저 아이디 사용)
 				Boolean createCart = cartDao.insertCart(member);
 				Cart dbCart2 = cartDao.selectCart(member);
@@ -813,32 +813,32 @@ public class ServerManager {
 	
 	//고객_메뉴조회_장바구니수정
 	private void updateCart(Member member) {
-		try {
-			sendCartLists(member);
-			int clAmount = ois.readInt();
-			System.out.println(clAmount);
-			int clNum = ois.readInt();
-			System.out.println(clNum);
-			
-			boolean isNull = cartListDao.selectCartList(clNum);
-			if(!isNull) {
-				oos.writeBoolean(isNull);
-				oos.flush();
-				return;
-			}
-			
-			oos.writeBoolean(isNull);
-			oos.flush();
-			
-			boolean res = cartListDao.updateCartList(clNum, clAmount);
-			
-			oos.writeBoolean(res);
-			oos.flush();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            sendCartLists(member);
+            int clAmount = ois.readInt();
+            System.out.println(clAmount);
+            int clNum = ois.readInt();
+            System.out.println(clNum);
+
+            boolean isNull = cartListDao.selectCartList(clNum);
+            if(!isNull) {
+                oos.writeBoolean(isNull);
+                oos.flush();
+                return;
+            }
+
+            oos.writeBoolean(isNull);
+            oos.flush();
+
+            boolean res = cartListDao.updateCartList(clNum, clAmount);
+
+            oos.writeBoolean(res);
+            oos.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	
 	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
@@ -942,7 +942,7 @@ public class ServerManager {
 	        }
 	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
 	        System.out.println(cartLists);
-	        if (cartLists == null) {
+	        if (cartLists == null || cartLists.isEmpty()) {
 	        	oos.writeBoolean(false);
 	        	oos.flush();
 	        	return false;
