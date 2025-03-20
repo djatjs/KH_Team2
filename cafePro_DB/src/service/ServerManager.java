@@ -574,7 +574,7 @@ public class ServerManager {
 			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
 			List<Menu> menuList = menuDao.selectAllMenu();
 			List<Tag> tagList = tagDao.selectAllTag();
-			System.out.println("");
+			System.out.println(menuList+" "+tagList);
 			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
 			if(menuList == null || tagList == null
 					|| menuList.isEmpty()|| tagList.isEmpty()) {
