@@ -851,7 +851,6 @@ public class ServerManager {
 	private void orderCart(Member member) {
 		try {
 			boolean is_ready = sendCartLists(member);
-			System.out.println(is_ready);
 			if(!is_ready) {
 				return;
 			}
@@ -902,6 +901,7 @@ public class ServerManager {
 	            return false;
 	        }
 	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
+	        System.out.println(cartLists);
 	        if (cartLists == null) {
 	        	oos.writeBoolean(false);
 	        	oos.flush();

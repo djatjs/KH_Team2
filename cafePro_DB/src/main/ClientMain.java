@@ -12,7 +12,7 @@ public class ClientMain {
 	static ObjectInputStream ois;
 	static ObjectOutputStream oos;
 	private static int port = 9999;
-	private static String ip = "127.0.0.1";
+	private static String ip = "192.168.40.52";
 	static Scanner scan = new Scanner(System.in);
 
 	public static void main(String[] args) {
