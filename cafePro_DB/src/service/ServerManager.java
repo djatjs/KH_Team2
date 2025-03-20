@@ -872,7 +872,7 @@ public class ServerManager {
 			CartList dbCart = cartListDao.seletCartByNum(clNum);
 
 			boolean res = true;
-			if (dbCart == null) {
+			if (dbCart == null || cartLists.isEmpty()) {
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
