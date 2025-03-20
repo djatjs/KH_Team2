@@ -47,6 +47,7 @@ public class ServerManager {
 	private CartListDAO cartListDao;
 	private MenuTagDAO menuTagDao;
 	
+	
 	private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
@@ -566,14 +567,14 @@ public class ServerManager {
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		}
-	}	
-
+		
+	}
 	private void insertMenuTag() {
 		try {
 			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
 			List<Menu> menuList = menuDao.selectAllMenu();
 			List<Tag> tagList = tagDao.selectAllTag();
-			
+			System.out.println("");
 			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
 			if(menuList == null || tagList == null
 					|| menuList.isEmpty()|| tagList.isEmpty()) {
@@ -599,7 +600,7 @@ public class ServerManager {
 		}
 		
 	}
-
+	
 	private void deleteMenuTag() {
 		try {
 			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
@@ -792,7 +793,7 @@ public class ServerManager {
 			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
 			Cart dbCart = cartDao.selectCart(member);
 			//없다면
-			if(dbCart == null) {
+			if(dbCart == null ) {
 				// 카트 생성(유저 아이디 사용)
 				Boolean createCart = cartDao.insertCart(member);
 				Cart dbCart2 = cartDao.selectCart(member);
@@ -812,45 +813,36 @@ public class ServerManager {
 	
 	//고객_메뉴조회_장바구니수정
 	private void updateCart(Member member) {
-		try {
-			sendCartLists(member);
-			int clAmount = ois.readInt();
-			System.out.println(clAmount);
-			int clNum = ois.readInt();
-			System.out.println(clNum);
-			
-			boolean isNull = cartListDao.selectCartList(clNum);
-			if(!isNull) {
-				oos.writeBoolean(isNull);
-				oos.flush();
+        try {
+        	boolean is_ready = sendCartLists(member);
+			if(!is_ready) {
 				return;
 			}
-			
-			oos.writeBoolean(isNull);
-			oos.flush();
-			
-			boolean res = cartListDao.updateCartList(clNum, clAmount);
-			
-			oos.writeBoolean(res);
-			oos.flush();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+            int clAmount = ois.readInt();
+            System.out.println(clAmount);
+            int clNum = ois.readInt();
+            System.out.println(clNum);
 
-	
-	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
-	//메뉴 태그 적용 후 여기 먼저 수정해보기
-	private void printListMenu() {
-		List<Menu> list = menuDao.selectAllMenu();
-		try {
-			oos.writeObject(list);
-			oos.flush();		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            boolean isNull = cartListDao.selectCartList(clNum);
+            if(!isNull) {
+                oos.writeBoolean(isNull);
+                oos.flush();
+                return;
+            }
+
+            oos.writeBoolean(isNull);
+            oos.flush();
+
+            boolean res = cartListDao.updateCartList(clNum, clAmount);
+
+            oos.writeBoolean(res);
+            oos.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	
 	//고객_1_3.
 	private void deleteCart(Member member) {
@@ -869,9 +861,9 @@ public class ServerManager {
 	        }
 			
 			CartList dbCart = cartListDao.seletCartByNum(clNum);
-
+	
 			boolean res = true;
-			if (dbCart == null) {
+			if (dbCart == null || cartLists.isEmpty() ) {
 				res = false;
 				oos.writeBoolean(res);
 				oos.flush();
@@ -885,6 +877,18 @@ public class ServerManager {
 			}
 			
 		}
+
+	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
+	//메뉴 태그 적용 후 여기 먼저 수정해보기
+	private void printListMenu() {
+		List<Menu> list = menuDao.selectAllMenu();
+		try {
+			oos.writeObject(list);
+			oos.flush();		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	//고객_메뉴조회_장바구니 구매
 	private void orderCart(Member member) {
@@ -893,7 +897,7 @@ public class ServerManager {
 			if(!is_ready) {
 				return;
 			}
-			// 고객이 보유하고 있는 쿠폰                           
+			// 고객이 보유하고 있는 쿠폰                               니 리스트 전송 
 			int haveCoupon = couponDao.selectCoupon(member.getMId());
 			oos.writeInt(haveCoupon);
 			oos.flush();
@@ -940,8 +944,8 @@ public class ServerManager {
 	            return false;
 	        }
 	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-	      
-	        if (cartLists == null ||  cartLists.isEmpty()) {
+	   
+	        if (cartLists == null || cartLists.isEmpty()) {
 	        	oos.writeBoolean(false);
 	        	oos.flush();
 	        	return false;

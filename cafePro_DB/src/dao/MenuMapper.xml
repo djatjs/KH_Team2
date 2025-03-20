@@ -30,11 +30,15 @@
 	<select id="selectMenuByNameAndHI">
 		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
 	</select>
-    <select id="selectAllMenu" resultMap="MenuMap">
-    	select * from menu
-    	join menu_tag on MT_ME_CODE = ME_CODE
-    	join tag on MT_TAG_NUM = TAG_NUM	
-    </select>
+
+	<select id="selectAllMenu" resultMap="MenuMap">
+		SELECT
+		ME_CODE, ME_NAME, ME_HOT_ICE,
+		TAG_NUM, TAG_NAME
+		FROM menu
+		LEFT JOIN menu_tag ON MT_ME_CODE = ME_CODE
+		LEFT JOIN tag ON MT_TAG_NUM = TAG_NUM;
+	</select>
 
 	<insert id="insertMenu">
 	    INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT, ME_HOT_ICE)
@@ -80,7 +84,6 @@
 	<select id="selectMenuByNumAndCode">
     	select * from menu 
     	where ME_CA_NUM = #{meCaNum} and ME_CODE = #{meCode}
-    </select> 
-    
+    </select>
     
 </mapper>
