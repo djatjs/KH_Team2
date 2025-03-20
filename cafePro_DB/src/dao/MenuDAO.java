@@ -36,7 +36,6 @@ public interface MenuDAO {
 
 	boolean menuExists(@Param("meName")String meName, @Param("meHotIce")String meHotIce);
 
-	
 
 	List<Menu> selectMenu();
 	

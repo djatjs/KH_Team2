@@ -75,7 +75,7 @@
 	<select id="selectMenuByNumAndCode">
     	select * from menu 
     	where ME_CA_NUM = #{meCaNum} and ME_CODE = #{meCode}
-    </select>
+    </select> 
     
     
 </mapper>

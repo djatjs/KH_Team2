@@ -17,6 +17,7 @@ public class Menu implements Serializable{
 	private String meAble = "Y";	//ME_ABLE
 	private String meHotIce = "H";		//ME_HOT_ICE
 	List<Menu_Tag> list;
+
 	
 	public Menu() {
     }
@@ -45,6 +46,7 @@ public class Menu implements Serializable{
 		this.meContent = meContent;
 		this.meHotIce = meHotIce;
 	}
+
 	
 	
 	
