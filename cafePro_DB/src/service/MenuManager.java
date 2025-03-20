@@ -535,17 +535,18 @@ public class MenuManager {
 	
 	private void insertMenuTag() {
 		try {
-			boolean ready = ois.readBoolean();
-			if(!ready) {
-				System.out.println("없습니다");
-				return;
-			}
-			// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
-			List<Menu> menuList = (List<Menu>) ois.readObject();
-			List<Tag> tagList = (List<Tag>) ois.readObject();
-			// 메뉴 출력
-			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
-			for (int i = 0; i < menuList.size(); i++) {
+			// 서버로부터 메뉴와 태그 목록을 받아오기
+	    	boolean ready = ois.readBoolean();
+	    	if(!ready) {
+	    		System.out.println("등록된 메뉴가 없습니다.");
+	    		return; // 메뉴가 없으면 종료	    		
+	    	}
+	        List<Menu> menuList = (List<Menu>) ois.readObject();
+	        List<Tag> tagList = (List<Tag>) ois.readObject();
+
+	        // 메뉴 출력
+	        List<String> menuNumList = new ArrayList<>(); // meCode를 저장
+	        for (int i = 0; i < menuList.size(); i++) {
 	            Menu menu = menuList.get(i);
 	            StringBuilder tagsString = new StringBuilder();
 
@@ -558,24 +559,26 @@ public class MenuManager {
 
 	            // 문자열 앞뒤 공백 제거
 	            String formattedTags = tagsString.toString().trim();
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
 
 	            // 메뉴와 태그 출력
 	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
 	        }
-			// 태그를 등록할 제품의 번호 선택
-			System.out.println("------------------");
-			int menuIndex = 0;
-			while (true) {
-				System.out.print("태그를 등록할 메뉴의 번호를 입력하세요 : ");
-				menuIndex = scan.nextInt();
-				if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
-					break;
-				} else {
-					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-					scan.nextLine();
-				}
-			}
-			String meCode = menuNumList.get(menuIndex - 1);
+
+	        // 추가할 메뉴 선택
+	        System.out.println("------------------");
+	        int menuIndex = 0;
+	        while (true) {
+	            System.out.print("태그를 추가할 메뉴의 번호를 입력하세요 : ");
+	            menuIndex = scan.nextInt();
+	            if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+	                break;
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	            }
+	        }
+	        String meCode = menuNumList.get(menuIndex - 1);
+
 			
 			// 등록할 태그 가져와서 출력
 			List<Integer> tagNumList = new ArrayList<>();
