@@ -13,6 +13,7 @@ import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Menu_Tag;
 import model.vo.Order;
 import model.vo.Tag;
 
@@ -366,7 +367,6 @@ public class MenuManager {
 			break;
 		default:
 		}
-		
 	}
 	
 	private void insertMenu() {
@@ -533,30 +533,81 @@ public class MenuManager {
 	}
 	
 	private void insertMenuTag() {
-		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
-		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
-		// 메뉴 출력
-		// 1. 아메리카노(I)
-		// 2. 아메리카노(H)
-		
-		// 태그를 등록할 제품의 번호 선택
-		// 번호 입력 : 1
-		
-		// 등록할 태그 가져와서 출력
-		// 1. 인기메뉴
-		// 2. 한정메뉴
-		
-		// 등록할 태그의 번호 선택
-		// 번호 입력 : 1
-		
-		//-> 아메리카노(I) / 인기메뉴
-		
-		// 제품번호와 태그번호 서버로 전송
-		
-		// 등록 결과 받고나서 값에 따라 메시지 출력
-		// System.out.println("메뉴태그 등록 완료");
-		// System.out.println("메뉴태그 등록 실패");
+	    try {
+	        boolean is_Exist = ois.readBoolean();
+	        // 둘 중 하나라도 등록된 항목이 없다면 리턴
+	        if (!is_Exist) {
+	            System.out.println("등록된 메뉴 또는 태그가 없습니다.");
+	            return;
+	        }
+
+	        // 메뉴 목록 받아오기
+	        List<Menu> menuList = (List<Menu>) ois.readObject();
+	        List<String> menuCodeList = new ArrayList<>();
+
+	        System.out.println("===== 메뉴 목록 =====");
+	        for (int i = 0; i < menuList.size(); i++) {
+	            Menu menu = menuList.get(i);
+	            menuCodeList.add(menu.getMeCode()); // 실제 메뉴 코드 저장
+	            System.out.println((i + 1) + ". " + menu.getMeName() + " (" + menu.getMeHotIce() + ")");
+	        }
+
+	        // 사용자에게 메뉴 선택 입력받기
+	        int menuIndex = 0;
+	        while (true) {
+	            System.out.print("태그를 등록할 메뉴 번호를 입력하세요: ");
+	            menuIndex = scan.nextInt();
+	            if (menuIndex >= 1 && menuIndex <= menuCodeList.size()) {
+	                break;
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	                scan.nextLine();
+	            }
+	        }
+	        String selectedMenuCode = menuCodeList.get(menuIndex - 1);
+
+	        // 태그 목록 받아오기
+	        List<Tag> tagList = (List<Tag>) ois.readObject();
+	        List<Integer> tagNumList = new ArrayList<>();
+
+	        System.out.println("===== 태그 목록 =====");
+	        for (int i = 0; i < tagList.size(); i++) {
+	            Tag tag = tagList.get(i);
+	            tagNumList.add(tag.getTagNum()); // 실제 태그 번호 저장
+	            System.out.println((i + 1) + ". " + tag.getTagName());
+	        }
+
+	        // 사용자에게 태그 선택 입력받기
+	        int tagIndex = 0;
+	        while (true) {
+	            System.out.print("등록할 태그의 번호를 입력하세요: ");
+	            tagIndex = scan.nextInt();
+	            if (tagIndex >= 1 && tagIndex <= tagNumList.size()) {
+	                break;
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	                scan.nextLine();
+	            }
+	        }
+	        int selectedTagNum = tagNumList.get(tagIndex - 1);
+
+	        // 선택한 메뉴와 태그 전송
+	        oos.writeUTF(selectedMenuCode);
+	        oos.writeInt(selectedTagNum);
+	        oos.flush();
+
+	        // 등록 결과 확인
+	        boolean result = ois.readBoolean();
+	        if (result) {
+	            System.out.println("[메뉴 태그 등록 완료]");
+	        } else {
+	            System.out.println("[메뉴 태그 등록 실패]");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
 	private void deleteMenuTag() {
 		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
 		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
@@ -730,47 +781,52 @@ public class MenuManager {
 		}
 
 	}
+
 	//메뉴리스트 보여주고 원하는 메뉴 입력받기
-	private Menu printListMenu() {
-		Menu selectedMenu = null;  // 선택된 메뉴 객체 저장
-		try {
-			List<Menu> dblist = (List<Menu>) ois.readObject();
-			System.out.println("=== 현재 등록된 메뉴 목록 ===");
-			if (dblist.isEmpty()) {
-				System.out.println("등록된 메뉴가 없습니다.");
-				return null; // 메뉴가 없으면 null 반환
-			}
-			for (int i = 0; i < dblist.size(); i++) {
-				Menu menu = dblist.get(i);
-				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")");
-			}
-			int index = 0;
-			while (true) {
-				System.out.print("제품 번호를 입력하세요 : ");
-				if (scan.hasNextInt()) {
-					index = scan.nextInt();
-					scan.nextLine();
-					
-					if (index >= 1 && index <= dblist.size()) {
-						selectedMenu = dblist.get(index - 1);
-						break;
-					} else {
-						System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-					}
-				} else {
-					System.out.println("[숫자를 입력하세요.]");
-					scan.nextLine();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return selectedMenu;
+	private Menu printListMenuWithTags() {
+	    Menu selectedMenu = null;
+	    try {
+	        List<Menu> dblist = (List<Menu>) ois.readObject();
+	        System.out.println("=== 현재 등록된 메뉴 목록 ===");
+	        if (dblist.isEmpty()) {
+	            System.out.println("등록된 메뉴가 없습니다.");
+	            return null;
+	        }
+
+	        for (int i = 0; i < dblist.size(); i++) {
+	            Menu menu = dblist.get(i);
+	            System.out.println((i + 1) + ". " + menu.getMeName() + " (" + menu.getMeHotIce() + ")" + menu.getList());
+	        }
+
+	        int index = 0;
+	        while (true) {
+	            System.out.print("제품 번호를 입력하세요 : ");
+	            if (scan.hasNextInt()) {
+	                index = scan.nextInt();
+	                scan.nextLine();
+
+	                if (index >= 1 && index <= dblist.size()) {
+	                    selectedMenu = dblist.get(index - 1);
+	                    break;
+	                } else {
+	                    System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	                }
+	            } else {
+	                System.out.println("[숫자를 입력하세요.]");
+	                scan.nextLine();
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return selectedMenu;
 	}
+
+
 	//고객_1_1.
 	private void insterCart() {
 		try {
-			Menu menu = printListMenu();
+			Menu menu = printListMenuWithTags();
 			System.out.print("장바구니에 담을 메뉴 갯수 : ");
 			int menuAmount = scan.nextInt();
 			scan.nextLine();
@@ -998,6 +1054,7 @@ public class MenuManager {
 	            cartItem.getMenu().getMeHotIce() + ")" + " " + cartItem.getClAmount() + "개" +
 	            " " + cartItem.getMenu().getMePrice() + " → " + itemTotalPrice + "원");
 	}
+	
 	
 	//고객_주문내역조회
 	//고객_2.

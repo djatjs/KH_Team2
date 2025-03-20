@@ -82,7 +82,6 @@ public class ServerManager {
 			Member login = (Member) ois.readObject();
 			// 로그인 확인
 			boolean loginRes = true;
-			
 			Member dbMember = memberDao.selectMember(login);
 			if (dbMember == null) {
 				loginRes = false;
@@ -90,20 +89,9 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
-			// 휴면 계정인지 여부 확인
-			// M_DEL 가 Y 이면 로그인 불가능
-//			System.out.println(dbMember);
-//			boolean isY = memberDao.selectDeletedId(dbMember);
-//			if(isY) {
-//				oos.writeBoolean(isY);
-//				oos.flush();
-//				System.out.println(isY);
-//				return;
-//			}
-
+			System.out.println(dbMember);
 			String type = dbMember.getMAuthority();
 			oos.writeBoolean(loginRes);
-			//oos.writeBoolean(isY);
 			oos.writeUTF(type);
 			oos.flush();
 
@@ -185,9 +173,8 @@ public class ServerManager {
 		default:
 			System.out.println("[잘못된 입력]");
 		}
-		
 	}
-
+	
 	//관리자_카테고리
 	private void runCategoryMenu(int num) {
 		switch (num) {
@@ -524,7 +511,6 @@ public class ServerManager {
 		}
 		
 	}
-
 	private void deleteMenu() {
 		List<Menu> list = menuDao.selectAllMenu();
 		try {
@@ -566,15 +552,38 @@ public class ServerManager {
 		
 	}
 	private void insertMenuTag() {
-		//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
-		
-		//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
-		
-		//int 자료 2개 받아옴
-		
-		//db에서 해당 제품에 해당 태그 추가하기.(menu_tagDao)
-		
-		//db작업 결과 반환
+		try {
+			//db에 등록된 메뉴들과 태그들을 클라이언트로 전송
+			List<Menu> menuList = menuDao.selectAllMenu();
+			List<Tag> tagList = tagDao.selectAllTag();
+			
+			//null 체크 : 둘다 있으면 true값과 함께 리스트들 전송
+			if(menuList == null || tagList == null) {
+				oos.writeBoolean(false);
+				oos.flush();
+				System.out.println("메뉴or태그가 없음");
+				return;
+			}
+			oos.writeBoolean(true);
+			oos.writeObject(menuList);
+			oos.writeObject(tagList);
+			oos.flush();
+			// 클라이언트에서 선택한 메뉴 코드와 태그 번호 받기
+	        String menuCode = ois.readUTF();
+	        int tagNum = ois.readInt();
+	        System.out.println("클라이언트 선택 - 메뉴 코드: " + menuCode + 
+	        		", 태그 번호: " + tagNum);
+			
+	        //DB에 해당 메뉴와 태그 추가
+	        boolean result = tagDao.insertMenuTag(menuCode, tagNum);
+			
+	        //클라이언트에게 DB 작업 결과 전송
+	        oos.writeBoolean(result);
+	        oos.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+			
 		
 	}
 	
@@ -741,14 +750,27 @@ public class ServerManager {
 			System.out.println("[잘못된 입력]");
 		}
 	}
-//고객_메뉴조회_장바구니담기
+	
+	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
+	//메뉴 태그 적용 후 여기 먼저 수정해보기
+	private void printListMenu() {
+		List<Menu> list = menuDao.selectAllMenuWithTags();
+		try {
+			oos.writeObject(list);
+			oos.flush();		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//고객_메뉴조회_장바구니담기
 	private void insertCart(Member member) {
 		try {
 			printListMenu();
 			// 구매할 제품과 수량 전달받음
 			Menu menu = (Menu) ois.readObject();
 			int amount = ois.readInt();
-		
+			System.out.println(menu+ " " +amount);
 			
 			// 해당 사용자의 장바구니가 있는지 확인(member.mId, CT_STATUS)
 			Cart dbCart = cartDao.selectCart(member);
@@ -763,9 +785,9 @@ public class ServerManager {
 			else {
 				// 카트 번호와 제품 번호, 수량을 카트리스트에 담기
 				Boolean dbCartList = cartListDao.insertMenuToCartList(dbCart.getCtNum(),menu,amount);
-			
+				System.out.println(dbCartList);
 			}
-			
+			System.out.println(dbCart);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -800,52 +822,12 @@ public class ServerManager {
 		}
 	}
 
-	
-	//구입을 위해 메뉴로 등록된 항목들을 클라이언트로 전송
-	//메뉴 태그 적용 후 여기 먼저 수정해보기
-	private void printListMenu() {
-		List<Menu> list = menuDao.selectAllMenu();
-		try {
-			oos.writeObject(list);
-			oos.flush();		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//고객_1_3.
+	//고객_메뉴조회_장바구니삭제
 	private void deleteCart(Member member) {
-		try {
-			Cart cart = cartDao.selectCart(member);
-			List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-				
-			oos.writeObject(cartLists);
-			oos.flush();
-			
-			int clNum = ois.readInt();
-			
-			if (clNum == 0) {
-	            System.out.println("뒤로 가기");
-	            return;  
-	        }
-			
-			CartList dbCart = cartListDao.seletCartByNum(clNum);
-
-			boolean res = true;
-			if (dbCart == null) {
-				res = false;
-				oos.writeBoolean(res);
-				oos.flush();
-				return;
-			}
-				res = cartListDao.deleteCart(clNum);
-				oos.writeBoolean(res);
-				oos.flush();
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
+		sendCartLists(member);
+		// 삭제할 장바구니리스트 번호 받기
+		// 번호를 통해 해당 장바구니 리스트 삭제하기
+	}
 	
 	//고객_메뉴조회_장바구니 구매
 	private void orderCart(Member member) {
@@ -901,7 +883,6 @@ public class ServerManager {
 	            return false;
 	        }
 	        List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());
-	        System.out.println(cartLists);
 	        if (cartLists == null) {
 	        	oos.writeBoolean(false);
 	        	oos.flush();
@@ -980,13 +961,13 @@ public class ServerManager {
 			//
 			String id = ois.readUTF();
 			String pw = ois.readUTF();
-
+			boolean res1 = false;
+			boolean res2 = false;
 			res3 = false;
 			if (member.getMId().equals(id) && member.getMPw().equals(pw)) {
-				
-				memberDao.Updat(member);	
-				memberDao.UpdateDeleteEvent(member);
-				res3 = true;
+				res1 = stampDao.deleteMember(id);
+				res2 = couponDao.deleteMember(id);
+				res3 = memberDao.deleteMember(member);
 			}
 			oos.writeBoolean(res3);
 			oos.flush();
@@ -1035,24 +1016,23 @@ public class ServerManager {
 	
 	//비밀번호 찾기
 	public void findPw() {
-	    try {
-	        // 클라이언트로부터 Member 객체를 받음
-	        Member member = (Member) ois.readObject();
-	        // 비밀번호 조회
-	        Member foundMember = memberDao.findPw(member);  // findPw() 호출 후, 반환값을 foundMember에 저장
-	        if (foundMember != null) {
-	            String pw = foundMember.getMPw();  // null이 아니면 비밀번호 가져오기
-	            oos.writeUTF(pw);
-	            oos.flush();
-	            System.out.println("[서버 : 비밀번호 조회 완료]");
-	        } else {           
-	            oos.writeUTF(""); 
-	            oos.flush();
-	            System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		try {
+			// 클라이언트로부터 Member 객체를 받음
+			Member member = (Member) ois.readObject();
+			// 비밀번호 조회
+			String pw = memberDao.findPw(member).getMPw();
+			// 클라이언트로 결과 반환
+			oos.writeUTF(pw);
+			oos.flush();
+			if (pw != null) {
+				System.out.println("[서버 : 비밀번호 조회 완료]");
+			} else {
+				System.out.println("[서버 : 아이디나 전화번호가 일치하지 않습니다.]");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	//아이디 중복 체크 : 매퍼 아이디만 쓰도록 수정해야함
@@ -1066,33 +1046,4 @@ public class ServerManager {
 		}
 		return false;
 	}
-
-	public boolean restory() {
-		boolean logres = false;
-
-		try {
-			// 클라이언트로부터 신호받음
-			String answer = ois.readUTF();
-			if (answer.equals("N")) {
-				return false;
-			}
-			//
-			String id = ois.readUTF();
-			String pw = ois.readUTF();
-			Member member = new Member(id, pw);
-
-			logres = memberDao.restory(member);
-			memberDao.dropEvent(member);
-	
-			
-			oos.writeBoolean(logres);
-			oos.flush();
-			return logres;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return logres;
-	}
-
 }
