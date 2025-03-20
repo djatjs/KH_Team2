@@ -82,6 +82,7 @@ public class ServerManager {
 			Member login = (Member) ois.readObject();
 			// 로그인 확인
 			boolean loginRes = true;
+			
 			Member dbMember = memberDao.selectMember(login);
 			if (dbMember == null) {
 				loginRes = false;
@@ -89,8 +90,20 @@ public class ServerManager {
 				oos.flush();
 				return;
 			}
+			// 휴면 계정인지 여부 확인
+			// M_DEL 가 Y 이면 로그인 불가능
+//			System.out.println(dbMember);
+//			boolean isY = memberDao.selectDeletedId(dbMember);
+//			if(isY) {
+//				oos.writeBoolean(isY);
+//				oos.flush();
+//				System.out.println(isY);
+//				return;
+//			}
+
 			String type = dbMember.getMAuthority();
 			oos.writeBoolean(loginRes);
+			//oos.writeBoolean(isY);
 			oos.writeUTF(type);
 			oos.flush();
 
@@ -799,8 +812,42 @@ public class ServerManager {
 			e.printStackTrace();
 		}
 	}
+	
+	private void updateCart(Member member) {
+		try {
+			sendCartLists(member);
+			int clAmount = ois.readInt();
+			System.out.println(clAmount);
+			int clNum = ois.readInt();
+			System.out.println(clNum);
 
+			boolean isNull = cartListDao.selectCartList(clNum);
+			if(!isNull) {
+				oos.writeBoolean(isNull);
+				oos.flush();
+				return;
+			}
+			
+			oos.writeBoolean(isNull);
+			oos.flush();
+			
+			boolean res = cartListDao.updateCartList(clNum, clAmount);
+			
+			oos.writeBoolean(res);
+			oos.flush();
+		}catch (IOException e) {
+				e.printStackTrace();
+		}
+	}
+
+
+	
+	//고객_1_3.
 	private void deleteCart(Member member) {
+		sendCartLists(member);
+		// 삭제할 장바구니리스트 번호 받기
+		// 번호를 통해 해당 장바구니 리스트 삭제하기
+
 		try {
 		Cart cart = cartDao.selectCart(member);
 		List<CartList> cartLists = cartDao.selectCartList(cart.getCtNum());

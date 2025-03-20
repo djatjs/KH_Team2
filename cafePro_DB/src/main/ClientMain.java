@@ -53,6 +53,7 @@ public class ClientMain {
 				customerProgram.runCustomer();
 				break;
 			default:
+				System.out.println(type);
 				System.out.println("[로그인 실패 : 아이디 또는 비밀번호 오류]");
 			}
 			

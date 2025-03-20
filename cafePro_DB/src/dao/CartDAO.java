@@ -16,7 +16,6 @@ public interface CartDAO {
 	List<CartList> selectCartList(int ctNum);
 
 	void setStatus(String mId);
-
 	
 	
 	
