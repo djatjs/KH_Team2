@@ -30,6 +30,7 @@ import model.vo.CartList;
 import model.vo.Category;
 import model.vo.Member;
 import model.vo.Menu;
+import model.vo.Menu_Tag;
 import model.vo.Order;
 import model.vo.Tag;
 
@@ -762,7 +763,7 @@ public class ServerManager {
 			System.out.println("[잘못된 입력]");
 		}
 	}
-//고객_메뉴조회_장바구니담기
+	//고객_메뉴조회_장바구니담기
 	private void insertCart(Member member) {
 		try {
 			printListMenu();

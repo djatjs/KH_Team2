@@ -26,8 +26,9 @@
 	<select id="selectMenuByNameAndHI">
 		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
 	</select>
-    <select id="selectAllMenu">
+    <select id="selectAllMenu" resultMap="MenuMap">
     	select * from menu
+    	
     </select>
 
 	<insert id="insertMenu">

@@ -11,5 +11,6 @@ public class Menu_Tag implements Serializable{
    private int mtNum;      		//MT_NUM
    private int mtThgNum;   		//MT_TAG_NUM
    private String mtMeCode;     //MT_ME_CODE
-
+   
+   
 }

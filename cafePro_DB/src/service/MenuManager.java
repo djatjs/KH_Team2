@@ -535,7 +535,7 @@ public class MenuManager {
 	private void insertMenuTag() {
 		try {
 			boolean ready = ois.readBoolean();
-			if (!ready) {
+			if(!ready) {
 				System.out.println("없습니다");
 				return;
 			}
@@ -545,10 +545,11 @@ public class MenuManager {
 			// 메뉴 출력
 			List<String> menuNumList = new ArrayList<>(); // meCode를 저장
 			for (int i = 0; i < menuList.size(); i++) {
-				Menu menu = menuList.get(i);
-				menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
-				System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")" + menu.getList());
-			}
+	            Menu menu = menuList.get(i);
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ")"
+	            		+ menu.getList());
+	        }
 			// 태그를 등록할 제품의 번호 선택
 			System.out.println("------------------");
 			int menuIndex = 0;
@@ -563,7 +564,8 @@ public class MenuManager {
 				}
 			}
 			String meCode = menuNumList.get(menuIndex - 1);
-
+			
+			// 등록할 태그 가져와서 출력
 			List<Integer> tagNumList = new ArrayList<>();
 			for (int i = 0; i < tagList.size(); i++) {
 				Tag tag = tagList.get(i);
