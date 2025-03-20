@@ -617,8 +617,91 @@ public class MenuManager {
 		}
 	}
 	private void deleteMenuTag() {
+	    try {
+	        // 서버로부터 메뉴와 태그 목록을 받아오기
+	    	boolean ready = ois.readBoolean();
+	    	if(!ready) {
+	    		System.out.println("등록된 메뉴가 없습니다.");
+	    		return; // 메뉴가 없으면 종료	    		
+	    	}
+	        List<Menu> menuList = (List<Menu>) ois.readObject();
 
+	        // 메뉴 출력
+	        List<String> menuNumList = new ArrayList<>(); // meCode를 저장
+	        for (int i = 0; i < menuList.size(); i++) {
+	            Menu menu = menuList.get(i);
+	            StringBuilder tagsString = new StringBuilder();
+
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+	                }
+	            }
+
+	            // 문자열 앞뒤 공백 제거
+	            String formattedTags = tagsString.toString().trim();
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+
+	            // 메뉴와 태그 출력
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
+	        }
+
+	        // 삭제할 메뉴 선택
+	        System.out.println("------------------");
+	        int menuIndex = 0;
+	        while (true) {
+	            System.out.print("태그를 삭제할 메뉴의 번호를 입력하세요 : ");
+	            menuIndex = scan.nextInt();
+	            if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+	                break;
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	            }
+	        }
+	        String meCode = menuNumList.get(menuIndex - 1);
+
+	        // 선택한 메뉴의 태그 출력
+	        System.out.println("등록된 태그들:");
+	        List<Menu_Tag> selectedMenuTags = menuList.get(menuIndex - 1).getList();
+	        List<Integer> tagNumList = new ArrayList<>();
+	        for (int i = 0; i < selectedMenuTags.size(); i++) {
+	            for (Tag tag : selectedMenuTags.get(i).getTags()) {
+	                System.out.println((i + 1) + ". " + tag.getTagName());
+	                tagNumList.add(tag.getTagNum()); // 실제 DB tagNum 저장
+	            }
+	        }
+
+	        // 삭제할 태그 번호 입력
+	        int userIndex = 0;
+	        while (true) {
+	            System.out.print("삭제할 태그의 번호를 입력하세요 : ");
+	            userIndex = scan.nextInt();
+	            if (userIndex >= 1 && userIndex <= tagNumList.size()) {
+	                break; // 유효한 입력이면 루프 종료
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	            }
+	        }
+	        int tagNum = tagNumList.get(userIndex - 1);
+
+	        // 제품번호와 태그번호 서버로 전송
+	        oos.writeUTF(meCode);
+	        oos.writeInt(tagNum);
+	        oos.flush();
+
+	        // 삭제 결과 받고나서 값에 따라 메시지 출력
+	        boolean res = ois.readBoolean();
+	        if (res) {
+	            System.out.println("메뉴태그 삭제 완료");
+	        } else {
+	            System.out.println("메뉴태그 삭제 실패");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
 
 	
 	//관리자_매출확인

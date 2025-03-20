@@ -9,6 +9,8 @@ import model.vo.Menu_Tag;
 public interface MenuTagDAO {
 
 	boolean insertMenuTag(@Param("meCode")String meCode, @Param("tagNum")int tagNum);
+
+	boolean deleteMenuTag(@Param("meCode")String meCode, @Param("tagNum")int tagNum);
 	
 	
 	

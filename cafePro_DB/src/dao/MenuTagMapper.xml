@@ -14,5 +14,10 @@
   		insert into menu_tag(MT_TAG_NUM, MT_ME_CODE)
   		values(#{tagNum},#{meCode})
   	</insert>
-  	
+  	<delete id="deleteMenuTag">
+  		delete from menu_tag
+  		where 
+  			MT_TAG_NUM = #{tagNum} and
+  			MT_ME_CODE = #{meCode}
+  	</delete>
   </mapper>
