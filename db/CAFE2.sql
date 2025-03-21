@@ -10,4 +10,4 @@ drop event if exists update_delete_event_123;
 
 # 이벤트 실행날짜 변경
 ALTER EVENT update_delete_event_123
-ON SCHEDULE AT '2025-03-21 22:41:00';
+ON SCHEDULE AT '2025-03-21 10:53:00';

@@ -27,7 +27,6 @@ public class Order implements Serializable{
 		 
 		return 
 		   "구매날짜 : " + dateOr + ", "+
-		   "메뉴 : " + meName + " " + clAmount + "개"  + ", "+
 		   "구매금액 : " + orFinal + "원";
 
 	}
