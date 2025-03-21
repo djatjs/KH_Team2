@@ -1,6 +1,11 @@
 # KH_Team2
+<h2>카페 프로그램</h2>
+<h3>콘솔을 이용한 서버-클라이언트 콘솔 I/O통신</h3>
 
-3/14 목표
+<h3>DB 구조</h3>
+![Image](https://github.com/user-attachments/assets/9a53718f-35e8-4a84-a315-847d27ddbf68)
+
+
 
 1. 장바구니 관리
 
