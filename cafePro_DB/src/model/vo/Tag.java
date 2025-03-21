@@ -7,7 +7,7 @@ import lombok.Data;
 public class Tag implements Serializable{
 
    private static final long serialVersionUID = 1L;
-   private int tagNum;      //TAG_NUM
+   private int tagNum;      	//TAG_NUM
    private String tagName;      //TAG_NAME   
    
    public Tag() {}
