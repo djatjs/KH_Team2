@@ -24,10 +24,10 @@
 		ME_NAME,
 		CL_AMOUNT
 	from `order`
-	join `cart` on OR_CT_NUM = CT_NUM
-	join `cart_list` on CL_CT_NUM = CL_NUM
-	join `menu` on CL_ME_CODE = ME_CODE
-	join `member` on OR_M_ID = M_ID
+	right join `cart` on OR_CT_NUM = CT_NUM
+	right join `cart_list` on CL_CT_NUM = CL_NUM
+	right join `menu` on CL_ME_CODE = ME_CODE
+	right join `member` on OR_M_ID = M_ID
 	where OR_M_ID = #{mId}
 	</select>
 	<insert id="insertOrder">
