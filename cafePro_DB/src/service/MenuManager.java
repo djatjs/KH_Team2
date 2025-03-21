@@ -367,6 +367,7 @@ public class MenuManager {
 			break;
 		default:
 		}
+		
 	}
 	
 	private void insertMenu() {
@@ -533,105 +534,178 @@ public class MenuManager {
 	}
 	
 	private void insertMenuTag() {
+		    try {
+		        // 서버로부터 메뉴와 태그 목록을 받아오기
+		        boolean ready = ois.readBoolean();
+		        if (!ready) {
+		            System.out.println("등록된 메뉴가 없습니다.");
+		            return; // 메뉴가 없으면 종료
+		        }
+		        
+		        // 메뉴 목록과 태그 목록을 받아옴
+		        List<Menu> menuList = (List<Menu>) ois.readObject();
+		        List<Tag> tagList = (List<Tag>) ois.readObject();
+
+		        // 메뉴 출력
+		        List<String> menuNumList = new ArrayList<>(); // meCode를 저장
+		        for (int i = 0; i < menuList.size(); i++) {
+		            Menu menu = menuList.get(i);
+		            StringBuilder tagsString = new StringBuilder();
+
+		            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+		            for (Menu_Tag menuTag : menu.getList()) {
+		                for (Tag tag : menuTag.getTags()) {
+		                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+		                }
+		            }
+
+		            // 문자열 앞뒤 공백 제거
+		            String formattedTags = tagsString.toString().trim();
+		            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+
+		            // 메뉴와 태그 출력
+		            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
+		        }
+
+		        // 추가할 메뉴 선택
+		        System.out.println("------------------");
+		        int menuIndex = 0;
+		        while (true) {
+		            System.out.print("태그를 추가할 메뉴의 번호를 입력하세요 : ");
+		            menuIndex = scan.nextInt();
+		            if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
+		                break;
+		            } else {
+		                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+		            }
+		        }
+		        String meCode = menuNumList.get(menuIndex - 1);
+
+		        // 등록할 태그 가져와서 출력
+		        List<Integer> tagNumList = new ArrayList<>();
+		        for (int i = 0; i < tagList.size(); i++) {
+		            Tag tag = tagList.get(i);
+		            tagNumList.add(tag.getTagNum()); // 실제 DB tagNum 저장
+		            System.out.println((i + 1) + ". " + tag.getTagName()); // 1부터 출력
+		        }
+
+		        // 등록할 태그의 번호 선택
+		        int userIndex = 0;
+		        while (true) {
+		            System.out.print("등록할 태그의 번호를 입력하세요 : ");
+		            userIndex = scan.nextInt();
+		            if (userIndex >= 1 && userIndex <= tagNumList.size()) {
+		                break;
+		            } else {
+		                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+		                scan.nextLine();
+		            }
+		        }
+		        int tagNum = tagNumList.get(userIndex - 1);
+
+		        // 제품번호와 태그번호 서버로 전송
+		        oos.writeUTF(meCode);
+		        oos.writeInt(tagNum);
+		        oos.flush();
+
+		        // 등록 결과 받고나서 값에 따라 메시지 출력
+		        boolean res = ois.readBoolean();
+		        if (res) {
+		            System.out.println("메뉴태그 등록 완료");
+		        } else {
+		            System.out.println("메뉴태그 등록 실패");
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+	private void deleteMenuTag() {
 	    try {
-	        boolean is_Exist = ois.readBoolean();
-	        // 둘 중 하나라도 등록된 항목이 없다면 리턴
-	        if (!is_Exist) {
-	            System.out.println("등록된 메뉴 또는 태그가 없습니다.");
-	            return;
-	        }
-
-	        // 메뉴 목록 받아오기
+	        // 서버로부터 메뉴와 태그 목록을 받아오기
+	    	boolean ready = ois.readBoolean();
+	    	if(!ready) {
+	    		System.out.println("등록된 메뉴가 없습니다.");
+	    		return; // 메뉴가 없으면 종료	    		
+	    	}
 	        List<Menu> menuList = (List<Menu>) ois.readObject();
-	        List<String> menuCodeList = new ArrayList<>();
 
-	        System.out.println("===== 메뉴 목록 =====");
+	        // 메뉴 출력
+	        List<String> menuNumList = new ArrayList<>(); // meCode를 저장
 	        for (int i = 0; i < menuList.size(); i++) {
 	            Menu menu = menuList.get(i);
-	            menuCodeList.add(menu.getMeCode()); // 실제 메뉴 코드 저장
-	            System.out.println((i + 1) + ". " + menu.getMeName() + " (" + menu.getMeHotIce() + ")");
+	            StringBuilder tagsString = new StringBuilder();
+
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
+	                }
+	            }
+
+	            // 문자열 앞뒤 공백 제거
+	            String formattedTags = tagsString.toString().trim();
+	            menuNumList.add(menu.getMeCode()); // 메뉴 코드 저장
+
+	            // 메뉴와 태그 출력
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
 	        }
 
-	        // 사용자에게 메뉴 선택 입력받기
+	        // 삭제할 메뉴 선택
+	        System.out.println("------------------");
 	        int menuIndex = 0;
 	        while (true) {
-	            System.out.print("태그를 등록할 메뉴 번호를 입력하세요: ");
+	            System.out.print("태그를 삭제할 메뉴의 번호를 입력하세요 : ");
 	            menuIndex = scan.nextInt();
-	            if (menuIndex >= 1 && menuIndex <= menuCodeList.size()) {
+	            if (menuIndex >= 1 && menuIndex <= menuNumList.size()) {
 	                break;
 	            } else {
 	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-	                scan.nextLine();
 	            }
 	        }
-	        String selectedMenuCode = menuCodeList.get(menuIndex - 1);
+	        String meCode = menuNumList.get(menuIndex - 1);
 
-	        // 태그 목록 받아오기
-	        List<Tag> tagList = (List<Tag>) ois.readObject();
+	        // 선택한 메뉴의 태그 출력
+	        System.out.println("등록된 태그들:");
+	        List<Menu_Tag> selectedMenuTags = menuList.get(menuIndex - 1).getList();
 	        List<Integer> tagNumList = new ArrayList<>();
-
-	        System.out.println("===== 태그 목록 =====");
-	        for (int i = 0; i < tagList.size(); i++) {
-	            Tag tag = tagList.get(i);
-	            tagNumList.add(tag.getTagNum()); // 실제 태그 번호 저장
-	            System.out.println((i + 1) + ". " + tag.getTagName());
-	        }
-
-	        // 사용자에게 태그 선택 입력받기
-	        int tagIndex = 0;
-	        while (true) {
-	            System.out.print("등록할 태그의 번호를 입력하세요: ");
-	            tagIndex = scan.nextInt();
-	            if (tagIndex >= 1 && tagIndex <= tagNumList.size()) {
-	                break;
-	            } else {
-	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-	                scan.nextLine();
+	        for (int i = 0; i < selectedMenuTags.size(); i++) {
+	            for (Tag tag : selectedMenuTags.get(i).getTags()) {
+	                System.out.println((i + 1) + ". " + tag.getTagName());
+	                tagNumList.add(tag.getTagNum()); // 실제 DB tagNum 저장
 	            }
 	        }
-	        int selectedTagNum = tagNumList.get(tagIndex - 1);
 
-	        // 선택한 메뉴와 태그 전송
-	        oos.writeUTF(selectedMenuCode);
-	        oos.writeInt(selectedTagNum);
+	        // 삭제할 태그 번호 입력
+	        int userIndex = 0;
+	        while (true) {
+	            System.out.print("삭제할 태그의 번호를 입력하세요 : ");
+	            userIndex = scan.nextInt();
+	            if (userIndex >= 1 && userIndex <= tagNumList.size()) {
+	                break; // 유효한 입력이면 루프 종료
+	            } else {
+	                System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	            }
+	        }
+	        int tagNum = tagNumList.get(userIndex - 1);
+
+	        // 제품번호와 태그번호 서버로 전송
+	        oos.writeUTF(meCode);
+	        oos.writeInt(tagNum);
 	        oos.flush();
 
-	        // 등록 결과 확인
-	        boolean result = ois.readBoolean();
-	        if (result) {
-	            System.out.println("[메뉴 태그 등록 완료]");
+	        // 삭제 결과 받고나서 값에 따라 메시지 출력
+	        boolean res = ois.readBoolean();
+	        if (res) {
+	            System.out.println("메뉴태그 삭제 완료");
 	        } else {
-	            System.out.println("[메뉴 태그 등록 실패]");
+	            System.out.println("메뉴태그 삭제 실패");
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
 
-	private void deleteMenuTag() {
-		// 서버로부터 관리자가 등록해놓은 메뉴와 태그 받아오기
-		// 둘 중 하나라도 등록된 항목이 없다면 서버에 리턴하라는 신호 보내고 같이 리턴
-		// 메뉴 출력
-		// 1. 아메리카노(I)
-		// 2. 아메리카노(H)
-		
-		// 태그를 삭제할 제품의 번호 선택
-		// 번호 입력 : 1
-		
-		// 삭제할 태그 가져와서 출력
-		// 1. 인기메뉴
-		// 2. 한정메뉴
-		
-		// 삭제할 태그의 번호 선택
-		// 번호 입력 : 1
-		
-		// 제품번호와 태그번호 서버로 전송
-		
-		// 등록 결과 받고나서 값에 따라 메시지 출력
-		// System.out.println("메뉴태그 삭제 완료");
-		// System.out.println("메뉴태그 삭제 실패");
-		
-	}
+
 	
 	//관리자_매출확인
 	// 4. 매출
@@ -781,52 +855,60 @@ public class MenuManager {
 		}
 
 	}
-
 	//메뉴리스트 보여주고 원하는 메뉴 입력받기
-	private Menu printListMenuWithTags() {
-	    Menu selectedMenu = null;
-	    try {
-	        List<Menu> dblist = (List<Menu>) ois.readObject();
-	        System.out.println("=== 현재 등록된 메뉴 목록 ===");
-	        if (dblist.isEmpty()) {
-	            System.out.println("등록된 메뉴가 없습니다.");
-	            return null;
-	        }
-
-	        for (int i = 0; i < dblist.size(); i++) {
+	private Menu printListMenu() {
+		Menu selectedMenu = null;  // 선택된 메뉴 객체 저장
+		try {
+			List<Menu> dblist = (List<Menu>) ois.readObject();
+			System.out.println("=== 현재 등록된 메뉴 목록 ===");
+			if (dblist.isEmpty()) {
+				System.out.println("등록된 메뉴가 없습니다.");
+				return null; // 메뉴가 없으면 null 반환
+			}
+			for (int i = 0; i < dblist.size(); i++) {
 	            Menu menu = dblist.get(i);
-	            System.out.println((i + 1) + ". " + menu.getMeName() + " (" + menu.getMeHotIce() + ")" + menu.getList());
-	        }
+	            StringBuilder tagsString = new StringBuilder();
 
-	        int index = 0;
-	        while (true) {
-	            System.out.print("제품 번호를 입력하세요 : ");
-	            if (scan.hasNextInt()) {
-	                index = scan.nextInt();
-	                scan.nextLine();
-
-	                if (index >= 1 && index <= dblist.size()) {
-	                    selectedMenu = dblist.get(index - 1);
-	                    break;
-	                } else {
-	                    System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	            // Menu_Tag 리스트에서 각 태그를 가져오기 위한 반복문
+	            for (Menu_Tag menuTag : menu.getList()) {
+	                for (Tag tag : menuTag.getTags()) {
+	                    tagsString.append(tag.getTagName()).append(" "); // 태그 이름 추가, 공백으로 구분
 	                }
-	            } else {
-	                System.out.println("[숫자를 입력하세요.]");
-	                scan.nextLine();
 	            }
+
+	            // 문자열 앞뒤 공백 제거
+	            String formattedTags = tagsString.toString().trim();
+
+	            // 메뉴와 태그 출력
+	            System.out.println((i + 1) + ". " + menu.getMeName() + "(" + menu.getMeHotIce() + ") " + formattedTags);
 	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return selectedMenu;
+			int index = 0;
+			while (true) {
+				System.out.print("제품 번호를 입력하세요 : ");
+				if (scan.hasNextInt()) {
+					index = scan.nextInt();
+					scan.nextLine();
+					
+					if (index >= 1 && index <= dblist.size()) {
+						selectedMenu = dblist.get(index - 1);
+						break;
+					} else {
+						System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+					}
+				} else {
+					System.out.println("[숫자를 입력하세요.]");
+					scan.nextLine();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return selectedMenu;
 	}
-
-
 	//고객_1_1.
 	private void insterCart() {
 		try {
-			Menu menu = printListMenuWithTags();
+			Menu menu = printListMenu();
 			System.out.print("장바구니에 담을 메뉴 갯수 : ");
 			int menuAmount = scan.nextInt();
 			scan.nextLine();
@@ -847,72 +929,73 @@ public class MenuManager {
 	}
 	
 	private void updateCart() {
-		try {
-			boolean isReady = ois.readBoolean();
-			if(!isReady) {
-				System.out.println("장바구니가 없습니다.");
-				return;
-			}
-			List<CartList> cartLists = (List<CartList>) ois.readObject();
-			List<Integer> cartListsNumList = new ArrayList<>();
-			
-			int totalAmount = 0;
+	      try {
+	         boolean isReady = ois.readBoolean();
+	         if(!isReady) {
+	            System.out.println("장바구니가 없습니다.");
+	         
+	            return;
+	         }
+	         List<CartList> cartLists = (List<CartList>) ois.readObject();
+	         List<Integer> cartListsNumList = new ArrayList<>();
+	         
+	         int totalAmount = 0;
 
-		    for (int i = 0; i < cartLists.size(); i++) {
-		        CartList cartItem = cartLists.get(i);
-		        cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
-		        int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
-		        totalAmount += itemTotalPrice;
+	          for (int i = 0; i < cartLists.size(); i++) {
+	              CartList cartItem = cartLists.get(i);
+	              cartListsNumList.add(cartItem.getClNum()); // DB tagNum 저장
+	              int itemTotalPrice = cartItem.getClAmount() * cartItem.getMenu().getMePrice();
+	              totalAmount += itemTotalPrice;
 
-		        printCartItem(i + 1, cartItem, itemTotalPrice);
-		    }
+	              printCartItem(i + 1, cartItem, itemTotalPrice);
+	          }
 
-		    System.out.println("------------------");
-		    System.out.println("최종금액 : " + totalAmount + "원");
-		
-		    //수정할 메뉴의 인덱스 번호를 입력 받음 
-		    //인덱스번호가 메뉴 범위 밖이면 경고 메시지 출력
-		    int menuIndex = 0;
-		    while (true) {
-				System.out.print("수정할 메뉴의 번호를 입력하세요 : ");
-				menuIndex = scan.nextInt();
-				if (menuIndex >= 1 && menuIndex <= cartListsNumList.size()) {
-					break;
-				} else {
-					System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
-					scan.nextLine();
-				}
-			}	    
-		
-			System.out.print("수정할 메뉴 수량 : ");
-			int clAmount = scan.nextInt();
-			
-			//사용자가 입력한 인덱스에 해당하는 장바구니를 가져와서
-			int clNum = cartListsNumList.get(menuIndex - 1);
-			// 사용자가 입력한 수량을 설정
-			//cartListsNumList.set(menuIndex, clAmount);
-			
-			//서버로 수량 보냄, 몇번째인지 보냄
-			oos.writeInt(clAmount);
-			oos.writeInt(clNum);
-			oos.flush();
-			
-			boolean isNull = ois.readBoolean();
-			if(!isNull) {
-				System.out.println("장바구니에 상품이 없습니다.");
-			}
-			boolean res = ois.readBoolean();
-			if(!res) {
-				System.out.println("업데이트 실패");
-			}else {
-				System.out.println("업데이트 성공");
-			}
-			
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-	}
+	          System.out.println("------------------");
+	          System.out.println("최종금액 : " + totalAmount + "원");
+	      
+	          //수정할 메뉴의 인덱스 번호를 입력 받음 
+	          //인덱스번호가 메뉴 범위 밖이면 경고 메시지 출력
+	          int menuIndex = 0;
+	          while (true) {
+	            System.out.print("수정할 메뉴의 번호를 입력하세요 : ");
+	            menuIndex = scan.nextInt();
+	            if (menuIndex >= 1 && menuIndex <= cartListsNumList.size()) {
+	               break;
+	            } else {
+	               System.out.println("[잘못된 번호입니다. 다시 입력하세요.]");
+	               scan.nextLine();
+	            }
+	         }       
+	      
+	         System.out.print("수정할 메뉴 수량 : ");
+	         int clAmount = scan.nextInt();
+	         
+	         //사용자가 입력한 인덱스에 해당하는 장바구니를 가져와서
+	         int clNum = cartListsNumList.get(menuIndex - 1);
+	         // 사용자가 입력한 수량을 설정
+	         //cartListsNumList.set(menuIndex, clAmount);
+	         
+	         //서버로 수량 보냄, 몇번째인지 보냄
+	         oos.writeInt(clAmount);
+	         oos.writeInt(clNum);
+	         oos.flush();
+	         
+	         boolean isNull = ois.readBoolean();
+	         if(!isNull) {
+	            System.out.println("장바구니에 상품이 없습니다.");
+	         }
+	         boolean res = ois.readBoolean();
+	         if(!res) {
+	            System.out.println("업데이트 실패");
+	         }else {
+	            System.out.println("업데이트 성공");
+	         }
+	         
+	         }catch (Exception e) {
+	            e.printStackTrace();
+	         }
+	         
+	   }
 	
 	//고객_1_3.
 	private void deleteCart() {
@@ -971,7 +1054,7 @@ public class MenuManager {
 	private void orderCart() {
 		try {
 			boolean is_ready = ois.readBoolean();
-			System.out.println(is_ready);
+	
 			if(!is_ready) {
 				System.out.println("장바구니가 비어있습니다.");
 				return;
@@ -1054,7 +1137,6 @@ public class MenuManager {
 	            cartItem.getMenu().getMeHotIce() + ")" + " " + cartItem.getClAmount() + "개" +
 	            " " + cartItem.getMenu().getMePrice() + " → " + itemTotalPrice + "원");
 	}
-	
 	
 	//고객_주문내역조회
 	//고객_2.

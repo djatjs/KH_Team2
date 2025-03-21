@@ -13,11 +13,15 @@
 		<result property="meThumb" column="ME_THUMB"/>
 		<result property="meAble" column="ME_ABLE"/>
 		<result property="meHotIce" column="ME_HOT_ICE"/>
-		<!-- 태그 리스트 추가 -->
-	  	<collection property="list" ofType="model.vo.Menu_Tag">
-	      <id property="tagNum" column="TAG_NUM"/>
-	      <result property="tagName" column="TAG_NAME"/>
-	  	</collection>
+		<collection property="list" ofType="model.vo.Menu_Tag">
+			<id property="mtNum" column="MT_NUM"/>
+			<result property="mtThgNum" column="MT_TAG_NUM"/>
+			<result property="mtMeCode" column="MT_ME_CODE"/>
+			<collection property="tags" ofType="model.vo.Tag">
+				<id property="tagNum" column="TAG_NUM"/>
+				<result property="tagName" column="TAG_NAME"/>
+			</collection>
+		</collection>
 	</resultMap>
 
 	<select id="selectMenuByCode">
@@ -26,13 +30,16 @@
 	<select id="selectMenuByNameAndHI">
 		select * from menu where ME_NAME = #{menu.meName} and ME_HOT_ICE = #{menu.meHotIce}
 	</select>
-    <select id="selectAllMenu">
-    	select * from menu
-    </select>
-	<select id="selectAllMenuWithTags">
-		select * from menu
-		join tag
+
+	<select id="selectAllMenu" resultMap="MenuMap">
+		SELECT
+		ME_CODE, ME_NAME, ME_HOT_ICE,
+		TAG_NUM, TAG_NAME
+		FROM menu
+		LEFT JOIN menu_tag ON MT_ME_CODE = ME_CODE
+		LEFT JOIN tag ON MT_TAG_NUM = TAG_NUM;
 	</select>
+
 	<insert id="insertMenu">
 	    INSERT INTO menu (ME_CODE, ME_CA_NUM, ME_NAME, ME_PRICE, ME_CONTENT, ME_HOT_ICE)
 	    SELECT 

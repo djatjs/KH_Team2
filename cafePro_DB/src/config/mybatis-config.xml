@@ -13,7 +13,7 @@
         <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/cafe"/>
         <property name="username" value="root"/>
-        <property name="password" value="root"/>
+        <property name="password" value="keson2625"/>
       </dataSource>
     </environment>
   </environments>
@@ -28,5 +28,6 @@
     <mapper resource="dao/OrderMapper.xml"/>
     <mapper resource="dao/CartMapper.xml"/>
     <mapper resource="dao/CartListMapper.xml"/>
+    <mapper resource="dao/MenuTagMapper.xml"/>
 </mappers>
 </configuration>
